@@ -11,7 +11,7 @@ function ShowMediaList({user}) {
     const headers = {
       'userID':user.ID
     }
-    console.log("Test1")
+
     axios
       .get('http://localhost:8082/api/media', {headers})
       .then((res) => {

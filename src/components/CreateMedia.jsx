@@ -27,7 +27,7 @@ const CreateMedia = ({user}) => {
     axios
       .post('http://localhost:8082/api/media', media)
       .then((res) => {
-        console.log("Add success")
+        console.log("Create Media success!")
         setMedia({
           title: '',
           tier: '',

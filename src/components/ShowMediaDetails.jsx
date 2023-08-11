@@ -20,7 +20,7 @@ function ShowMediaDetails(props) {
     axios
       .get(`http://localhost:8082/api/media/${mediaType}/${ID}`, {headers})
       .then((res) => {
-        setMedia(res.data);
+        setMedia(res.data[0]);
       })
       .catch((err) => {
         console.log('Error from ShowMediaDetails');

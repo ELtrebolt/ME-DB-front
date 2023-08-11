@@ -3,33 +3,36 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../App.css';
 
-function UpdateMediaInfo(props) {
+function UpdateMediaInfo(user) {
   const [media, setMedia] = useState({
-    mediaType: '',
     title: '',
     tier: '',
     toDo: '',
     year: '',
   });
-
   const { mediaType, ID } = useParams();
   const navigate = useNavigate();
+  const userID = user.user.ID
 
   useEffect(() => {
+    const headers = {
+      'userID':userID
+    }
+
     axios
-      .get(`http://localhost:8082/api/media/${mediaType}/${ID}`)
+      .get(`http://localhost:8082/api/media/${mediaType}/${ID}`, {headers})
       .then((res) => {
         setMedia({
-          title: res.data.title,
-          tier: res.data.tier,
-          toDo: res.data.toDo,
-          year: res.data.year,
+          title: res.data[0].title,
+          tier: res.data[0].tier,
+          toDo: res.data[0].toDo,
+          year: res.data[0].year,
         });
       })
       .catch((err) => {
         console.log('Error from UpdateMediaInfo');
       });
-  }, []);
+  }, [mediaType, ID, userID]);
   // info
 
   const onChange = (e) => {
@@ -40,6 +43,7 @@ function UpdateMediaInfo(props) {
     e.preventDefault();
 
     const data = {
+      userID: userID,
       title: media.title,
       tier: media.tier,
       toDo: media.toDo,
@@ -105,9 +109,9 @@ function UpdateMediaInfo(props) {
               <input
                 type='text'
                 placeholder='ToDo'
-                name='tier'
+                name='toDo'
                 className='form-control'
-                value={media.tier}
+                value={media.toDo}
                 onChange={onChange}
               />
             </div>
