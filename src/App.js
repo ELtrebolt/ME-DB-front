@@ -90,14 +90,18 @@ const App = () => {
         <div>
           <Navbar user={user}/>
           <Routes>
-            <Route path='/' element={user ? <Navigate to="/home"/> : <Intro />} />
-
-            <Route path='/create-media' element={<CreateMedia user={user}/>} />
-            <Route path='/edit-media/:mediaType/:ID' element={<UpdateMediaInfo user={user}/>} />
-            <Route path='/show-media/:mediaType/:ID' element={<ShowMediaDetails user={user}/>} />
-
-            <Route path='/home' element={user ? <ShowMediaList user={user}/> : <Navigate to="/login"/>} />
+            <Route path='/' element={user ? <Navigate to="/anime/collection"/> : <Intro />} />
             <Route path='/login' element={user ? <Navigate to="/home"/> : <Login />} />
+            <Route path='/home' element={user ? <Navigate to="/anime/collection"/> : <Login />} />
+
+            <Route path='/:mediaType/collection' element={user ? <ShowMediaList user={user} toDo={false}/> : <Navigate to="/login"/>} />
+            <Route path='/:mediaType/to-do' element={user ? <ShowMediaList user={user} toDo={true}/> : <Navigate to="/login"/>} />
+
+            <Route path='/:mediaType/collection/create' element={<CreateMedia user={user} toDo={false}/>} />
+            <Route path='/:mediaType/to-do/create' element={<CreateMedia user={user} toDo={true}/>} />
+
+            <Route path='/:mediaType/:ID' element={<ShowMediaDetails user={user}/>} />
+            <Route path='/:mediaType/:ID/edit' element={<UpdateMediaInfo user={user} />} />
           </Routes>
         </div>
       </Router>

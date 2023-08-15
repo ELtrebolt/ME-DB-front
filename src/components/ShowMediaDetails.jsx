@@ -3,6 +3,13 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import '../App.css';
 import axios from 'axios';
 
+function toCapitalNotation(inputString) {
+  return inputString
+    .split(' ') // Split the string into an array of words
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
+    .join(' '); // Join the words back into a single string
+}
+
 function ShowMediaDetails(props) {
   const [media, setMedia] = useState({});
   const { mediaType, ID } = useParams();
@@ -56,7 +63,7 @@ function ShowMediaDetails(props) {
           <tr>
             <th scope='row'>3</th>
             <td>ToDo</td>
-            <td>{media.toDo}</td>
+            <td>{`${media.toDo}`}</td>
           </tr>
           <tr>
             <th scope='row'>4</th>
@@ -69,42 +76,51 @@ function ShowMediaDetails(props) {
     </div>
   );
 
+  const goBack = () => {
+    navigate(-1);
+  };
+
   return (
     <div className='ShowMediaDetails'>
       <div className='container'>
+        <br></br>
         <div className='row'>
-          <div className='col-md-10 m-auto'>
-            <br /> <br />
-            <Link to='/' className='btn btn-outline-warning float-left'>
-              Show Media List
-            </Link>
-          </div>
-          <br />
-          <div className='col-md-8 m-auto'>
-            <h1 className='display-4 text-center'>Media's Record</h1>
-            <p className='lead text-center'>View Media's Info</p>
-            <hr /> <br />
-          </div>
-          <div className='col-md-10 m-auto'>{MediaItem}</div>
-          <div className='col-md-6 m-auto'>
-            <button
-              type='button'
-              className='btn btn-outline-danger btn-lg btn-block'
-              onClick={() => {
-                onDeleteClick(mediaType, ID);
-              }}
-            >
-              Delete Media
+          <div className='col-md-2 m-auto'>
+            <button onClick={goBack} className='btn btn-outline-warning float-left'>
+              Go Back
             </button>
           </div>
-          <div className='col-md-6 m-auto'>
-            <Link
-              to={`/edit-media/${mediaType}/${ID}`}
-              className='btn btn-outline-info btn-lg btn-block'
-            >
-              Edit Media
-            </Link>
+          <div className='col-md-8 m-auto'>
+            <h1 className='display-4 text-center'>{toCapitalNotation(mediaType)}'s Record</h1>
+            <hr />
           </div>
+          <div className='col-md-2 m-auto'></div>
+        </div>
+        <div className='row'>
+          <div className='col-md-10 m-auto'>{MediaItem}</div>
+        </div>
+          <div className='row'>
+            <div className='col-md-2 m-auto'></div>
+            <div className='col-md-4 m-auto'>
+              <button
+                type='button'
+                className='btn btn-outline-danger btn-lg btn-block'
+                onClick={() => {
+                  onDeleteClick(mediaType, ID);
+                }}
+              >
+                Delete
+              </button>
+            </div>
+            <div className='col-md-4 m-auto'>
+              <Link
+                to={`/${mediaType}/${ID}/edit`}
+                className='btn btn-outline-info btn-lg btn-block'
+              >
+                Edit
+              </Link>
+            </div>
+            <div className='col-md-2 m-auto'></div>
         </div>
       </div>
     </div>

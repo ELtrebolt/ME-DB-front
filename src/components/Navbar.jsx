@@ -13,7 +13,7 @@ const NavbarFunction = ({user}) => {
     <Navbar expand="lg" className="bg-body-tertiary">
     {user ? (
       <Container>
-        <Navbar.Brand href="/home">ME-DB</Navbar.Brand>
+        <Navbar.Brand href="/anime/collection">ME-DB</Navbar.Brand>
         <Nav className="me-auto">
           <Nav.Link href="/about">About</Nav.Link>
           <Nav.Link onClick={logout}>Logout</Nav.Link>
