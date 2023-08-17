@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import '../App.css';
 
 const MediaCard = (props) => {
-  const media = props.m;
-
+  // console.log("Props", props);
+  const media = props.media
 
   return (
     <div className='media-card'>

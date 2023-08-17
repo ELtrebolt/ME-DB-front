@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import '../App.css';
 import axios from 'axios';
 import { Link, useParams } from 'react-router-dom';
-import MediaCard from './MediaCard';
+
+import ViewByYear from "../components/ViewByYear";
+import CardsContainer from "../components/CardsContainer";
+
+const constants = require('../constants');
 
 function toCapitalNotation(inputString) {
   return inputString
@@ -14,7 +18,16 @@ function toCapitalNotation(inputString) {
 function ShowMediaList({user, toDo}) {
   const [media, setMedia] = useState([]);
   const { mediaType } = useParams();
+  const [firstYear, setFirstYear] = useState();
+  const current_year = new Date().getFullYear()
+  const [lastYear, setLastYear] = useState(current_year);
+
   const toDoString = toDo ? 'To-Do' : 'Collection'
+
+  const resetFilters = () => {
+    setFirstYear();
+    setLastYear(current_year)
+  }
 
   useEffect(() => {
     const headers = {
@@ -24,14 +37,16 @@ function ShowMediaList({user, toDo}) {
     }
 
     axios
-      .get('http://localhost:8082/api/media', {headers})
+      .get(constants['SERVER_URL'] + '/api/media', {headers})
       .then((res) => {
+        // console.log("RES", res)
         setMedia(res.data);
+        resetFilters();
       })
       .catch((err) => {
         console.log('Error from ShowMediaList');
       });
-  }, [mediaType, user.ID, toDo]);
+  });
 
   const tiers = {
     S: [],
@@ -42,14 +57,16 @@ function ShowMediaList({user, toDo}) {
     F: [],
   };
 
+  var possible_years = new Set();
   media.forEach(m => {
-    tiers[m.tier].push(<MediaCard m={m}/>);
+    tiers[m.tier].push(m);
+    possible_years.add(m.year)
   });
 
-  // const SList =
-  //   media.length === 0
-  //     ? 'there is no media record!'
-  //     : media.map((m, k) => <MediaCard m={m} key={k} />);
+  possible_years = Array.from(possible_years).sort((a, b) => a - b);
+  console.log("firstYear",firstYear)
+  console.log("lastYear", lastYear)
+  // console.log("Tiers",tiers)
 
   return (
     <div className='ShowMediaList'>
@@ -57,48 +74,39 @@ function ShowMediaList({user, toDo}) {
         <br></br>
         <div className='row'>
           
-          { toDo ? 
-            <div className='col-md-2 mt-auto'>
-            <Link
-              to={`/${mediaType}/collection`}
-              className='btn btn-outline-warning float-left'
-              >
-              My Collection
-            </Link>
-            </div>
-          :
-            <div className='col-md-2 mt-auto'>
-            <Link
-            to={`/${mediaType}/to-do`}
-            className='btn btn-outline-warning float-left'
-            >
-            To Do
-            </Link>
-            </div>
-          }
+          <div className='col-md-2'></div>
 
           <div className='col-md-8'>
-          <h3 className='display-4 text-center'>{toCapitalNotation(mediaType)} {toDoString} Tier List</h3>
+            <h3 className='display-4 text-center'>{toCapitalNotation(mediaType)} {toDoString} Tier List</h3>
           </div>
+
+          <div className='col-md-2'></div>
+
+        </div>
+        <div className='row'>
+          
+          <ViewByYear possible_years={possible_years} setFirstYear={setFirstYear} setLastYear={setLastYear}/>
+
+          <div className='col-md-6'></div>
           
           { toDo ? 
-          <div className='col-md-2 mt-auto'>
-            <Link
-              to={`/${mediaType}/to-do/create`}
-              className='btn btn-outline-warning float-left'
-            >
-              + Add New
-            </Link>
-          </div>
-          :
-          <div className='col-md-2 mt-auto'>
-            <Link
-              to={`/${mediaType}/collection/create`}
-              className='btn btn-outline-warning float-right'
-            >
-              + Add New
-            </Link>
-          </div>
+            <div className='col-md-2 m-auto'>
+              <Link
+                to={`/${mediaType}/collection/export`}
+                className='btn btn-outline-warning float-right'
+              >
+              Export
+              </Link>
+            </div>
+            :
+            <div className='col-md-2 m-auto'>
+              <Link
+                to={`/${mediaType}/to-do/export`}
+                className='btn btn-outline-warning float-right'
+                >
+                Export
+              </Link>
+            </div>
           }
           
         </div>
@@ -108,13 +116,7 @@ function ShowMediaList({user, toDo}) {
 
       <div className='tier-container'>
         <h2 className='display-8 text-center'>{user.anime.collectionTiers.S}</h2>
-        <div className='cards-container'>
-          {tiers['S'].map((item, index) => (
-              <div key={index}>
-                {item}
-              </div>
-            ))}
-        </div>
+        <CardsContainer items={tiers['S']} firstYear={firstYear} lastYear={lastYear}/>
         <hr />
       </div>
 
@@ -177,7 +179,54 @@ function ShowMediaList({user, toDo}) {
         </div>
         <hr />
       </div>
-    </div>
+
+      <div className='container'>
+        <div className='row'>
+          { toDo ? 
+            <div className='col-md-4 m-auto'>
+            <Link
+              to={`/${mediaType}/collection`}
+              className='btn-lg btn-outline-warning float-left'
+              >
+              My Collection
+            </Link>
+            </div>
+          :
+            <div className='col-md-4 m-auto'>
+            <Link
+              to={`/${mediaType}/to-do`}
+              className='btn-lg btn-outline-warning float-left'
+              >
+              To Do
+            </Link>
+            </div>
+          }
+
+          <div className='col-md-4'></div>
+
+          { toDo ? 
+            <div className='col-md-4 m-auto'>
+              <Link
+                to={`/${mediaType}/to-do/create`}
+                className='btn-lg btn-outline-warning float-right'
+              >
+                + Add New
+              </Link>
+            </div>
+            :
+            <div className='col-md-4 m-auto'>
+              <Link
+                to={`/${mediaType}/collection/create`}
+                className='btn-lg btn-outline-warning float-right'
+              >
+                + Add New
+              </Link>
+            </div>
+          }
+        </div>
+      </div>
+
+      </div>
   );
 }
 

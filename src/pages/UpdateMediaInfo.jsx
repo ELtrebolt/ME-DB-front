@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../App.css';
+const constants = require('../constants');
 
 function UpdateMediaInfo({user}) {
   const [media, setMedia] = useState({
@@ -20,7 +21,7 @@ function UpdateMediaInfo({user}) {
     }
 
     axios
-      .get(`http://localhost:8082/api/media/${mediaType}/${ID}`, {headers})
+      .get(constants['SERVER_URL'] + `/api/media/${mediaType}/${ID}`, {headers})
       .then((res) => {
         setMedia({
           title: res.data[0].title,
@@ -51,7 +52,7 @@ function UpdateMediaInfo({user}) {
     };
 
     axios
-      .put(`http://localhost:8082/api/media/${mediaType}/${ID}`, data)
+      .put(constants['SERVER_URL'] + `/api/media/${mediaType}/${ID}`, data)
       .then((res) => {
         navigate(`/${mediaType}/${ID}`);
       })
@@ -65,17 +66,18 @@ function UpdateMediaInfo({user}) {
   return (
     <div className='UpdateMediaInfo'>
       <div className='container'>
+        <br></br>
         <div className='row'>
-          <div className='col-md-8 m-auto'>
-            <br />
-            <Link to='/' className='btn btn-outline-warning float-left'>
-              Show Media List 
+          <div className='col-md-2 m-auto'>
+            <Link to={`/${mediaType}/${ID}`} className='btn btn-outline-warning float-left'>
+              Go Back
             </Link>
           </div>
           <div className='col-md-8 m-auto'>
             <h1 className='display-4 text-center'>Edit Media</h1>
-            <p className='lead text-center'>Update Media's Info</p>
+            <hr></hr>
           </div>
+          <div className='col-md-2 m-auto'></div>
         </div>
 
         <div className='col-md-8 m-auto'>
@@ -91,6 +93,17 @@ function UpdateMediaInfo({user}) {
                 onChange={onChange}
               />
             </div>
+
+            <div className='form-group'>
+              <label htmlFor='year'>Year</label>
+                <select className='form-control' name='year' value={media.year} onChange={onChange}>
+                  {years.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
             <div className='form-group'>
               <label htmlFor='tier'>Tier</label>
@@ -121,17 +134,6 @@ function UpdateMediaInfo({user}) {
                 >
                   <option value='true'>true</option>
                   <option value='false'>false</option>
-                </select>
-              </div>
-
-            <div className='form-group'>
-              <label htmlFor='year'>Year</label>
-                <select className='form-control' name='year' value={media.year} onChange={onChange}>
-                  {years.map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))}
                 </select>
               </div>
 

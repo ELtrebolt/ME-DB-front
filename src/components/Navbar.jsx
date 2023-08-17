@@ -2,11 +2,12 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+const constants = require('../constants');
 
 const NavbarFunction = ({user}) => {
 
   const logout = () => {
-    window.open("http://localhost:8082/auth/logout", "_self");
+    window.open(constants['SERVER_URL'] + "/auth/logout", "_self");
   };
 
   return (
@@ -17,16 +18,13 @@ const NavbarFunction = ({user}) => {
         <Nav className="me-auto">
           <Nav.Link href="/about">About</Nav.Link>
           <Nav.Link onClick={logout}>Logout</Nav.Link>
-          <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-            <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.2">
-              Another action
-            </NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
+          <NavDropdown title="Media" id="basic-nav-dropdown">
+            <NavDropdown.Item href="/anime/collection">Anime</NavDropdown.Item>
+            <NavDropdown.Item href="/tv/collection">TV Shows</NavDropdown.Item>
+            <NavDropdown.Item href="/movies/collection">Movies</NavDropdown.Item>
+            <NavDropdown.Item href="/games/collection">Games</NavDropdown.Item>
             <NavDropdown.Divider />
-            <NavDropdown.Item href="#action/3.4">
-              Separated link
-            </NavDropdown.Item>
+            <NavDropdown.Item href="/music/collection">Music</NavDropdown.Item>
           </NavDropdown>
         </Nav>
         <Nav className="ml-auto">

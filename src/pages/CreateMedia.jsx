@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
-import { useNavigate } from 'react-router-dom';
+const constants = require('../constants');
 
 function toCapitalNotation(inputString) {
   return inputString
@@ -32,7 +31,7 @@ const CreateMedia = ({user, toDo}) => {
     e.preventDefault();
     console.log("Attempt to Create:", media)
     axios
-      .post('http://localhost:8082/api/media', media)
+      .post(constants['SERVER_URL'] + '/api/media', media)
       .then((res) => {
         console.log("Create Media success!")
         setMedia({
@@ -40,11 +39,11 @@ const CreateMedia = ({user, toDo}) => {
           toDo: '',
         });
         
-        // Push to /
-        navigate('/');
+        navigate(-1);
       })
       .catch((err) => {
         console.log(err);
+        window.alert("Create Failed :(")
       });
   };
 
@@ -67,7 +66,11 @@ const CreateMedia = ({user, toDo}) => {
             }
           </div>
           <div className='col-md-8 m-auto'>
-            <h1 className='display-4 text-center'>Add {toCapitalNotation(mediaType)}</h1>
+            { toDo ?
+            <h1 className='display-4 text-center'>Add {toCapitalNotation(mediaType)} to To-Do</h1>
+            :
+            <h1 className='display-4 text-center'>Add {toCapitalNotation(mediaType)} to Collection</h1>
+            }
             <hr />
           </div>
           <div className='col-md-2 m-auto'></div>

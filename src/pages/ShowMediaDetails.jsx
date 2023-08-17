@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import '../App.css';
 import axios from 'axios';
+const constants = require('../constants');
 
 function toCapitalNotation(inputString) {
   return inputString
@@ -25,21 +26,25 @@ function ShowMediaDetails(props) {
     }
     
     axios
-      .get(`http://localhost:8082/api/media/${mediaType}/${ID}`, {headers})
+      .get(constants['SERVER_URL'] + `/api/media/${mediaType}/${ID}`, {headers})
       .then((res) => {
+        if(!res.data[0])
+        {
+          navigate('/404')
+        }
         setMedia(res.data[0]);
       })
       .catch((err) => {
         console.log('Error from ShowMediaDetails');
       });
-  }, [mediaType, ID, user.ID]);
+  }, [mediaType, ID, user.ID, navigate]);
   // [id]
 
   const onDeleteClick = (mediaType, ID) => {
     axios
-      .delete(`http://localhost:8082/api/media/${mediaType}/${ID}`, {headers})
+      .delete(constants['SERVER_URL'] + `/api/media/${mediaType}/${ID}`, {headers})
       .then((res) => {
-        navigate('/');
+        navigate(-1);
       })
       .catch((err) => {
         console.log('Error form ShowMediaDetails_deleteClick');
@@ -56,6 +61,11 @@ function ShowMediaDetails(props) {
             <td>{media.title}</td>
           </tr>
           <tr>
+            <th scope='row'>4</th>
+            <td>Year</td>
+            <td>{media.year}</td>
+          </tr>
+          <tr>
             <th scope='row'>2</th>
             <td>Tier</td>
             <td>{media.tier}</td>
@@ -65,30 +75,22 @@ function ShowMediaDetails(props) {
             <td>ToDo</td>
             <td>{`${media.toDo}`}</td>
           </tr>
-          <tr>
-            <th scope='row'>4</th>
-            <td>Year</td>
-            <td>{media.year}</td>
-          </tr>
 
         </tbody>
       </table>
     </div>
   );
 
-  const goBack = () => {
-    navigate(-1);
-  };
-
+  const toDoURL = media.toDo === true ? 'to-do' : 'collection'
   return (
     <div className='ShowMediaDetails'>
       <div className='container'>
         <br></br>
         <div className='row'>
           <div className='col-md-2 m-auto'>
-            <button onClick={goBack} className='btn btn-outline-warning float-left'>
+            <Link to={`/${mediaType}/${toDoURL}`} className='btn btn-outline-warning float-left'>
               Go Back
-            </button>
+            </Link>
           </div>
           <div className='col-md-8 m-auto'>
             <h1 className='display-4 text-center'>{toCapitalNotation(mediaType)}'s Record</h1>
