@@ -12,6 +12,7 @@ import About from "./pages/About";
 import Intro from "./pages/Intro";
 import NotFound from "./pages/NotFound";
 import Export from "./pages/Export";
+import { Helmet } from 'react-helmet';
 
 import { useEffect, useState } from "react";
 const constants = require('./constants');
