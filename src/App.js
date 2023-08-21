@@ -36,8 +36,8 @@ const App = () => {
         })
         if (response.status === 200)
         {
-          console.log("Auth Response received");
           const data = await response.json();
+          console.log("Auth Response received:", data);
           setUser(data.user);
         }
         else
