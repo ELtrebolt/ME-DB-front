@@ -15,24 +15,19 @@ function toCapitalNotation(inputString) {
     .join(' '); // Join the words back into a single string
 }
 
-function ShowMediaList({user, toDo}) {
+function ShowToDoList({user}) {
   const [media, setMedia] = useState([]);
   const { mediaType } = useParams();
   const [firstYear, setFirstYear] = useState();
   const current_year = new Date().getFullYear()
   const [lastYear, setLastYear] = useState(current_year);
 
-  const toDoString = toDo ? 'To-Do' : 'Collection'
-
-  const resetFilters = () => {
-    setFirstYear();
-    setLastYear(current_year)
-  }
+  const [firstLoad, setFirstLoad] = useState(true);
 
   useEffect(() => {
     const headers = {
       'userID':user.ID,
-      'toDo':toDo.toString(),
+      'toDo':'true',
       'mediaType':mediaType
     }
 
@@ -41,10 +36,14 @@ function ShowMediaList({user, toDo}) {
       .then((res) => {
         // console.log("RES", res)
         setMedia(res.data);
-        resetFilters();
+        if(firstLoad === true) {
+          setFirstYear();
+          setLastYear(current_year);
+          setFirstLoad(false);
+        }
       })
       .catch((err) => {
-        console.log('Error from ShowMediaList');
+        console.log('Error from ShowToDoList');
       });
   });
 
@@ -68,6 +67,12 @@ function ShowMediaList({user, toDo}) {
   console.log("lastYear", lastYear)
   // console.log("Tiers",tiers)
 
+  if(firstLoad === true)
+  {
+    setFirstYear();
+    setLastYear(current_year);
+    setFirstLoad(false);
+  }
   return (
     <div className='ShowMediaList'>
       <div className='container'>
@@ -77,7 +82,7 @@ function ShowMediaList({user, toDo}) {
           <div className='col-md-2'></div>
 
           <div className='col-md-8'>
-            <h3 className='display-4 text-center'>{toCapitalNotation(mediaType)} {toDoString} Tier List</h3>
+            <h3 className='display-4 text-center'>{toCapitalNotation(mediaType)} To-Do Tier List</h3>
           </div>
 
           <div className='col-md-2'></div>
@@ -89,25 +94,14 @@ function ShowMediaList({user, toDo}) {
 
           <div className='col-md-6'></div>
           
-          { toDo ? 
-            <div className='col-md-2 m-auto'>
-              <Link
-                to={`/${mediaType}/collection/export`}
-                className='btn btn-outline-warning float-right'
-              >
-              Export
-              </Link>
-            </div>
-            :
-            <div className='col-md-2 m-auto'>
-              <Link
-                to={`/${mediaType}/to-do/export`}
-                className='btn btn-outline-warning float-right'
-                >
-                Export
-              </Link>
-            </div>
-          }
+          <div className='col-md-2 m-auto'>
+            <Link
+              to={`/${mediaType}/collection/export`}
+              className='btn btn-outline-warning float-right'
+            >
+            Export
+            </Link>
+          </div>
           
         </div>
       </div>
@@ -122,107 +116,56 @@ function ShowMediaList({user, toDo}) {
 
       <div className='tier-container'>
         <h2 className='display-8 text-center'>{user.anime.collectionTiers.A}</h2>
-        <div className='cards-container'>
-          {tiers['A'].map((item, index) => (
-              <div key={index}>
-                {item}
-              </div>
-            ))}
-        </div>
+        <CardsContainer items={tiers['A']} firstYear={firstYear} lastYear={lastYear}/>
         <hr />
       </div>
 
       <div className='tier-container'>
         <h2 className='display-8 text-center'>{user.anime.collectionTiers.B}</h2>
-        <div className='cards-container'>
-        {tiers['B'].map((item, index) => (
-              <div key={index}>
-                {item}
-              </div>
-            ))}
-        </div>
+        <CardsContainer items={tiers['B']} firstYear={firstYear} lastYear={lastYear}/>
         <hr />
       </div>
 
       <div className='tier-container'>
         <h2 className='display-8 text-center'>{user.anime.collectionTiers.C}</h2>
-        <div className='cards-container'>
-        {tiers['C'].map((item, index) => (
-              <div key={index}>
-                {item}
-              </div>
-            ))}
-        </div>
+        <CardsContainer items={tiers['C']} firstYear={firstYear} lastYear={lastYear}/>
         <hr />
       </div>
 
       <div className='tier-container'>
         <h2 className='display-8 text-center'>{user.anime.collectionTiers.D}</h2>
-        <div className='cards-container'>
-        {tiers['D'].map((item, index) => (
-              <div key={index}>
-                {item}
-              </div>
-            ))}
-        </div>
+        <CardsContainer items={tiers['D']} firstYear={firstYear} lastYear={lastYear}/>
         <hr />
       </div>
 
       <div className='tier-container'>
         <h2 className='display-8 text-center'>{user.anime.collectionTiers.F}</h2>
-        <div className='cards-container'>
-        {tiers['F'].map((item, index) => (
-              <div key={index}>
-                {item}
-              </div>
-            ))}
-        </div>
+        <CardsContainer items={tiers['F']} firstYear={firstYear} lastYear={lastYear}/>
         <hr />
       </div>
 
       <div className='container'>
         <div className='row'>
-          { toDo ? 
-            <div className='col-md-4 m-auto'>
-            <Link
-              to={`/${mediaType}/collection`}
-              className='btn-lg btn-outline-warning float-left'
-              >
-              My Collection
-            </Link>
-            </div>
-          :
-            <div className='col-md-4 m-auto'>
-            <Link
-              to={`/${mediaType}/to-do`}
-              className='btn-lg btn-outline-warning float-left'
-              >
-              To Do
-            </Link>
-            </div>
-          }
+          <div className='col-md-4 m-auto'>
+          <Link 
+            to={`/${mediaType}/collection`}
+            className='btn-lg btn-outline-warning float-left'
+            >
+            My Collection
+          </Link>
+          </div>
 
           <div className='col-md-4'></div>
 
-          { toDo ? 
-            <div className='col-md-4 m-auto'>
-              <Link
-                to={`/${mediaType}/to-do/create`}
-                className='btn-lg btn-outline-warning float-right'
-              >
-                + Add New
-              </Link>
-            </div>
-            :
-            <div className='col-md-4 m-auto'>
-              <Link
-                to={`/${mediaType}/collection/create`}
-                className='btn-lg btn-outline-warning float-right'
-              >
-                + Add New
-              </Link>
-            </div>
-          }
+          <div className='col-md-4 m-auto'>
+            <Link
+              to={`/${mediaType}/to-do/create`}
+              className='btn-lg btn-outline-warning float-right'
+            >
+              + Add New
+            </Link>
+          </div>
+
         </div>
       </div>
 
@@ -230,4 +173,4 @@ function ShowMediaList({user, toDo}) {
   );
 }
 
-export default ShowMediaList;
+export default ShowToDoList;

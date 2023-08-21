@@ -4,7 +4,8 @@ import './App.css';
 import Navbar from "./components/Navbar";
 
 import CreateMedia from './pages/CreateMedia';
-import ShowMediaList from './pages/ShowMediaList';
+import ShowCollection from './pages/ShowCollection';
+import ShowToDoList from './pages/ShowToDoList';
 import ShowMediaDetails from './pages/ShowMediaDetails';
 import UpdateMediaInfo from './pages/UpdateMediaInfo';
 import About from "./pages/About";
@@ -93,11 +94,11 @@ function RestrictMediaType({ user, n }) {
   if (mediaTypes.includes(mediaType)) {
     if(n === 1)
     {
-      return <ShowMediaList user={user} toDo={false}/>;
+      return <ShowCollection user={user}/>;
     }
     else if(n === 2)
     {
-      return <ShowMediaList user={user} toDo={true}/>;
+      return <ShowToDoList user={user}/>;
     }
     else if(n === 3)
     {
