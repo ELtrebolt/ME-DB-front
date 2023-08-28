@@ -60,9 +60,9 @@ const App = () => {
     return (
       <Router>
         <div>
-          <Helmet>
-            <meta name="google-site-verification" content="qHSz3SHc0ld68VaquYcNZBDU-VM8r7v7PsprEP1HNeo" />
-          </Helmet>
+          {/* <Helmet>
+            <meta name="google-site-verification" content="ahyRJbOk-5vzk_dNqiGRPK4kaWVeQKVafK3e7zvfjZc" />
+          </Helmet> */}
           <Navbar user={user}/>
           <Routes>
             <Route path='/' element={user ? <Navigate to="/anime/collection"/> : <Intro />} />
