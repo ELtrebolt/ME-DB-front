@@ -5,11 +5,13 @@ const Function = ({possible_years, setFirstYear, setLastYear}) => {
 
   const onChangeFirstYear = (e) => {
     setFirstYear(e.target.value );
+    console.log("First Year Now:", e.target.value);
   };
   
   const onChangeLastYear = (e) => {
     setLastYear(e.target.value );
     setLastYearValue(e.target.value);
+    console.log("Last Year Now:", e.target.value);
   };
 
   return (

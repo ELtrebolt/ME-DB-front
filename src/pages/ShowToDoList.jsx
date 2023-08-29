@@ -31,20 +31,22 @@ function ShowToDoList({user}) {
       'mediaType':mediaType
     }
 
-    axios
+    if(firstLoad)
+    {
+      axios
       .get(constants['SERVER_URL'] + '/api/media', {headers})
       .then((res) => {
         // console.log("RES", res)
         setMedia(res.data);
-        if(firstLoad === true) {
-          setFirstYear();
-          setLastYear(current_year);
-          setFirstLoad(false);
-        }
+
+        setFirstYear();
+        setLastYear(current_year);
+        setFirstLoad(false);
       })
       .catch((err) => {
         console.log('Error from ShowToDoList');
       });
+    }
   });
 
   const tiers = {
@@ -63,16 +65,8 @@ function ShowToDoList({user}) {
   });
 
   possible_years = Array.from(possible_years).sort((a, b) => a - b);
-  console.log("firstYear",firstYear)
-  console.log("lastYear", lastYear)
   // console.log("Tiers",tiers)
 
-  if(firstLoad === true)
-  {
-    setFirstYear();
-    setLastYear(current_year);
-    setFirstLoad(false);
-  }
   return (
     <div className='ShowMediaList'>
       <div className='container'>

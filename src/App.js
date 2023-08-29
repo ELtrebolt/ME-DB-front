@@ -12,7 +12,7 @@ import About from "./pages/About";
 import Intro from "./pages/Intro";
 import NotFound from "./pages/NotFound";
 import Export from "./pages/Export";
-import { Helmet } from 'react-helmet';
+// import { Helmet } from 'react-helmet';
 
 import { useEffect, useState } from "react";
 const constants = require('./constants');
@@ -25,24 +25,27 @@ const App = () => {
     const getUser = async () => {
       try
       {
-        const response = await fetch(constants['SERVER_URL'] + "/auth/login/success", {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": true,
-          },
-        })
-        if (response.status === 200)
+        if(!user)
         {
-          const data = await response.json();
-          console.log("Auth Response received:", data);
-          setUser(data.user);
-        }
-        else
-        {
-          throw new Error("authentication has been failed!");
+          const response = await fetch(constants['SERVER_URL'] + "/auth/login/success", {
+            method: "GET",
+            credentials: "include",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Credentials": true,
+            },
+          })
+          if (response.status === 200)
+          {
+            const data = await response.json();
+            console.log("Auth Response received:", data);
+            setUser(data.user);
+          }
+          else
+          {
+            throw new Error("authentication has been failed!");
+          }
         }
       }
       catch(err) {
@@ -53,7 +56,7 @@ const App = () => {
       }
     };
     getUser();
-  }, []);
+  }, [user]);
   
   if(!isLoading)
   {
