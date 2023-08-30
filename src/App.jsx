@@ -29,9 +29,7 @@ const App = () => {
       {
         axios
         .get(constants['SERVER_URL'] + '/auth/login/success', {
-            "Access-Control-Allow-Credentials": true,
-            'Content-Type': 'application/json',
-            "X-Requested-With": "XMLHttpRequest",
+          withCredentials: true
         })
         .then((res) => {
           console.log("RES", res)
