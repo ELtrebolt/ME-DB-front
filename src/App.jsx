@@ -15,45 +15,67 @@ import Export from "./pages/Export";
 // import { Helmet } from 'react-helmet';
 
 import { useEffect, useState } from "react";
+import axios from 'axios';
 const constants = require('./constants');
 
 const App = () => {
+  axios.defaults.withCredentials = true;
+  axios.defaults.baseURL = constants['SERVER_URL'];
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getUser = async () => {
-      try
+      if(!user)
       {
-        if(!user)
-        {
-          const response = await fetch(constants['SERVER_URL'] + "/auth/login/success", {
-            method: "GET",
-            credentials: "include",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-              "Access-Control-Allow-Credentials": true,
-            },
-          })
-          if (response.status === 200)
-          {
-            const data = await response.json();
-            console.log("Auth Response received:", data);
-            setUser(data.user);
-          }
-          else
-          {
-            throw new Error("authentication has been failed!");
-          }
+        const headers = {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Credentials": true,
         }
+
+        axios
+        .get(constants['SERVER_URL'] + '/auth/login/success', {headers})
+        .then((res) => {
+          console.log("RES", res)
+          setUser(res.data.user);
+        })
+        .catch((err) => {
+          console.log('Error from client/App.jsx:');
+        })
+        .finally(() => {
+          setIsLoading(false);
+        })
+        ;
       }
-      catch(err) {
-        console.log(err);
-      }
-      finally {
-        setIsLoading(false);
-      }
+      // try
+      // {
+        // const response = await fetch(constants['SERVER_URL'] + "/auth/login/success", {
+        //   method: "GET",
+        //   credentials: "include",
+        //   headers: {
+        //     Accept: "application/json",
+        //     "Content-Type": "application/json",
+        //     "Access-Control-Allow-Credentials": true,
+        //   },
+        // })
+        // if (response.status === 200)
+        // {
+        //   const data = await response.json();
+        //   console.log("Auth Response received:", data);
+        //   setUser(data.user);
+        // }
+        // else
+        // {
+        //   throw new Error("authentication has been failed!");
+        // }
+      // }
+      // catch(err) {
+      //   console.log(err);
+      // }
+      // finally {
+      //   setIsLoading(false);
+      // }
     };
     getUser();
   }, [user]);
