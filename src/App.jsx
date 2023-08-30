@@ -19,8 +19,6 @@ import axios from 'axios';
 const constants = require('./constants');
 
 const App = () => {
-  axios.defaults.withCredentials = true;
-  axios.defaults.baseURL = constants['SERVER_URL'];
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -31,11 +29,17 @@ const App = () => {
         const headers = {
             Accept: "application/json",
             "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": true,
+            "Access-Control-Allow-Credentials": true
         }
 
         axios
-        .get(constants['SERVER_URL'] + '/auth/login/success', {headers})
+        .get(constants['SERVER_URL'] + '/auth/login/success', {
+          withCredentials: true,
+          headers: {
+            "Access-Control-Allow-Credentials": true,
+            'Content-Type': 'application/json'
+          }
+        })
         .then((res) => {
           console.log("RES", res)
           setUser(res.data.user);
