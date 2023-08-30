@@ -12,7 +12,6 @@ import About from "./pages/About";
 import Intro from "./pages/Intro";
 import NotFound from "./pages/NotFound";
 import Export from "./pages/Export";
-// import { Helmet } from 'react-helmet';
 
 import { useEffect, useState } from "react";
 import axios from 'axios';
@@ -80,9 +79,6 @@ const App = () => {
     return (
       <Router>
         <div>
-          {/* <Helmet>
-            <meta name="google-site-verification" content="ahyRJbOk-5vzk_dNqiGRPK4kaWVeQKVafK3e7zvfjZc" />
-          </Helmet> */}
           <Navbar user={user}/>
           <Routes>
             <Route path='/' element={user ? <Navigate to="/anime/collection"/> : <Intro />} />
