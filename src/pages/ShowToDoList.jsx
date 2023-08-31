@@ -25,16 +25,10 @@ function ShowToDoList({user}) {
   const [firstLoad, setFirstLoad] = useState(true);
 
   useEffect(() => {
-    const headers = {
-      'userID':user.ID,
-      'toDo':'true',
-      'mediaType':mediaType
-    }
-
     if(firstLoad)
     {
       axios
-      .get(constants['SERVER_URL'] + '/api/media', {headers})
+      .get(constants['SERVER_URL'] + '/api/media/' + mediaType + '/to-do')
       .then((res) => {
         // console.log("RES", res)
         setMedia(res.data);

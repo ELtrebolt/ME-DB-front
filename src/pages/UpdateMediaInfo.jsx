@@ -16,12 +16,8 @@ function UpdateMediaInfo({user}) {
   const userID = user.ID
 
   useEffect(() => {
-    const headers = {
-      'userID':userID
-    }
-
     axios
-      .get(constants['SERVER_URL'] + `/api/media/${mediaType}/${ID}`, {headers})
+      .get(constants['SERVER_URL'] + `/api/media/${mediaType}/${ID}`)
       .then((res) => {
         setMedia({
           title: res.data[0].title,
@@ -33,7 +29,7 @@ function UpdateMediaInfo({user}) {
       .catch((err) => {
         console.log('Error from UpdateMediaInfo');
       });
-  }, [mediaType, ID, userID]);
+  }, [mediaType, ID]);
   // info
 
   const onChange = (e) => {

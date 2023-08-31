@@ -25,16 +25,10 @@ function ShowCollection({user}) {
   const [firstLoad, setFirstLoad] = useState(true);
 
   useEffect(() => {
-    const headers = {
-      'userID':user.ID,
-      'toDo':'false',
-      'mediaType':mediaType
-    }
-
     if(firstLoad)
     {
       axios
-      .get(constants['SERVER_URL'] + '/api/media', {headers})
+      .get(constants['SERVER_URL'] + '/api/media/' + mediaType + '/collection')
       .then((res) => {
         // console.log("RES", res)
         setMedia(res.data);

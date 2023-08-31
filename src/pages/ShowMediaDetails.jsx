@@ -15,18 +15,10 @@ function ShowMediaDetails(props) {
   const [media, setMedia] = useState({});
   const { mediaType, ID } = useParams();
   const navigate = useNavigate();
-  const user = props.user;
-  const headers = {
-    'userID':user.ID
-  }
 
   useEffect(() => {
-    const headers = {
-      'userID':user.ID
-    }
-    
     axios
-      .get(constants['SERVER_URL'] + `/api/media/${mediaType}/${ID}`, {headers})
+      .get(constants['SERVER_URL'] + `/api/media/${mediaType}/${ID}`)
       .then((res) => {
         if(!res.data[0])
         {
@@ -37,12 +29,12 @@ function ShowMediaDetails(props) {
       .catch((err) => {
         console.log('Error from ShowMediaDetails');
       });
-  }, [mediaType, ID, user.ID, navigate]);
+  }, [mediaType, ID, navigate]);
   // [id]
 
   const onDeleteClick = (mediaType, ID) => {
     axios
-      .delete(constants['SERVER_URL'] + `/api/media/${mediaType}/${ID}`, {headers})
+      .delete(constants['SERVER_URL'] + `/api/media/${mediaType}/${ID}`)
       .then((res) => {
         navigate(-1);
       })

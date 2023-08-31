@@ -15,7 +15,6 @@ const CreateMedia = ({user, toDo}) => {
   const navigate = useNavigate();
   const { mediaType } = useParams();
   const [media, setMedia] = useState({
-    userID: user.ID,
     mediaType: mediaType,
     title: '',
     tier: 'S',
