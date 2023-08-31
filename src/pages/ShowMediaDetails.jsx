@@ -13,28 +13,28 @@ function toCapitalNotation(inputString) {
 
 function ShowMediaDetails(props) {
   const [media, setMedia] = useState({});
-  const { mediaType, ID } = useParams();
+  const { mediaType, group } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
     axios
-      .get(constants['SERVER_URL'] + `/api/media/${mediaType}/${ID}`)
+      .get(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`)
       .then((res) => {
-        if(!res.data[0])
+        console.log("/api/media/type/id", res)
+        if(!res.data)
         {
           navigate('/404')
         }
-        setMedia(res.data[0]);
+        setMedia(res.data);
       })
       .catch((err) => {
         console.log('Error from ShowMediaDetails');
       });
-  }, [mediaType, ID, navigate]);
-  // [id]
+  }, [mediaType, group, navigate]);
 
-  const onDeleteClick = (mediaType, ID) => {
+  const onDeleteClick = (mediaType, group) => {
     axios
-      .delete(constants['SERVER_URL'] + `/api/media/${mediaType}/${ID}`)
+      .delete(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`)
       .then((res) => {
         navigate(-1);
       })
@@ -53,17 +53,17 @@ function ShowMediaDetails(props) {
             <td>{media.title}</td>
           </tr>
           <tr>
-            <th scope='row'>4</th>
+            <th scope='row'>2</th>
             <td>Year</td>
             <td>{media.year}</td>
           </tr>
           <tr>
-            <th scope='row'>2</th>
+            <th scope='row'>3</th>
             <td>Tier</td>
             <td>{media.tier}</td>
           </tr>
           <tr>
-            <th scope='row'>3</th>
+            <th scope='row'>4</th>
             <td>ToDo</td>
             <td>{`${media.toDo}`}</td>
           </tr>
@@ -100,7 +100,7 @@ function ShowMediaDetails(props) {
                 type='button'
                 className='btn btn-outline-danger btn-lg btn-block'
                 onClick={() => {
-                  onDeleteClick(mediaType, ID);
+                  onDeleteClick(mediaType, group);
                 }}
               >
                 Delete
@@ -108,7 +108,7 @@ function ShowMediaDetails(props) {
             </div>
             <div className='col-md-4 m-auto'>
               <Link
-                to={`/${mediaType}/${ID}/edit`}
+                to={`/${mediaType}/${group}/edit`}
                 className='btn btn-outline-info btn-lg btn-block'
               >
                 Edit

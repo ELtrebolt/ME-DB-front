@@ -31,7 +31,7 @@ const App = () => {
           withCredentials: true
         })
         .then((res) => {
-          console.log("RES", res)
+          console.log("/auth/login/success", res)
           setUser(res.data.user);
         })
         .catch((err) => {
@@ -85,14 +85,11 @@ const App = () => {
             <Route path='/about' element={<About/>} />
             <Route path='/home' element={user ? <Navigate to="/anime/collection"/> : <Navigate to="/"/>} />
 
-            <Route path='/:mediaType/collection' element={user ? <RestrictMediaType user={user} n={1}/> : <Navigate to="/"/>} />
-            <Route path='/:mediaType/to-do' element={user ? <RestrictMediaType user={user} n={2}/> : <Navigate to="/"/>} />
-
             <Route path='/:mediaType/collection/create' element={<RestrictMediaType user={user} n={3}/>} />
             <Route path='/:mediaType/to-do/create' element={<RestrictMediaType user={user} n={4}/>} />
 
-            <Route path='/:mediaType/:ID' element={<RestrictMediaType user={user} n={5}/>} />
-            <Route path='/:mediaType/:ID/edit' element={<RestrictMediaType user={user} n={6}/>} />
+            <Route path='/:mediaType/:group' element={<RestrictMediaType user={user} n={5}/>} />
+            <Route path='/:mediaType/:group/edit' element={<RestrictMediaType user={user} n={6}/>} />
             
             <Route path='/:mediaType/collection/export' element={<RestrictMediaType user={user} n={7}/>} />
             <Route path='/:mediaType/to-do/export' element={<RestrictMediaType user={user} n={7}/>} />
@@ -109,18 +106,10 @@ const App = () => {
 function RestrictMediaType({ user, n }) {
   const mediaTypes = ['anime', 'tv', 'movies', 'games']
 
-  const { mediaType, ID } = useParams();
+  const { mediaType, group } = useParams();
 
   if (mediaTypes.includes(mediaType)) {
-    if(n === 1)
-    {
-      return <ShowCollection user={user}/>;
-    }
-    else if(n === 2)
-    {
-      return <ShowToDoList user={user}/>;
-    }
-    else if(n === 3)
+    if(n === 3)
     {
       return <CreateMedia user={user} toDo={false}/>;
     }
@@ -130,11 +119,21 @@ function RestrictMediaType({ user, n }) {
     }
     else if(n === 5)
     {
-      if(!isNaN(Number(ID)))
+      if(!isNaN(group))
       {
-        return <ShowMediaDetails user={user}/>;
+        return <ShowMediaDetails/>;
       }
-      return <Navigate to="/404" />;
+      else if(group === "collection")
+      {
+        return <ShowCollection user={user}/>;
+      }
+      else if(group === "to-do")
+      {
+        return <ShowToDoList user={user}/>;
+      }
+      else {
+        return <Navigate to="/404" />;
+      }
     }
     else if(n === 6)
     {

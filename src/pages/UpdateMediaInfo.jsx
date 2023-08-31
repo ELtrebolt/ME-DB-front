@@ -11,25 +11,26 @@ function UpdateMediaInfo({user}) {
     toDo: '',
     year: '',
   });
-  const { mediaType, ID } = useParams();
+  const { mediaType, group } = useParams();
   const navigate = useNavigate();
-  const userID = user.ID
+  const userID = user.group
 
   useEffect(() => {
     axios
-      .get(constants['SERVER_URL'] + `/api/media/${mediaType}/${ID}`)
+      .get(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`)
       .then((res) => {
+        console.log("/api/media/type/group", res);
         setMedia({
-          title: res.data[0].title,
-          tier: res.data[0].tier,
-          toDo: res.data[0].toDo,
-          year: res.data[0].year,
+          title: res.data.title,
+          tier: res.data.tier,
+          toDo: res.data.toDo,
+          year: res.data.year,
         });
       })
       .catch((err) => {
         console.log('Error from UpdateMediaInfo');
       });
-  }, [mediaType, ID]);
+  }, [mediaType, group]);
   // info
 
   const onChange = (e) => {
@@ -48,9 +49,9 @@ function UpdateMediaInfo({user}) {
     };
 
     axios
-      .put(constants['SERVER_URL'] + `/api/media/${mediaType}/${ID}`, data)
+      .put(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`, data)
       .then((res) => {
-        navigate(`/${mediaType}/${ID}`);
+        navigate(`/${mediaType}/${group}`);
       })
       .catch((err) => {
         console.log('Error in UpdateMediaInfo!');
@@ -65,7 +66,7 @@ function UpdateMediaInfo({user}) {
         <br></br>
         <div className='row'>
           <div className='col-md-2 m-auto'>
-            <Link to={`/${mediaType}/${ID}`} className='btn btn-outline-warning float-left'>
+            <Link to={`/${mediaType}/${group}`} className='btn btn-outline-warning float-left'>
               Go Back
             </Link>
           </div>
