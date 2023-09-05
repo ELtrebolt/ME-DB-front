@@ -5,6 +5,7 @@ import { Link, useParams } from 'react-router-dom';
 
 import ViewByYear from "../components/ViewByYear";
 import CardsContainer from "../components/CardsContainer";
+import TierTitle from "../components/TierTitle";
 
 const constants = require('../constants');
 
@@ -15,7 +16,7 @@ function toCapitalNotation(inputString) {
     .join(' '); // Join the words back into a single string
 }
 
-function ShowToDoList({user}) {
+function ShowToDoList({user, setUserChanged}) {
   const [media, setMedia] = useState([]);
   const { mediaType } = useParams();
   const [firstYear, setFirstYear] = useState();
@@ -43,7 +44,7 @@ function ShowToDoList({user}) {
     }
   });
 
-  const tiers = {
+  const tierData = {
     S: [],
     A: [],
     B: [],
@@ -51,15 +52,16 @@ function ShowToDoList({user}) {
     D: [],
     F: [],
   };
+  const tiers = ["S", "A", "B", "C", "D", "F"];
 
   var possible_years = new Set();
   media.forEach(m => {
-    tiers[m.tier].push(m);
+    tierData[m.tier].push(m);
     possible_years.add(m.year)
   });
 
   possible_years = Array.from(possible_years).sort((a, b) => a - b);
-  // console.log("Tiers",tiers)
+  // console.log("Tiers",tierData)
 
   return (
     <div className='ShowMediaList'>
@@ -96,41 +98,13 @@ function ShowToDoList({user}) {
 
       <hr />
 
-      <div className='tier-container'>
-        <h2 className='display-8 text-center'>{user.anime.collectionTiers.S}</h2>
-        <CardsContainer items={tiers['S']} firstYear={firstYear} lastYear={lastYear}/>
-        <hr />
-      </div>
-
-      <div className='tier-container'>
-        <h2 className='display-8 text-center'>{user.anime.collectionTiers.A}</h2>
-        <CardsContainer items={tiers['A']} firstYear={firstYear} lastYear={lastYear}/>
-        <hr />
-      </div>
-
-      <div className='tier-container'>
-        <h2 className='display-8 text-center'>{user.anime.collectionTiers.B}</h2>
-        <CardsContainer items={tiers['B']} firstYear={firstYear} lastYear={lastYear}/>
-        <hr />
-      </div>
-
-      <div className='tier-container'>
-        <h2 className='display-8 text-center'>{user.anime.collectionTiers.C}</h2>
-        <CardsContainer items={tiers['C']} firstYear={firstYear} lastYear={lastYear}/>
-        <hr />
-      </div>
-
-      <div className='tier-container'>
-        <h2 className='display-8 text-center'>{user.anime.collectionTiers.D}</h2>
-        <CardsContainer items={tiers['D']} firstYear={firstYear} lastYear={lastYear}/>
-        <hr />
-      </div>
-
-      <div className='tier-container'>
-        <h2 className='display-8 text-center'>{user.anime.collectionTiers.F}</h2>
-        <CardsContainer items={tiers['F']} firstYear={firstYear} lastYear={lastYear}/>
-        <hr />
-      </div>
+      {tiers.map((item, index) => (
+          <div className='tier-container' key={item}>
+            <TierTitle title={user[mediaType].todoTiers[item]} mediaType={mediaType} group="todo" tier={item} setUserChanged={setUserChanged}></TierTitle>
+            <CardsContainer items={tierData[item]} firstYear={firstYear} lastYear={lastYear}/>
+            <hr />
+          </div>
+        ))}
 
       <div className='container'>
         <div className='row'>

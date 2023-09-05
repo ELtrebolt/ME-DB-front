@@ -21,18 +21,25 @@ const App = () => {
   axios.defaults.withCredentials = true;
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [userChanged, setUserChanged] = useState(false);
 
   useEffect(() => {
     const getUser = async () => {
-      if(!user)
+      if(!user || userChanged)
       {
+        var headers = {}
+        if(userChanged)
+        {
+          headers['userupdated'] = true;
+        }
         axios
         .get(constants['SERVER_URL'] + '/auth/login/success', {
-          withCredentials: true
-        })
+          withCredentials: true,
+          headers})
         .then((res) => {
           console.log("/auth/login/success", res)
           setUser(res.data.user);
+          setUserChanged(false);
         })
         .catch((err) => {
           console.log('Error from client/App.jsx:');
@@ -42,38 +49,11 @@ const App = () => {
         })
         ;
       }
-      // try
-      // {
-        // const response = await fetch(constants['SERVER_URL'] + "/auth/login/success", {
-        //   method: "GET",
-        //   credentials: "include",
-        //   headers: {
-        //     Accept: "application/json",
-        //     "Content-Type": "application/json",
-        //     "Access-Control-Allow-Credentials": true,
-        //   },
-        // })
-        // if (response.status === 200)
-        // {
-        //   const data = await response.json();
-        //   console.log("Auth Response received:", data);
-        //   setUser(data.user);
-        // }
-        // else
-        // {
-        //   throw new Error("authentication has been failed!");
-        // }
-      // }
-      // catch(err) {
-      //   console.log(err);
-      // }
-      // finally {
-      //   setIsLoading(false);
-      // }
     };
     getUser();
-  }, [user]);
+  });
   
+  console.log(userChanged)
   if(!isLoading)
   {
     return (
@@ -85,14 +65,14 @@ const App = () => {
             <Route path='/about' element={<About/>} />
             <Route path='/home' element={user ? <Navigate to="/anime/collection"/> : <Navigate to="/"/>} />
 
-            <Route path='/:mediaType/collection/create' element={<RestrictMediaType user={user} n={3}/>} />
-            <Route path='/:mediaType/to-do/create' element={<RestrictMediaType user={user} n={4}/>} />
+            <Route path='/:mediaType/collection/create' element={<RestrictMediaType user={user} n={3} setUserChanged={setUserChanged}/>} />
+            <Route path='/:mediaType/to-do/create' element={<RestrictMediaType user={user} n={4} setUserChanged={setUserChanged}/>} />
 
-            <Route path='/:mediaType/:group' element={<RestrictMediaType user={user} n={5}/>} />
-            <Route path='/:mediaType/:group/edit' element={<RestrictMediaType user={user} n={6}/>} />
+            <Route path='/:mediaType/:group' element={<RestrictMediaType user={user} n={5} setUserChanged={setUserChanged}/>} />
+            <Route path='/:mediaType/:group/edit' element={<RestrictMediaType user={user} n={6} setUserChanged={setUserChanged}/>} />
             
-            <Route path='/:mediaType/collection/export' element={<RestrictMediaType user={user} n={7}/>} />
-            <Route path='/:mediaType/to-do/export' element={<RestrictMediaType user={user} n={7}/>} />
+            <Route path='/:mediaType/collection/export' element={<RestrictMediaType user={user} n={7} setUserChanged={setUserChanged}/>} />
+            <Route path='/:mediaType/to-do/export' element={<RestrictMediaType user={user} n={7} setUserChanged={setUserChanged}/>} />
 
             <Route path='/404' element={<NotFound/>} />
             <Route path="/*" element={<NotFound />} />
@@ -103,7 +83,7 @@ const App = () => {
   }
 };
 
-function RestrictMediaType({ user, n }) {
+function RestrictMediaType({ user, n, setUserChanged}) {
   const mediaTypes = ['anime', 'tv', 'movies', 'games']
 
   const { mediaType, group } = useParams();
@@ -125,11 +105,11 @@ function RestrictMediaType({ user, n }) {
       }
       else if(group === "collection")
       {
-        return <ShowCollection user={user}/>;
+        return <ShowCollection user={user} setUserChanged={setUserChanged}/>;
       }
       else if(group === "to-do")
       {
-        return <ShowToDoList user={user}/>;
+        return <ShowToDoList user={user} setUserChanged={setUserChanged}/>;
       }
       else {
         return <Navigate to="/404" />;
