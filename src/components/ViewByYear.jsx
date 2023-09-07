@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-const Function = ({possible_years, setFirstYear, setLastYear}) => {
-  const [lastYearValue, setLastYearValue] = useState();
+const Function = ({possible_years, firstYear, lastYear, setFirstYear, setLastYear}) => {
+  const current_year = new Date().getFullYear()
 
   const onChangeFirstYear = (e) => {
     setFirstYear(e.target.value );
@@ -10,7 +10,6 @@ const Function = ({possible_years, setFirstYear, setLastYear}) => {
   
   const onChangeLastYear = (e) => {
     setLastYear(e.target.value );
-    setLastYearValue(e.target.value);
     console.log("Last Year Now:", e.target.value);
   };
 
@@ -18,7 +17,7 @@ const Function = ({possible_years, setFirstYear, setLastYear}) => {
     <><div className='col-md-2 mt-auto'>
       <div className='form-group'>
         <label htmlFor='firstYear'>First Year</label>
-        <select className='form-control' name='firstYear' onChange={onChangeFirstYear}>
+        <select className='form-control' name='firstYear' value={firstYear} onChange={onChangeFirstYear}>
           <option value={possible_years[0]}>Select a year</option>
           {possible_years.map((year) => (
             <option key={year} value={year}>
@@ -30,8 +29,8 @@ const Function = ({possible_years, setFirstYear, setLastYear}) => {
     </div><div className='col-md-2 mt-auto'>
         <div className='form-group'>
           <label htmlFor='lastYear'>Last Year</label>
-          <select className='form-control' name='lastYear' value={lastYearValue} onChange={onChangeLastYear}>
-            <option value=''>Select a year</option>
+          <select className='form-control' name='lastYear' value={lastYear} onChange={onChangeLastYear}>
+            <option value={current_year}>Select a year</option>
             {possible_years.map((year) => (
               <option key={year} value={year}>
                 {year}

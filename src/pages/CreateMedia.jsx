@@ -48,6 +48,9 @@ const CreateMedia = ({user, toDo}) => {
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 1969 }, (_, index) => currentYear - index);
+  const tiers = ['S', 'A', 'B', 'C', 'D', 'F']
+  const tiersName = toDo ? "todoTiers" : "collectionTiers"
+  const yearString = toDo ? "Year You First Wanted To Do" : "Year You First Experienced"
   return (
     <div className='CreateMedia'>
       <div className='container'>
@@ -91,7 +94,7 @@ const CreateMedia = ({user, toDo}) => {
               </div>
 
               <div className='form-group'>
-                <label htmlFor='year'>Year</label>
+                <label htmlFor='year'>{yearString}</label>
                 <select className='form-control' name='year' value={media.year} onChange={onChange}>
                   {years.map((year) => (
                     <option key={year} value={year}>
@@ -110,12 +113,9 @@ const CreateMedia = ({user, toDo}) => {
                   value={media.tier}
                   onChange={onChange}
                 >
-                  <option value='S'>S - {user.anime.collectionTiers.S}</option>
-                  <option value='A'>A - {user.anime.collectionTiers.A}</option>
-                  <option value='B'>B - {user.anime.collectionTiers.B}</option>
-                  <option value='C'>C - {user.anime.collectionTiers.C}</option>
-                  <option value='D'>D - {user.anime.collectionTiers.D}</option>
-                  <option value='F'>F - {user.anime.collectionTiers.F}</option>
+                  {tiers.map((tier) => (
+                    <option value={tier}>{user[mediaType][tiersName][tier]}</option>
+                  ))}
                 </select>
               </div>
 

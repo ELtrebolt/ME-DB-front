@@ -11,7 +11,6 @@ import UpdateMediaInfo from './pages/UpdateMediaInfo';
 import About from "./pages/About";
 import Intro from "./pages/Intro";
 import NotFound from "./pages/NotFound";
-import Export from "./pages/Export";
 
 import { useEffect, useState } from "react";
 import axios from 'axios';
@@ -27,17 +26,10 @@ const App = () => {
     const getUser = async () => {
       if(!user || userChanged)
       {
-        var headers = {}
-        if(userChanged)
-        {
-          headers['userupdated'] = true;
-        }
         axios
-        .get(constants['SERVER_URL'] + '/auth/login/success', {
-          withCredentials: true,
-          headers})
+        .get(constants['SERVER_URL'] + '/auth/login/success', {withCredentials: true})
         .then((res) => {
-          console.log("/auth/login/success", res)
+          // console.log("GET /auth/login/success", res)
           setUser(res.data.user);
           setUserChanged(false);
         })
@@ -53,7 +45,8 @@ const App = () => {
     getUser();
   });
   
-  console.log(userChanged)
+  console.log("userChanged", userChanged)
+  console.log("user", user);
   if(!isLoading)
   {
     return (
@@ -71,9 +64,6 @@ const App = () => {
             <Route path='/:mediaType/:group' element={<RestrictMediaType user={user} n={5} setUserChanged={setUserChanged}/>} />
             <Route path='/:mediaType/:group/edit' element={<RestrictMediaType user={user} n={6} setUserChanged={setUserChanged}/>} />
             
-            <Route path='/:mediaType/collection/export' element={<RestrictMediaType user={user} n={7} setUserChanged={setUserChanged}/>} />
-            <Route path='/:mediaType/to-do/export' element={<RestrictMediaType user={user} n={7} setUserChanged={setUserChanged}/>} />
-
             <Route path='/404' element={<NotFound/>} />
             <Route path="/*" element={<NotFound />} />
           </Routes>
@@ -85,7 +75,6 @@ const App = () => {
 
 function RestrictMediaType({ user, n, setUserChanged}) {
   const mediaTypes = ['anime', 'tv', 'movies', 'games']
-
   const { mediaType, group } = useParams();
 
   if (mediaTypes.includes(mediaType)) {
@@ -118,10 +107,6 @@ function RestrictMediaType({ user, n, setUserChanged}) {
     else if(n === 6)
     {
       return <UpdateMediaInfo user={user} />;
-    }
-    else if(n === 7)
-    {
-      return <Export user={user} />;
     }
   } else {
     return <Navigate to="/404" />;
