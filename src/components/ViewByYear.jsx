@@ -1,16 +1,18 @@
 import React from 'react';
 
-const Function = ({possible_years, firstYear, lastYear, setFirstYear, setLastYear}) => {
+const Function = ({possible_years, firstYear, lastYear, setFirstYear, setLastYear, setSearchChanged}) => {
   const current_year = new Date().getFullYear()
 
   const onChangeFirstYear = (e) => {
     setFirstYear(e.target.value );
     console.log("First Year Now:", e.target.value);
+    setSearchChanged(true);
   };
   
   const onChangeLastYear = (e) => {
     setLastYear(e.target.value );
     console.log("Last Year Now:", e.target.value);
+    setSearchChanged(true);
   };
 
   return (

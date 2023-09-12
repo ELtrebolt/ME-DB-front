@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import TagMaker from "../components/TagMaker";
 const constants = require('../constants');
 
 function toCapitalNotation(inputString) {
@@ -20,6 +21,7 @@ const CreateMedia = ({user, toDo}) => {
     tier: 'S',
     toDo: toDo.toString(),
     year: 2023,
+    tags: ''
   });
 
   const onChange = (e) => {
@@ -36,6 +38,7 @@ const CreateMedia = ({user, toDo}) => {
         setMedia({
           title: '',
           toDo: '',
+          tags: ''
         });
         
         navigate(-1);
@@ -46,6 +49,7 @@ const CreateMedia = ({user, toDo}) => {
       });
   };
 
+  // console.log("Media", media);
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 1969 }, (_, index) => currentYear - index);
   const tiers = ['S', 'A', 'B', 'C', 'D', 'F']
@@ -85,7 +89,7 @@ const CreateMedia = ({user, toDo}) => {
               <div className='form-group'>
                 <input
                   type='text'
-                  placeholder='Title'
+                  placeholder={constants.examples[mediaType]}
                   name='title'
                   className='form-control'
                   value={media.title}
@@ -114,10 +118,12 @@ const CreateMedia = ({user, toDo}) => {
                   onChange={onChange}
                 >
                   {tiers.map((tier) => (
-                    <option value={tier}>{user[mediaType][tiersName][tier]}</option>
+                    <option key={tier} value={tier}>{user[mediaType][tiersName][tier]}</option>
                   ))}
                 </select>
               </div>
+
+              <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={[]}></TagMaker>
 
               <input
                 type='submit'

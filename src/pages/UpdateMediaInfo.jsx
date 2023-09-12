@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../App.css';
+import TagMaker from "../components/TagMaker";
 const constants = require('../constants');
 
 function UpdateMediaInfo({user}) {
@@ -10,27 +11,31 @@ function UpdateMediaInfo({user}) {
     tier: '',
     toDo: '',
     year: '',
+    tags: ''
   });
   const { mediaType, group } = useParams();
   const navigate = useNavigate();
   const userID = user.group
 
   useEffect(() => {
-    axios
+    if(!media.tier) {
+      axios
       .get(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`)
       .then((res) => {
-        console.log("/api/media/type/group", res);
+        console.log("Update GET /api/media/type/group", res.data);
         setMedia({
           title: res.data.title,
           tier: res.data.tier,
           toDo: res.data.toDo,
           year: res.data.year,
+          tags: res.data.tags,
         });
       })
       .catch((err) => {
         console.log('Error from UpdateMediaInfo');
       });
-  }, [mediaType, group]);
+    }
+  });
   // info
 
   const onChange = (e) => {
@@ -39,18 +44,19 @@ function UpdateMediaInfo({user}) {
 
   const onSubmit = (e) => {
     e.preventDefault();
-
     const data = {
       userID: userID,
       title: media.title,
       tier: media.tier,
       toDo: media.toDo,
       year: media.year,
+      tags: media.tags
     };
 
     axios
       .put(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`, data)
       .then((res) => {
+        console.log("PUT /api/media/type/group", data);
         navigate(`/${mediaType}/${group}`);
       })
       .catch((err) => {
@@ -62,6 +68,8 @@ function UpdateMediaInfo({user}) {
   const years = Array.from({ length: currentYear - 1969 }, (_, index) => currentYear - index);
   const tiers = ['S', 'A', 'B', 'C', 'D', 'F']
   const tiersName = media.toDo ? "todoTiers" : "collectionTiers"
+  const yearString = media.toDo ? "Year You First Wanted To Do" : "Year You First Experienced"
+  if(media.tags !== '') {
   return (
     <div className='UpdateMediaInfo'>
       <div className='container'>
@@ -85,8 +93,8 @@ function UpdateMediaInfo({user}) {
               <label htmlFor='title'>Title</label>
               <input
                 type='text'
-                placeholder='Title'
                 name='title'
+                placeholder={constants.examples[mediaType]}
                 className='form-control'
                 value={media.title}
                 onChange={onChange}
@@ -94,7 +102,7 @@ function UpdateMediaInfo({user}) {
             </div>
 
             <div className='form-group'>
-              <label htmlFor='year'>Year</label>
+              <label htmlFor='year'>{yearString}</label>
                 <select className='form-control' name='year' value={media.year} onChange={onChange}>
                   {years.map((year) => (
                     <option key={year} value={year}>
@@ -114,15 +122,17 @@ function UpdateMediaInfo({user}) {
                   onChange={onChange}
                 >
                   {tiers.map((tier) => (
-                    <option value={tier}>{user[mediaType][tiersName][tier]}</option>
+                    <option key={tier} value={tier}>{user[mediaType][tiersName][tier]}</option>
                   ))}
                 </select>
               </div>
 
+              <TagMaker mediaType={mediaType} toDo={media.toDo} media={media} setMedia={setMedia} alreadySelected={media.tags}></TagMaker>
+
               <div className='form-group'>
               <label htmlFor='toDo'>To Do</label>
                 <select
-                  placeholder={media.toDo}
+                  placeholder={media.toDo.toString()}
                   name='toDo'
                   className='form-control'
                   value={media.toDo}
@@ -144,6 +154,7 @@ function UpdateMediaInfo({user}) {
       </div>
     </div>
   );
+  }
 }
 
 export default UpdateMediaInfo;

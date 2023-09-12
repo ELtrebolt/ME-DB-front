@@ -14,73 +14,47 @@ function toCapitalNotation(inputString) {
 function ShowMediaDetails(props) {
   const [media, setMedia] = useState({});
   const { mediaType, group } = useParams();
+  const [loaded, setLoaded] = useState(false)
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios
+    if(!loaded) {
+      axios
       .get(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`)
       .then((res) => {
-        console.log("/api/media/type/id", res)
-        if(!res.data)
-        {
+        if(!res.data) {
           navigate('/404')
+        } else {
+          console.log("Details GET /api/media/type/id", res.data)
+          setMedia(res.data);
+          setLoaded(true);
         }
-        setMedia(res.data);
       })
       .catch((err) => {
         console.log('Error from ShowMediaDetails');
-      });
-  }, [mediaType, group, navigate]);
+    });
+    }
+  });
 
   const onDeleteClick = (mediaType, group) => {
     axios
       .delete(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`)
       .then((res) => {
-        navigate(-1);
+        group = res.data.toDo === true ? 'to-do' : 'collection'
+        navigate(`/${mediaType}/${group}`);
       })
       .catch((err) => {
         console.log('Error form ShowMediaDetails_deleteClick');
       });
   };
-
-  const MediaItem = (
-    <div>
-      <table className='table table-hover table-dark'>
-        <tbody>
-          <tr>
-            <th scope='row'>1</th>
-            <td>Title</td>
-            <td>{media.title}</td>
-          </tr>
-          <tr>
-            <th scope='row'>2</th>
-            <td>Year</td>
-            <td>{media.year}</td>
-          </tr>
-          <tr>
-            <th scope='row'>3</th>
-            <td>Tier</td>
-            <td>{media.tier}</td>
-          </tr>
-          <tr>
-            <th scope='row'>4</th>
-            <td>ToDo</td>
-            <td>{`${media.toDo}`}</td>
-          </tr>
-
-        </tbody>
-      </table>
-    </div>
-  );
-
-  const toDoURL = media.toDo === true ? 'to-do' : 'collection'
+  
   return (
     <div className='ShowMediaDetails'>
       <div className='container'>
         <br></br>
         <div className='row'>
           <div className='col-md-2 m-auto'>
-            <Link to={`/${mediaType}/${toDoURL}`} className='btn btn-outline-warning float-left'>
+            <Link to={`/${mediaType}/${media.toDo === true ? 'to-do' : 'collection'}`} className='btn btn-outline-warning float-left'>
               Go Back
             </Link>
           </div>
@@ -91,7 +65,39 @@ function ShowMediaDetails(props) {
           <div className='col-md-2 m-auto'></div>
         </div>
         <div className='row'>
-          <div className='col-md-10 m-auto'>{MediaItem}</div>
+          <div className='col-md-10 m-auto'>
+          <div>
+            <table className='table table-hover table-dark'>
+              <tbody>
+                <tr>
+                  <th scope='row'>1</th>
+                  <td>Title</td>
+                  <td>{media.title}</td>
+                </tr>
+                <tr>
+                  <th scope='row'>2</th>
+                  <td>Year</td>
+                  <td>{media.year}</td>
+                </tr>
+                <tr>
+                  <th scope='row'>3</th>
+                  <td>Tier</td>
+                  <td>{media.tier}</td>
+                </tr>
+                <tr>
+                  <th scope='row'>4</th>
+                  <td>Tags</td>
+                  <td>{media.tags && media.tags[0] ? media.tags.join(', ') : '-'}</td>
+                </tr>
+                <tr>
+                  <th scope='row'>5</th>
+                  <td>ToDo</td>
+                  <td>{`${media.toDo}`}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          </div>
         </div>
           <div className='row'>
             <div className='col-md-2 m-auto'></div>

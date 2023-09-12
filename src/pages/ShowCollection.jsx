@@ -6,8 +6,68 @@ import { Link, useParams } from 'react-router-dom';
 import ViewByYear from "../components/ViewByYear";
 import CardsContainer from "../components/CardsContainer";
 import TierTitle from "../components/TierTitle";
+import TagFilter from "../components/TagFilter";
 
 const constants = require('../constants');
+
+function filterData(tierData, firstYear, lastYear, selected, setTagsList, setSearchChanged, setFilteredData) {
+  var array = [];
+  var data = {
+    S: [],
+    A: [],
+    B: [],
+    C: [],
+    D: [],
+    F: [],
+  };
+  // Filter by Tags
+  Object.keys(tierData).forEach(tier => {
+    tierData[tier].forEach(m => {
+      if(selected && selected[0]) {
+        if(m.tags) {
+          for(const t of selected) {
+            if(m.tags.includes(t['label'])){
+              array.push(m);
+              break;
+            }
+          }
+        }
+      } else {
+        array.push(m);
+      }
+    })
+  });
+  // Filter by Years
+  array.forEach(m => {
+    if(firstYear && lastYear) {
+      if(m.year >= firstYear && m.year <= lastYear) {
+        data[m.tier].push(m);
+      }
+    } else if (firstYear && !lastYear && m.year >= firstYear) {
+      data[m.tier].push(m);
+    } else if (!firstYear && lastYear && m.year <= lastYear) {
+      data[m.tier].push(m);
+    }
+  });
+  setFilteredData(data);
+
+  // Change TagsList
+  var tags_list = []
+  Object.keys(data).forEach(tier => {
+    data[tier].forEach(item => {
+      if(item.tags) {
+        item.tags.forEach(tag => {
+          if(!tags_list.includes(tag)) {
+            tags_list.push(tag);
+          }
+        })
+      }
+    })
+  })
+  setTagsList(tags_list);
+  setSearchChanged(false);
+  return data;
+}
 
 function toCapitalNotation(inputString) {
   return inputString
@@ -17,7 +77,7 @@ function toCapitalNotation(inputString) {
 }
 
 function ShowCollection({user, setUserChanged}) {
-  const [media, setMedia] = useState([]);
+  const [tierData, setTierData] = useState();
   const { mediaType } = useParams();
   const [firstYear, setFirstYear] = useState();
   const current_year = new Date().getFullYear()
@@ -25,8 +85,12 @@ function ShowCollection({user, setUserChanged}) {
   const [firstLoad, setFirstLoad] = useState(true);
   const [exportMode, setExportMode] = useState(false);
   const tiers = ["S", "A", "B", "C", "D", "F"];
-  var possible_years = new Set();
+  const [possibleYears, setPossibleYears] = useState([]);
   const [dataByYear, setDataByYear] = useState({});
+  const [selected, setSelected] = useState([]);
+  const [tagsList, setTagsList] = useState([])
+  const [searchChanged, setSearchChanged] = useState();
+  const [filteredData, setFilteredData] = useState();
 
   useEffect(() => {
     if(firstLoad)
@@ -34,59 +98,38 @@ function ShowCollection({user, setUserChanged}) {
       axios
       .get(constants['SERVER_URL'] + '/api/media/' + mediaType + '/collection')
       .then((res) => {
-        // console.log("RES", res)
-        setMedia(res.data);
+        // console.log("GET /api/media/type/collection", res)
         setFirstYear();
         setLastYear(current_year);
-
+        var tiers = {
+          S: [],
+          A: [],
+          B: [],
+          C: [],
+          D: [],
+          F: [],
+        };
+        var possible_years = new Set();
+        res.data.forEach(m => {
+          tiers[m.tier].push(m);
+          possible_years.add(m.year)
+        });
+        setTierData(tiers);
+        setPossibleYears(Array.from(possible_years).sort((a, b) => a - b));
         setFirstLoad(false);
       })
       .catch((err) => {
         console.log('Error from ShowCollection');
       });
     }
-  });
-
-  const tierData = {
-    S: [],
-    A: [],
-    B: [],
-    C: [],
-    D: [],
-    F: [],
-  };
-  media.forEach(m => {
-    tierData[m.tier].push(m);
-    possible_years.add(m.year)
-  });
+  })
 
   // Filtering
-  possible_years = Array.from(possible_years).sort((a, b) => a - b);
-  const filteredData = {
-    S: [],
-    A: [],
-    B: [],
-    C: [],
-    D: [],
-    F: [],
-  };
-  media.forEach(m => {
-    if(firstYear && lastYear)
-    {
-      if(m.year >= firstYear && m.year <= lastYear) {
-        filteredData[m.tier].push(m);
-      }
-    }
-    else if (firstYear && !lastYear && m.year >= firstYear)
-    {
-      filteredData[m.tier].push(m);
-    }
-    else if (!firstYear && lastYear && m.year <= lastYear)
-    {
-      filteredData[m.tier].push(m);
-    }
-  });
-
+  if(tierData && (searchChanged === undefined || searchChanged === true)) {
+    const data = filterData(tierData, firstYear, lastYear, selected, setTagsList, setSearchChanged, setFilteredData);
+    setFilteredData(data);
+  }
+  
   function exportByYear() {
     var temp = {};
     Object.keys(filteredData).forEach(tier => {
@@ -102,7 +145,6 @@ function ShowCollection({user, setUserChanged}) {
     setExportMode("By-Year");
   }
 
-  const firstYearString = firstYear ? firstYear : possible_years[0];
   if(exportMode) {
     return (
       <div className='container'>
@@ -128,9 +170,11 @@ function ShowCollection({user, setUserChanged}) {
           <div className='col-md-10'>
             <b>Filters</b>
             <br></br>
-            Start Year = {firstYearString}
+            Start Year = {firstYear ? firstYear : possibleYears[0]}
             <br></br>
             End Year = {lastYear}
+            <br></br>
+            Tags = {selected && selected[0] ? selected.map((item) => item['label']).join(', ') : 'No Tags Selected'}
             <br></br>
             <br></br>
 
@@ -158,7 +202,7 @@ function ShowCollection({user, setUserChanged}) {
         </div>
       </div>
     )
-  }
+  } else if(user && filteredData) {
   return (
     <div className='ShowMediaList'>
       <div className='container'>
@@ -176,9 +220,12 @@ function ShowCollection({user, setUserChanged}) {
         </div>
         <div className='row'>
           
-          <ViewByYear possible_years={possible_years} firstYear={firstYear} lastYear={lastYear} setFirstYear={setFirstYear} setLastYear={setLastYear}/>
-
-          <div className='col-md-6'></div>
+          {/* col-4 */}
+          <ViewByYear possible_years={possibleYears} firstYear={firstYear} lastYear={lastYear} setFirstYear={setFirstYear} setLastYear={setLastYear} setSearchChanged={setSearchChanged}/>
+          <div className='col-md-6'>
+            <TagFilter tagsList={tagsList} selected={selected} setSelected={setSelected} setSearchChanged={setSearchChanged}></TagFilter>
+          </div>
+          {/* <div className='col-md-4'></div> */}
           
           <div className='col-md-2 m-auto'>
             <div className="dropdown">
@@ -232,6 +279,7 @@ function ShowCollection({user, setUserChanged}) {
 
       </div>
   );
+  }
 }
 
 export default ShowCollection;
