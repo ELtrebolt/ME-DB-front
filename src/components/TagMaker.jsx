@@ -9,7 +9,8 @@ const TagMaker = ({mediaType, toDo, media, setMedia, alreadySelected}) => {
   const [toDoState, setToDoState] = useState();
   const [suggestions, setSuggestions] = useState();
   // list of {value, label}
-  const [selected, setSelected] = useState(alreadySelected.map((name, index) => ({ value: index, label: name })));
+  const [selected, setSelected] = useState();
+
   // get suggestions by iterating through all current media
   useEffect(() => {
     // Suggestions need to update if toDo is changed
@@ -19,15 +20,30 @@ const TagMaker = ({mediaType, toDo, media, setMedia, alreadySelected}) => {
       .get(constants['SERVER_URL'] + '/api/media/' + mediaType + '/' + groupStr)
       .then((res) => {
         console.log(`TagMaker GET ${mediaType}/${groupStr}`, res.data);
-        var allTags = new Set();
+        var tags_set = new Set();
+        var all_tags = [];
+        var index = 0;
+        var alreadySelectedList = [];
+
         res.data.forEach((m) => {
           if(m.tags) {
             m.tags.forEach((t) => {
-              allTags.add(t);
+              if(!tags_set.has(t)) {
+                for(const s of alreadySelected) {
+                  if(s === t) {
+                    alreadySelectedList.push({value:index, label:t});
+                    break;
+                  }
+                }
+                tags_set.add(t);
+                all_tags.push({value:index, label:t})
+                index += 1;
+              }
             })
           }
         })
-        setSuggestions(Array.from(allTags).map((name, index) => ({ value: index, label: name })))  
+        setSuggestions(all_tags);  
+        setSelected(alreadySelectedList);
         setToDoState(toDo);
       })
       .catch((err) => {

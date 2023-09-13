@@ -19,7 +19,7 @@ const Function = ({possible_years, firstYear, lastYear, setFirstYear, setLastYea
     <><div className='col-md-2 mt-auto'>
       <div className='form-group'>
         <label htmlFor='firstYear'>First Year</label>
-        <select className='form-control' name='firstYear' value={firstYear} onChange={onChangeFirstYear}>
+        <select className='form-control' id='firstYear' value={firstYear} onChange={onChangeFirstYear}>
           <option value={possible_years[0]}>Select a year</option>
           {possible_years.map((year) => (
             <option key={year} value={year}>
@@ -31,7 +31,7 @@ const Function = ({possible_years, firstYear, lastYear, setFirstYear, setLastYea
     </div><div className='col-md-2 mt-auto'>
         <div className='form-group'>
           <label htmlFor='lastYear'>Last Year</label>
-          <select className='form-control' name='lastYear' value={lastYear} onChange={onChangeLastYear}>
+          <select className='form-control' id='lastYear' value={lastYear} onChange={onChangeLastYear}>
             <option value={current_year}>Select a year</option>
             {possible_years.map((year) => (
               <option key={year} value={year}>

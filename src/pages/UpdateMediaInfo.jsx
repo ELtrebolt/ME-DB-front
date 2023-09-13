@@ -39,7 +39,7 @@ function UpdateMediaInfo({user}) {
   // info
 
   const onChange = (e) => {
-    setMedia({ ...media, [e.target.name]: e.target.value });
+    setMedia({ ...media, [e.target.id]: e.target.value });
   };
 
   const onSubmit = (e) => {
@@ -93,7 +93,7 @@ function UpdateMediaInfo({user}) {
               <label htmlFor='title'>Title</label>
               <input
                 type='text'
-                name='title'
+                id='title'
                 placeholder={constants.examples[mediaType]}
                 className='form-control'
                 value={media.title}
@@ -103,7 +103,7 @@ function UpdateMediaInfo({user}) {
 
             <div className='form-group'>
               <label htmlFor='year'>{yearString}</label>
-                <select className='form-control' name='year' value={media.year} onChange={onChange}>
+                <select className='form-control' id='year' value={media.year} onChange={onChange}>
                   {years.map((year) => (
                     <option key={year} value={year}>
                       {year}
@@ -116,7 +116,7 @@ function UpdateMediaInfo({user}) {
               <label htmlFor='tier'>Tier</label>
                 <select
                   placeholder={media.tier}
-                  name='tier'
+                  id='tier'
                   className='form-control'
                   value={media.tier}
                   onChange={onChange}
@@ -127,13 +127,15 @@ function UpdateMediaInfo({user}) {
                 </select>
               </div>
 
+              <div className='form-group'>
               <TagMaker mediaType={mediaType} toDo={media.toDo} media={media} setMedia={setMedia} alreadySelected={media.tags}></TagMaker>
+              </div>
 
               <div className='form-group'>
               <label htmlFor='toDo'>To Do</label>
                 <select
                   placeholder={media.toDo.toString()}
-                  name='toDo'
+                  id='toDo'
                   className='form-control'
                   value={media.toDo}
                   onChange={onChange}

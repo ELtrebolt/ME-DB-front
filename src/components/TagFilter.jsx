@@ -2,8 +2,10 @@ import React, { useCallback } from 'react'
 import { ReactTags } from 'react-tag-autocomplete'
 import { matchSorter } from 'match-sorter'
 
-const Function = ({tagsList, selected, setSelected, setSearchChanged}) => {
-  const suggestions = tagsList.map((name, index) => ({ value: index, label: name }))
+const Function = ({suggestedTags, selected, setSelected, setSearchChanged}) => {
+  const suggestions = suggestedTags;
+  // const suggestions = tagsList.map((name, index) => ({ value: index, label: name }))
+
   function suggestionsTransform(value, suggestions) {
     return matchSorter(suggestions, value, { keys: ['label'] })
   }

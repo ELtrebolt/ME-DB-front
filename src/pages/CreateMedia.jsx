@@ -21,11 +21,11 @@ const CreateMedia = ({user, toDo}) => {
     tier: 'S',
     toDo: toDo.toString(),
     year: 2023,
-    tags: ''
+    tags: []
   });
 
   const onChange = (e) => {
-    setMedia({ ...media, [e.target.name]: e.target.value });
+    setMedia({ ...media, [e.target.id]: e.target.value });
   };
 
   const onSubmit = (e) => {
@@ -38,7 +38,7 @@ const CreateMedia = ({user, toDo}) => {
         setMedia({
           title: '',
           toDo: '',
-          tags: ''
+          tags: []
         });
         
         navigate(-1);
@@ -90,7 +90,7 @@ const CreateMedia = ({user, toDo}) => {
                 <input
                   type='text'
                   placeholder={constants.examples[mediaType]}
-                  name='title'
+                  id='title'
                   className='form-control'
                   value={media.title}
                   onChange={onChange}
@@ -99,7 +99,7 @@ const CreateMedia = ({user, toDo}) => {
 
               <div className='form-group'>
                 <label htmlFor='year'>{yearString}</label>
-                <select className='form-control' name='year' value={media.year} onChange={onChange}>
+                <select className='form-control' id='year' value={media.year} onChange={onChange}>
                   {years.map((year) => (
                     <option key={year} value={year}>
                       {year}
@@ -112,7 +112,7 @@ const CreateMedia = ({user, toDo}) => {
                 <label htmlFor='tier'>Tier</label>
                 <select
                   placeholder='S'
-                  name='tier'
+                  id='tier'
                   className='form-control'
                   value={media.tier}
                   onChange={onChange}
@@ -123,7 +123,7 @@ const CreateMedia = ({user, toDo}) => {
                 </select>
               </div>
 
-              <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={[]}></TagMaker>
+              <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={null}></TagMaker>
 
               <input
                 type='submit'

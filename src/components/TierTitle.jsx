@@ -23,6 +23,7 @@ function EditableText({title, mediaType, group, tier, setUserChanged}) {
   const handleCheckmarkMouseDown = (event) => {
     event.preventDefault();
     // console.log("CheckmarkMouseDown")
+    group = group === 'to-do' ? 'todo' : 'collection'
     axios
     .put(constants['SERVER_URL'] + `/api/user/${mediaType}/${group}/${tier}`, {newTitle: editedText})
     .then((res) => {

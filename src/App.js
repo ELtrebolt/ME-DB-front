@@ -4,8 +4,7 @@ import './App.css';
 import Navbar from "./components/Navbar";
 
 import CreateMedia from './pages/CreateMedia';
-import ShowCollection from './pages/ShowCollection';
-import ShowToDoList from './pages/ShowToDoList';
+import ShowMediaList from './pages/ShowMediaList';
 import ShowMediaDetails from './pages/ShowMediaDetails';
 import UpdateMediaInfo from './pages/UpdateMediaInfo';
 import About from "./pages/About";
@@ -94,11 +93,11 @@ function RestrictMediaType({ user, n, setUserChanged}) {
       }
       else if(group === "collection")
       {
-        return <ShowCollection user={user} setUserChanged={setUserChanged}/>;
+        return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={false}/>;
       }
       else if(group === "to-do")
       {
-        return <ShowToDoList user={user} setUserChanged={setUserChanged}/>;
+        return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={true}/>;
       }
       else {
         return <Navigate to="/404" />;
