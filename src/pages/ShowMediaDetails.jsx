@@ -11,7 +11,7 @@ function toCapitalNotation(inputString) {
     .join(' '); // Join the words back into a single string
 }
 
-function ShowMediaDetails(props) {
+function ShowMediaDetails({user}) {
   const [media, setMedia] = useState({});
   const { mediaType, group } = useParams();
   const [loaded, setLoaded] = useState(false)
@@ -48,6 +48,7 @@ function ShowMediaDetails(props) {
       });
   };
   
+  const tiersVariable = media.toDo ? 'todoTiers' : 'collectionTiers';
   return (
     <div className='ShowMediaDetails'>
       <div className='container'>
@@ -82,7 +83,7 @@ function ShowMediaDetails(props) {
                 <tr>
                   <th scope='row'>3</th>
                   <td>Tier</td>
-                  <td>{media.tier}</td>
+                  <td>{user[mediaType][tiersVariable][media.tier]}</td>
                 </tr>
                 <tr>
                   <th scope='row'>4</th>

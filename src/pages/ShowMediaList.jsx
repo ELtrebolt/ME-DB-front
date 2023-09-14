@@ -152,23 +152,14 @@ function ShowMediaList({user, setUserChanged, toDo}) {
           F: [],
         };
         var possible_years = new Set();
-        var tags_set = new Set();
         var all_tags = [];
-        var index = 0;
-        res.data.forEach(m => {
+        // iterate through all Data
+        res.data.media.forEach(m => {
           tiers[m.tier].push(m);
-          possible_years.add(m.year)
-          
-          // Add All Tags
-          if(m.tags) {
-            m.tags.forEach((t) => {
-              if(!tags_set.has(t)) {
-                tags_set.add(t);
-                all_tags.push({value:index, label:t})
-                index += 1;
-              }
-            })
-          }
+          possible_years.add(m.year);
+        });
+        res.data.uniqueTags.forEach((t, index) => {
+          all_tags.push({value:index, label:t});
         });
         setAllTags(all_tags);
         setTierData(tiers);
@@ -177,7 +168,7 @@ function ShowMediaList({user, setUserChanged, toDo}) {
         setSearchChanged(true);
       })
       .catch((err) => {
-        console.log('Error from ShowMediaList');
+        console.log(err);
       });
     }
   })
@@ -211,7 +202,7 @@ function ShowMediaList({user, setUserChanged, toDo}) {
           
           <div className='col-md-2'></div>
           <div className='col-md-8'>
-            <h3 className='display-4 text-center'>{toCapitalNotation(mediaType)} {toCapitalNotation(toDoString)} Tier List ({exportMode})</h3>
+            <h3 className='display-4 text-center'>{toCapitalNotation(mediaType)} {toCapitalNotation(toDoString)} Tier List</h3>
           </div>
           <div className='col-md-2 m-auto'>     
             <button

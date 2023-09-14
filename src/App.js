@@ -89,7 +89,7 @@ function RestrictMediaType({ user, n, setUserChanged}) {
     {
       if(!isNaN(group))
       {
-        return <ShowMediaDetails/>;
+        return <ShowMediaDetails user={user}/>;
       }
       else if(group === "collection")
       {

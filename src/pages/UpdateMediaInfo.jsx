@@ -14,8 +14,9 @@ function UpdateMediaInfo({user}) {
     tags: ''
   });
   const { mediaType, group } = useParams();
+  const [tiersName, setTiersName] = useState();
   const navigate = useNavigate();
-  const userID = user.group
+  const userID = user.group;
 
   useEffect(() => {
     if(!media.tier) {
@@ -28,11 +29,15 @@ function UpdateMediaInfo({user}) {
           tier: res.data.tier,
           toDo: res.data.toDo,
           year: res.data.year,
-          tags: res.data.tags,
+          tags: res.data.tags
         });
+        setTiersName(res.data.toDo ? "todoTiers" : "collectionTiers");
+        // if(res.data.tags && res.data.tags[0]) {
+        //   setMedia({...media, tags: res.data.tags,})
+        // }
       })
       .catch((err) => {
-        console.log('Error from UpdateMediaInfo');
+        console.log(err);
       });
     }
   });
@@ -40,6 +45,9 @@ function UpdateMediaInfo({user}) {
 
   const onChange = (e) => {
     setMedia({ ...media, [e.target.id]: e.target.value });
+    if(e.target.id === 'toDo') {
+      setTiersName(e.target.value === 'true' ? "todoTiers" : "collectionTiers");
+    }
   };
 
   const onSubmit = (e) => {
@@ -60,15 +68,15 @@ function UpdateMediaInfo({user}) {
         navigate(`/${mediaType}/${group}`);
       })
       .catch((err) => {
-        console.log('Error in UpdateMediaInfo!');
+        console.log(err);
       });
   };
 
+  console.log(tiersName);
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 1969 }, (_, index) => currentYear - index);
-  const tiers = ['S', 'A', 'B', 'C', 'D', 'F']
-  const tiersName = media.toDo ? "todoTiers" : "collectionTiers"
-  const yearString = media.toDo ? "Year You First Wanted To Do" : "Year You First Experienced"
+  const tiers = ['S', 'A', 'B', 'C', 'D', 'F'];
+  const yearString = media.toDo ? "Year You First Wanted To Do" : "Year You First Experienced";
   if(media.tags !== '') {
   return (
     <div className='UpdateMediaInfo'>
