@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import '../App.css';
 import axios from 'axios';
+import DeleteModal from "../components/DeleteModal";
 const constants = require('../constants');
 
 function toCapitalNotation(inputString) {
@@ -36,12 +37,12 @@ function ShowMediaDetails({user}) {
     }
   });
 
-  const onDeleteClick = (mediaType, group) => {
+  function onDeleteClick() {
     axios
       .delete(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`)
       .then((res) => {
-        group = res.data.toDo === true ? 'to-do' : 'collection'
-        navigate(`/${mediaType}/${group}`);
+        const groupStr = res.data.toDo === true ? 'to-do' : 'collection'
+        navigate(`/${mediaType}/${groupStr}`);
       })
       .catch((err) => {
         console.log('Error form ShowMediaDetails_deleteClick');
@@ -49,12 +50,13 @@ function ShowMediaDetails({user}) {
   };
   
   const tiersVariable = media.toDo ? 'todoTiers' : 'collectionTiers';
+  const listType = media.toDo ? 'To-Do List' : 'My Collection' 
   return (
     <div className='ShowMediaDetails'>
       <div className='container'>
         <br></br>
         <div className='row'>
-          <div className='col-md-2 m-auto'>
+          <div className='col-md-2 m-auto d-flex justify-content-end'>
             <Link to={`/${mediaType}/${media.toDo === true ? 'to-do' : 'collection'}`} className='btn btn-outline-warning float-left'>
               Go Back
             </Link>
@@ -63,7 +65,9 @@ function ShowMediaDetails({user}) {
             <h1 className='display-4 text-center'>{toCapitalNotation(mediaType)}'s Record</h1>
             <hr />
           </div>
-          <div className='col-md-2 m-auto'></div>
+          <div className='col-md-2 m-auto'>
+            <DeleteModal onDeleteClick={onDeleteClick}></DeleteModal>
+          </div>
         </div>
         <div className='row'>
           <div className='col-md-10 m-auto'>
@@ -92,8 +96,8 @@ function ShowMediaDetails({user}) {
                 </tr>
                 <tr>
                   <th scope='row'>5</th>
-                  <td>ToDo</td>
-                  <td>{`${media.toDo}`}</td>
+                  <td>List Type</td>
+                  <td>{`${listType}`}</td>
                 </tr>
               </tbody>
             </table>
@@ -101,18 +105,7 @@ function ShowMediaDetails({user}) {
           </div>
         </div>
           <div className='row'>
-            <div className='col-md-2 m-auto'></div>
-            <div className='col-md-4 m-auto'>
-              <button
-                type='button'
-                className='btn btn-outline-danger btn-lg btn-block'
-                onClick={() => {
-                  onDeleteClick(mediaType, group);
-                }}
-              >
-                Delete
-              </button>
-            </div>
+            <div className='col-md-4 m-auto'></div>
             <div className='col-md-4 m-auto'>
               <Link
                 to={`/${mediaType}/${group}/edit`}
@@ -121,7 +114,7 @@ function ShowMediaDetails({user}) {
                 Edit
               </Link>
             </div>
-            <div className='col-md-2 m-auto'></div>
+            <div className='col-md-4 m-auto'></div>
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ import { matchSorter } from 'match-sorter'
 
 const Function = ({suggestedTags, selected, setSelected, setSearchChanged}) => {
   const suggestions = suggestedTags;
-  // const suggestions = tagsList.map((name, index) => ({ value: index, label: name }))
+  // suggested and selected are lists of { value: index, label: name }
 
   function suggestionsTransform(value, suggestions) {
     return matchSorter(suggestions, value, { keys: ['label'] })
@@ -30,7 +30,6 @@ const Function = ({suggestedTags, selected, setSelected, setSearchChanged}) => {
 
   return (
     <><label>Filter By Tags</label><ReactTags
-      labelText="Select countries"
       selected={selected}
       suggestions={suggestions}
       onAdd={onAdd}

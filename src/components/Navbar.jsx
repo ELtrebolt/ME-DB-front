@@ -17,7 +17,6 @@ const NavbarFunction = ({user}) => {
         <Navbar.Brand href="/anime/collection">ME-DB</Navbar.Brand>
         <Nav className="me-auto">
           <Nav.Link href="/about">About</Nav.Link>
-          <Nav.Link onClick={logout}>Logout</Nav.Link>
           <NavDropdown title="Media" id="basic-nav-dropdown">
             <NavDropdown.Item href="/anime/collection">Anime</NavDropdown.Item>
             <NavDropdown.Item href="/tv/collection">TV Shows</NavDropdown.Item>
@@ -28,6 +27,7 @@ const NavbarFunction = ({user}) => {
           </NavDropdown>
         </Nav>
         <Nav className="ml-auto">
+          <Nav.Link onClick={logout}>Logout</Nav.Link>
           <Nav.Link>
             <img src={user.profilePic} className="avatar" alt=""/>
             {user.displayName}

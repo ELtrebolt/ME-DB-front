@@ -3,15 +3,15 @@ import '../App.css';
 import axios from 'axios';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 
-import ViewByYear from "../components/ViewByYear";
+import YearFilter from "../components/YearFilter";
 import CardsContainer from "../components/CardsContainer";
 import TierTitle from "../components/TierTitle";
 import TagFilter from "../components/TagFilter";
-import FilterOperator from "../components/FilterOperator";
+import SearchBar from "../components/SearchBar";
 
 const constants = require('../constants');
 
-function filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSuggestedTags, setSearchChanged, setFilteredData, filterOperator) {
+function filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSuggestedTags, setSearchChanged, setFilteredData, searchQuery) {
   var array = [];
   var data = {
     S: [],
@@ -21,32 +21,31 @@ function filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSug
     D: [],
     F: [],
   };
-  // Filter by Tags
-  Object.keys(tierData).forEach(tier => {
-    tierData[tier].forEach(m => {
+  for(const tier of Object.keys(tierData)) {
+    for(const m of tierData[tier]) {
+      // Filter by SearchQuery
+      if(searchQuery !== '') {
+        if(!m.title.toLowerCase().includes(searchQuery)) {
+          continue;
+        }
+      }
+      // Filter by Tags
       if(selectedTags && selectedTags[0]) {
         if(m.tags) {
           for(const t of selectedTags) {
-            if(filterOperator === 'OR') {
-              if(m.tags.includes(t['label'])){
-                array.push(m);
-                break;
-              }
-            } else if(filterOperator === 'AND') {
-              if(!m.tags.includes(t['label'])) {
-                break;
-              }
-              if(selectedTags[selectedTags.length-1] === t) {
-                array.push(m);
-              }
+            if(!m.tags.includes(t['label'])) {
+              break;
+            }
+            if(selectedTags[selectedTags.length-1] === t) {
+              array.push(m);
             }
           }
         }
       } else {
         array.push(m);
       }
-    })
-  });
+    }
+  }
   // Filter by Years
   array.forEach(m => {
     if(firstYear && lastYear) {
@@ -63,26 +62,22 @@ function filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSug
 
   // Change TagsList Dynamically
   var tags_list = []
-  if(filterOperator === 'OR'){
-    tags_list = allTags;
-  } else if(filterOperator === 'AND') {
-    const allTagsList = allTags.map((item) => item['label']);
-    var added_tags = new Set()
-    Object.keys(data).forEach(tier => {
-      data[tier].forEach(item => {
-        if(item.tags) {
-          item.tags.forEach(tag => {
-            const foundIndex = allTagsList.indexOf(tag);
-            const tagDict = { value: foundIndex, label: tag };
-            if(foundIndex >= -1 && !added_tags.has(tag)) {
-              tags_list.push(tagDict);
-              added_tags.add(tag);
-            }
-          })
-        }
-      })
+  const allTagsList = allTags.map((item) => item['label']);
+  var added_tags = new Set()
+  Object.keys(data).forEach(tier => {
+    data[tier].forEach(item => {
+      if(item.tags) {
+        item.tags.forEach(tag => {
+          const foundIndex = allTagsList.indexOf(tag);
+          const tagDict = { value: foundIndex, label: tag };
+          if(foundIndex >= -1 && !added_tags.has(tag)) {
+            tags_list.push(tagDict);
+            added_tags.add(tag);
+          }
+        })
+      }
     })
-  }
+  })
   setSuggestedTags(tags_list);
   setSearchChanged(false);
   return data;
@@ -103,6 +98,7 @@ function ShowMediaList({user, setUserChanged, toDo}) {
   const [tierData, setTierData] = useState();
   const { mediaType } = useParams();
   const tiers = ["S", "A", "B", "C", "D", "F"];
+  const [filteredData, setFilteredData] = useState();
   // Filters
   const [firstYear, setFirstYear] = useState();
   const current_year = new Date().getFullYear();
@@ -111,9 +107,8 @@ function ShowMediaList({user, setUserChanged, toDo}) {
   const [allTags, setAllTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [suggestedTags, setSuggestedTags] = useState([]);
-  const [filterOperator, setFilterOperator] = useState('OR')
   const [searchChanged, setSearchChanged] = useState();
-  const [filteredData, setFilteredData] = useState();
+  const [searchQuery, setSearchQuery] = useState('');
   // Modes
   const [firstLoad, setFirstLoad] = useState(true);
   const [exportMode, setExportMode] = useState(false);
@@ -175,7 +170,7 @@ function ShowMediaList({user, setUserChanged, toDo}) {
 
   // Filtering
   if(tierData && (searchChanged === undefined || searchChanged === true)) {
-    const data = filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSuggestedTags, setSearchChanged, setFilteredData, filterOperator);
+    const data = filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSuggestedTags, setSearchChanged, setFilteredData, searchQuery);
     setFilteredData(data);
   }
   
@@ -223,7 +218,7 @@ function ShowMediaList({user, setUserChanged, toDo}) {
             <br></br>
             End Year = {lastYear}
             <br></br>
-            Tags ({filterOperator}) = {selectedTags && selectedTags[0] ? selectedTags.map((item) => item['label']).join(', ') : 'No Tags Selected'}
+            Tags = {selectedTags && selectedTags[0] ? selectedTags.map((item) => item['label']).join(', ') : 'No Tags Selected'}
             <br></br>
             <br></br>
 
@@ -270,15 +265,15 @@ function ShowMediaList({user, setUserChanged, toDo}) {
         <div className='row'>
           
           {/* col-4 */}
-          <ViewByYear possible_years={possibleYears} firstYear={firstYear} lastYear={lastYear} setFirstYear={setFirstYear} setLastYear={setLastYear} setSearchChanged={setSearchChanged}/>
+          <YearFilter possible_years={possibleYears} firstYear={firstYear} lastYear={lastYear} setFirstYear={setFirstYear} setLastYear={setLastYear} setSearchChanged={setSearchChanged}/>
           <div className='col-md-4'>
+            <SearchBar mediaType={mediaType} allMedia={filteredData} searchQuery={searchQuery} setSearchQuery={setSearchQuery} setSearchChanged={setSearchChanged}></SearchBar>
+          </div>
+          <div className = 'col-md-3'>
             <TagFilter suggestedTags={suggestedTags} selected={selectedTags} setSelected={setSelectedTags} setSearchChanged={setSearchChanged}></TagFilter>
           </div>
-          <div className = 'col-md-2'>
-            <FilterOperator filterOperator={filterOperator} setFilterOperator={setFilterOperator} setSearchChanged={setSearchChanged}></FilterOperator>
-          </div>
           
-          <div className='col-md-2 m-auto text-right'>
+          <div className='col-md-1 m-auto text-right'>
             <div className="dropdown">
               <button className="btn btn-warning dropdown-toggle" type="button" id="exportDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Export

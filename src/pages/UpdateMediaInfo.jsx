@@ -15,6 +15,7 @@ function UpdateMediaInfo({user}) {
   });
   const { mediaType, group } = useParams();
   const [tiersName, setTiersName] = useState();
+  const [yearString, setYearString] = useState();
   const navigate = useNavigate();
   const userID = user.group;
 
@@ -32,6 +33,7 @@ function UpdateMediaInfo({user}) {
           tags: res.data.tags
         });
         setTiersName(res.data.toDo ? "todoTiers" : "collectionTiers");
+        setYearString(res.data.toDo ? "Year You First Wanted To Do" : "Year You First Experienced");
         // if(res.data.tags && res.data.tags[0]) {
         //   setMedia({...media, tags: res.data.tags,})
         // }
@@ -47,6 +49,7 @@ function UpdateMediaInfo({user}) {
     setMedia({ ...media, [e.target.id]: e.target.value });
     if(e.target.id === 'toDo') {
       setTiersName(e.target.value === 'true' ? "todoTiers" : "collectionTiers");
+      setYearString(e.target.value === 'true' ? "Year You First Wanted To Do" : "Year You First Experienced");
     }
   };
 
@@ -76,7 +79,7 @@ function UpdateMediaInfo({user}) {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 1969 }, (_, index) => currentYear - index);
   const tiers = ['S', 'A', 'B', 'C', 'D', 'F'];
-  const yearString = media.toDo ? "Year You First Wanted To Do" : "Year You First Experienced";
+  const listType = media.toDo ? "To-Do List" : "My Collection";
   if(media.tags !== '') {
   return (
     <div className='UpdateMediaInfo'>
@@ -140,16 +143,16 @@ function UpdateMediaInfo({user}) {
               </div>
 
               <div className='form-group'>
-              <label htmlFor='toDo'>To Do</label>
+              <label htmlFor='toDo'>List Type</label>
                 <select
-                  placeholder={media.toDo.toString()}
+                  placeholder={listType}
                   id='toDo'
                   className='form-control'
                   value={media.toDo}
                   onChange={onChange}
                 >
-                  <option value='true'>true</option>
-                  <option value='false'>false</option>
+                  <option value='true'>To-Do List</option>
+                  <option value='false'>My Collection</option>
                 </select>
               </div>
 
