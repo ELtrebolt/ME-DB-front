@@ -1,8 +1,9 @@
 import { BrowserRouter as Router, Route, Routes, Navigate, useParams } from 'react-router-dom';
 import './App.css';
 
+// Components
 import Navbar from "./components/Navbar";
-
+// Pages
 import CreateMedia from './pages/CreateMedia';
 import ShowMediaList from './pages/ShowMediaList';
 import ShowMediaDetails from './pages/ShowMediaDetails';
@@ -10,7 +11,8 @@ import UpdateMediaInfo from './pages/UpdateMediaInfo';
 import About from "./pages/About";
 import Intro from "./pages/Intro";
 import NotFound from "./pages/NotFound";
-
+import Logout from "./pages/Logout";
+// Other
 import { useEffect, useState } from "react";
 import axios from 'axios';
 const constants = require('./constants');
@@ -20,20 +22,22 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userChanged, setUserChanged] = useState(false);
+  const [newTypes, setNewTypes] = useState([]);
 
   // function onUserChanged({foo}) {
   //   setUserChanged(true);
   //   foo();
   // }
   useEffect(() => {
+    // get User data from MongoDB, use for TierTitle and AddNewType
     const getUser = async () => {
       if(!user || userChanged)
       {
         axios
         .get(constants['SERVER_URL'] + '/auth/login/success', {withCredentials: true})
         .then((res) => {
-          // console.log("GET /auth/login/success", res)
           setUser(res.data.user);
+          setNewTypes(Object.keys(res.data.user.newTypes));
           setUserChanged(false);
         })
         .catch((err) => {
@@ -50,22 +54,23 @@ const App = () => {
   
   console.log("userChanged", userChanged)
   console.log("user", user);
-  if(!isLoading)
+  if(!isLoading && !userChanged)
   {
     return (
       <Router>
         <div>
-          <Navbar user={user} setUserChanged={setUserChanged}/>
+          <Navbar user={user} setUserChanged={setUserChanged} newTypes={newTypes}/>
           <Routes>
             <Route path='/' element={user ? <Navigate to="/anime/collection"/> : <Intro />} />
             <Route path='/about' element={<About/>} />
             <Route path='/home' element={user ? <Navigate to="/anime/collection"/> : <Navigate to="/"/>} />
+            <Route path='/logout' element={<Logout/>} />
 
-            <Route path='/:mediaType/collection/create' element={<RestrictMediaType user={user} n={3} setUserChanged={setUserChanged}/>} />
-            <Route path='/:mediaType/to-do/create' element={<RestrictMediaType user={user} n={4} setUserChanged={setUserChanged}/>} />
+            <Route path='/:mediaType/collection/create' element={<RestrictMediaType user={user} n={3} setUserChanged={setUserChanged} newTypes={newTypes}/>} />
+            <Route path='/:mediaType/to-do/create' element={<RestrictMediaType user={user} n={4} setUserChanged={setUserChanged} newTypes={newTypes}/>} />
 
-            <Route path='/:mediaType/:group' element={<RestrictMediaType user={user} n={5} setUserChanged={setUserChanged}/>} />
-            <Route path='/:mediaType/:group/edit' element={<RestrictMediaType user={user} n={6} setUserChanged={setUserChanged}/>} />
+            <Route path='/:mediaType/:group' element={<RestrictMediaType user={user} n={5} setUserChanged={setUserChanged} newTypes={newTypes}/>} />
+            <Route path='/:mediaType/:group/edit' element={<RestrictMediaType user={user} n={6} setUserChanged={setUserChanged} newTypes={newTypes}/>} />
             
             <Route path='/404' element={<NotFound/>} />
             <Route path="/*" element={<NotFound />} />
@@ -76,9 +81,8 @@ const App = () => {
   }
 };
 
-function RestrictMediaType({ user, n, setUserChanged}) {
+function RestrictMediaType({ user, n, setUserChanged, newTypes}) {
   const defaultTypes = ['anime', 'tv', 'movies', 'games']
-  const newTypes = Object.keys(user.newTypes);
   var mediaTypes;
   if(newTypes.length > 0) {
     mediaTypes = [...defaultTypes, ...newTypes];
@@ -120,7 +124,8 @@ function RestrictMediaType({ user, n, setUserChanged}) {
       return <UpdateMediaInfo user={user} newType={newType} />;
     }
   } else {
-    console.log(mediaType, 'not valid type', mediaTypes)
+    console.log(n, group);
+    console.log(mediaType, 'not valid type', mediaTypes);
     return <Navigate to="/404" />;
   }
 }

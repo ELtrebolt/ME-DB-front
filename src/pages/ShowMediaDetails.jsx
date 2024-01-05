@@ -67,7 +67,7 @@ function ShowMediaDetails({user, newType}) {
             <hr />
           </div>
           <div className='col-md-2 m-auto'>
-            <DeleteModal onDeleteClick={onDeleteClick}></DeleteModal>
+            <DeleteModal onDeleteClick={onDeleteClick} type='media'></DeleteModal>
           </div>
         </div>
         <div className='row'>

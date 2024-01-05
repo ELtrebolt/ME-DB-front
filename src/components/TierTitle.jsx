@@ -30,6 +30,7 @@ function EditableText({title, mediaType, group, tier, setUserChanged, newType}) 
       console.log("Updated Tier Title");
       setText(editedText); 
       setIsEditing(false);
+      // Keeps changes when switching from to-do list and collection
       setUserChanged(true);
     })
     .catch((err) => {

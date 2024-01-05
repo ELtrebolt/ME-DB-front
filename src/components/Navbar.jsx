@@ -4,18 +4,15 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import NewTypeModal from "../components/NewTypeModal";
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 const constants = require('../constants');
 
-const NavbarFunction = ({user, setUserChanged}) => {
-  const navigate = useNavigate();
+const NavbarFunction = ({user, setUserChanged, newTypes}) => {
   const [showModal, setShowModal] = useState(false);
-  // const [newTypes, setNewTypes] = useState(null);
+  const navigate = useNavigate();
+  const [navNewTypes, setNavNewTypes] = useState(newTypes);
 
-  const logout = () => {
-    window.open(constants['SERVER_URL'] + "/auth/logout", "_self");
-  };
   const showNewTypeModal = () => {
     setShowModal(true);
   }
@@ -29,6 +26,7 @@ const NavbarFunction = ({user, setUserChanged}) => {
         .put(constants['SERVER_URL'] + `/api/user/newTypes`, {newType: newName})
         .then((res) => {
           console.log("Created New Type:", newName);
+          setNavNewTypes(Object.keys(res.data.newTypes));
           setUserChanged(true);
           navigate(`/${newName}/collection`);
         })
@@ -39,10 +37,6 @@ const NavbarFunction = ({user, setUserChanged}) => {
     }
   };
 
-  var newTypes = [];
-  if(user && user.newTypes){
-    newTypes = Object.keys(user.newTypes);
-  }
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
     {user ? (
@@ -56,17 +50,17 @@ const NavbarFunction = ({user, setUserChanged}) => {
             <NavDropdown.Item href="/tv/collection">TV Shows</NavDropdown.Item>
             <NavDropdown.Item href="/movies/collection">Movies</NavDropdown.Item>
             <NavDropdown.Item href="/games/collection">Games</NavDropdown.Item>
-            { newTypes ? <NavDropdown.Divider/> : null}
-            {newTypes.length > 0 ? 
-              newTypes.map((item, index) => (
+            { navNewTypes.length > 0 ? <NavDropdown.Divider/> : null}
+            {navNewTypes.length > 0 ? 
+              navNewTypes.map((item, index) => (
               <NavDropdown.Item key={index} href={`/${item}/collection`}>{item.charAt(0).toUpperCase() + item.slice(1)}</NavDropdown.Item>
-            )) : <NavDropdown.Divider />}
+            )) : null}
             <NavDropdown.Divider />
             <NavDropdown.Item onClick={showNewTypeModal}>Add New</NavDropdown.Item>
           </NavDropdown>
         </Nav>
         <Nav className="ml-auto">
-          <Nav.Link onClick={logout}>Logout</Nav.Link>
+          <Nav.Link href='/logout'>Logout</Nav.Link>
           <Nav.Link>
             <img src={user.profilePic} className="avatar" alt=""/>
             {user.displayName}

@@ -8,6 +8,7 @@ import CardsContainer from "../components/CardsContainer";
 import TierTitle from "../components/TierTitle";
 import TagFilter from "../components/TagFilter";
 import SearchBar from "../components/SearchBar";
+import DeleteModal from "../components/DeleteModal";
 
 const constants = require('../constants');
 
@@ -189,6 +190,19 @@ function ShowMediaList({user, setUserChanged, toDo, newType}) {
     setDataByYear(temp);
     setExportMode("By-Year");
   }
+  function onDeleteClick() {
+    axios
+      .delete(constants['SERVER_URL'] + `/api/media/${mediaType}`)
+      .then((res) => {
+        console.log('Deleted all records of', mediaType);
+        setUserChanged(true);
+        navigate(`/`);
+      })
+      .catch((err) => {
+        window.alert('Error form ShowMediaList_deleteClick')
+        console.log(err);
+      });
+  };
 
   if(exportMode) {
     return (
@@ -260,7 +274,9 @@ function ShowMediaList({user, setUserChanged, toDo, newType}) {
             <h3 className='display-4 text-center'>{toCapitalNotation(mediaType)} {toCapitalNotation(toDoString)} Tier List</h3>
           </div>
 
-          <div className='col-md-2'></div>
+          <div className='col-md-2 d-flex justify-content-end align-items-center'>
+            {newType ? <DeleteModal onDeleteClick={onDeleteClick} type={mediaType}></DeleteModal> : null}
+          </div>
 
         </div>
         <div className='row'>

@@ -43,7 +43,7 @@ const Function = ({mediaType, allMedia, searchQuery, setSearchQuery, setSearchCh
   
   const noOptionsText = `No matching ${mediaType}`;
   return (
-    <><label htmlFor='searchBar'>Search by Title</label><ReactTags
+    <><label htmlFor='searchBar-input'>Search by Title</label><ReactTags
     id='searchBar'
     placeholderText={constants.examples[mediaType]}
     selected={selected}

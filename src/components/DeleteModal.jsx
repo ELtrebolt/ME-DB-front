@@ -2,8 +2,11 @@ import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
-function Example({onDeleteClick}) {
+function Example({onDeleteClick, type}) {
   const [show, setShow] = useState(false);
+  const areYouSureText = type === 'media' ? 'Are you sure you want to remove this record?' : 
+  `Are you sure you want to delete the entirety of your To-Do List & Collection from ~${type.charAt(0).toUpperCase() + type.slice(1)}~?`
+  const saveChangesText = type === 'media' ? 'Delete' : 'Yes, Delete Everything'
 
   const handleClose = () => {
     setShow(false);
@@ -24,13 +27,13 @@ function Example({onDeleteClick}) {
         <Modal.Header closeButton>
           <Modal.Title>Delete Confirmation</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to remove this media?</Modal.Body>
+        <Modal.Body><b>{areYouSureText}</b></Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleSave}>
-            Save Changes
+          <Button variant="danger" onClick={handleSave}>
+            {saveChangesText}
           </Button>
         </Modal.Footer>
       </Modal>
