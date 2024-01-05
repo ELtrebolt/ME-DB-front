@@ -2,29 +2,37 @@ import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
-function Example({onDeleteClick}) {
-  const [show, setShow] = useState(false);
+const constants = require('../constants');
+
+function Example({show, setShow, onSaveClick}) {
+  const [newName, setNewName] = useState('');
 
   const handleClose = () => {
     setShow(false);
+    setNewName('');
   }
   const handleSave = () => {
     setShow(false);
-    onDeleteClick();
+    setNewName('');
+    onSaveClick(newName);
   }
-  const handleShow = () => setShow(true);
+  const onChange = (e) => {
+    setNewName(e.target.value);
+  };
 
   return (
     <>
-      <Button variant="danger" onClick={handleShow}>
-        Delete
-      </Button>
-
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Delete Confirmation</Modal.Title>
+          <Modal.Title>Add New Type</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to remove this media?</Modal.Body>
+        <Modal.Body>Enter the name of the new collection:</Modal.Body>
+        <input
+            type='text'
+            value={newName}
+            onChange={onChange}
+            placeholder={constants['examples']['type']}
+          />
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Cancel

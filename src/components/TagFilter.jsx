@@ -29,7 +29,8 @@ const Function = ({suggestedTags, selected, setSelected, setSearchChanged}) => {
   )
 
   return (
-    <><label>Filter By Tags</label><ReactTags
+    <><label htmlFor='tagFilter-input'>Filter By Tags</label><ReactTags
+      id='tagFilter'
       selected={selected}
       suggestions={suggestions}
       onAdd={onAdd}

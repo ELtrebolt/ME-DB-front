@@ -12,12 +12,13 @@ function toCapitalNotation(inputString) {
     .join(' '); // Join the words back into a single string
 }
 
-function ShowMediaDetails({user}) {
+function ShowMediaDetails({user, newType}) {
   const [media, setMedia] = useState({});
   const { mediaType, group } = useParams();
   const [loaded, setLoaded] = useState(false)
   const navigate = useNavigate();
-
+  const mediaTypeLoc = newType ? user.newTypes[mediaType] : user[mediaType]
+  
   useEffect(() => {
     if(!loaded) {
       axios
@@ -87,7 +88,7 @@ function ShowMediaDetails({user}) {
                 <tr>
                   <th scope='row'>3</th>
                   <td>Tier</td>
-                  <td>{user[mediaType][tiersVariable][media.tier]}</td>
+                  <td>{mediaTypeLoc[tiersVariable][media.tier]}</td>
                 </tr>
                 <tr>
                   <th scope='row'>4</th>

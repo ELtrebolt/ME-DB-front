@@ -93,12 +93,13 @@ function toCapitalNotation(inputString) {
     .join(' '); // Join the words back into a single string
 }
 
-function ShowMediaList({user, setUserChanged, toDo}) {
+function ShowMediaList({user, setUserChanged, toDo, newType}) {
   // Data
   const [tierData, setTierData] = useState();
   const { mediaType } = useParams();
   const tiers = ["S", "A", "B", "C", "D", "F"];
   const [filteredData, setFilteredData] = useState();
+  const mediaTypeLoc = newType ? user.newTypes[mediaType] : user[mediaType]
   // Filters
   const [firstYear, setFirstYear] = useState();
   const current_year = new Date().getFullYear();
@@ -224,7 +225,7 @@ function ShowMediaList({user, setUserChanged, toDo}) {
 
             {exportMode === 'By-Tier' && (
               Object.keys(filteredData).map((tier) => {
-                return <ul key={tier}><b>{user[mediaType][tierVariable][tier]}</b>
+                return <ul key={tier}><b>{mediaTypeLoc[tierVariable][tier]}</b>
                   {filteredData[tier].map((item) => (
                     <li key={item.ID}>{item.title}, {item.year}</li>
                   ))}
@@ -292,7 +293,7 @@ function ShowMediaList({user, setUserChanged, toDo}) {
 
       {tiers.map((item, index) => (
           <div className='tier-container' key={item}>
-            <TierTitle title={user[mediaType][tierVariable][item]} mediaType={mediaType} group={toDoString} tier={item} setUserChanged={setUserChanged}></TierTitle>
+            <TierTitle title={mediaTypeLoc[tierVariable][item]} mediaType={mediaType} group={toDoString} tier={item} setUserChanged={setUserChanged} newType={newType}></TierTitle>
             <CardsContainer items={filteredData[item]}/>
             <hr />
           </div>

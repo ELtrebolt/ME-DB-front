@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 const constants = require('../constants');
 
-function EditableText({title, mediaType, group, tier, setUserChanged}) {
+function EditableText({title, mediaType, group, tier, setUserChanged, newType}) {
   const [text, setText] = useState(title);
   const [editedText, setEditedText] = useState(text); // Store edited text separately
   const [isEditing, setIsEditing] = useState(false);
@@ -25,7 +25,7 @@ function EditableText({title, mediaType, group, tier, setUserChanged}) {
     // console.log("CheckmarkMouseDown")
     group = group === 'to-do' ? 'todo' : 'collection'
     axios
-    .put(constants['SERVER_URL'] + `/api/user/${mediaType}/${group}/${tier}`, {newTitle: editedText})
+    .put(constants['SERVER_URL'] + `/api/user/${mediaType}/${group}/${tier}`, {newTitle: editedText, newType: newType})
     .then((res) => {
       console.log("Updated Tier Title");
       setText(editedText); 

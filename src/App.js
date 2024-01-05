@@ -21,6 +21,10 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userChanged, setUserChanged] = useState(false);
 
+  // function onUserChanged({foo}) {
+  //   setUserChanged(true);
+  //   foo();
+  // }
   useEffect(() => {
     const getUser = async () => {
       if(!user || userChanged)
@@ -51,7 +55,7 @@ const App = () => {
     return (
       <Router>
         <div>
-          <Navbar user={user}/>
+          <Navbar user={user} setUserChanged={setUserChanged}/>
           <Routes>
             <Route path='/' element={user ? <Navigate to="/anime/collection"/> : <Intro />} />
             <Route path='/about' element={<About/>} />
@@ -73,31 +77,39 @@ const App = () => {
 };
 
 function RestrictMediaType({ user, n, setUserChanged}) {
-  const mediaTypes = ['anime', 'tv', 'movies', 'games']
+  const defaultTypes = ['anime', 'tv', 'movies', 'games']
+  const newTypes = Object.keys(user.newTypes);
+  var mediaTypes;
+  if(newTypes.length > 0) {
+    mediaTypes = [...defaultTypes, ...newTypes];
+  } else {
+    mediaTypes = defaultTypes;
+  }
   const { mediaType, group } = useParams();
+  const newType = newTypes.includes(mediaType);
 
   if (mediaTypes.includes(mediaType)) {
     if(n === 3)
     {
-      return <CreateMedia user={user} toDo={false}/>;
+      return <CreateMedia user={user} toDo={false} newType={newType}/>;
     }
     else if(n === 4)
     {
-      return <CreateMedia user={user} toDo={true}/>;
+      return <CreateMedia user={user} toDo={true} newType={newType}/>;
     }
     else if(n === 5)
     {
       if(!isNaN(group))
       {
-        return <ShowMediaDetails user={user}/>;
+        return <ShowMediaDetails user={user} newType={newType}/>;
       }
       else if(group === "collection")
       {
-        return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={false}/>;
+        return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={false} newType={newType}/>;
       }
       else if(group === "to-do")
       {
-        return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={true}/>;
+        return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={true} newType={newType}/>;
       }
       else {
         return <Navigate to="/404" />;
@@ -105,9 +117,10 @@ function RestrictMediaType({ user, n, setUserChanged}) {
     }
     else if(n === 6)
     {
-      return <UpdateMediaInfo user={user} />;
+      return <UpdateMediaInfo user={user} newType={newType} />;
     }
   } else {
+    console.log(mediaType, 'not valid type', mediaTypes)
     return <Navigate to="/404" />;
   }
 }

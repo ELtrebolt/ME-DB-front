@@ -11,7 +11,7 @@ function toCapitalNotation(inputString) {
     .join(' '); // Join the words back into a single string
 }
 
-const CreateMedia = ({user, toDo}) => {
+const CreateMedia = ({user, toDo, newType}) => {
   // Define the state with useState hook
   const navigate = useNavigate();
   const { mediaType } = useParams();
@@ -23,7 +23,8 @@ const CreateMedia = ({user, toDo}) => {
     year: 2023,
     tags: []
   });
-
+  const mediaTypeLoc = newType ? user.newTypes[mediaType] : user[mediaType]
+  
   const onChange = (e) => {
     setMedia({ ...media, [e.target.id]: e.target.value });
   };
@@ -32,7 +33,7 @@ const CreateMedia = ({user, toDo}) => {
     e.preventDefault();
     console.log("Attempt to Create:", media)
     axios
-      .post(constants['SERVER_URL'] + '/api/media', media)
+      .post(constants['SERVER_URL'] + '/api/media', {media: media, newType: newType})
       .then((res) => {
         console.log("Create Media success!")
         setMedia({
@@ -89,7 +90,7 @@ const CreateMedia = ({user, toDo}) => {
               <div className='form-group'>
                 <input
                   type='text'
-                  placeholder={constants.examples[mediaType]}
+                  placeholder={constants.examples[mediaType] ? constants.examples[mediaType] : constants.examples['other']}
                   id='title'
                   className='form-control'
                   value={media.title}
@@ -118,7 +119,7 @@ const CreateMedia = ({user, toDo}) => {
                   onChange={onChange}
                 >
                   {tiers.map((tier) => (
-                    <option key={tier} value={tier}>{user[mediaType][tiersName][tier]}</option>
+                    <option key={tier} value={tier}>{mediaTypeLoc[tiersName][tier]}</option>
                   ))}
                 </select>
               </div>

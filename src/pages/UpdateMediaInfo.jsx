@@ -5,7 +5,7 @@ import '../App.css';
 import TagMaker from "../components/TagMaker";
 const constants = require('../constants');
 
-function UpdateMediaInfo({user}) {
+function UpdateMediaInfo({user, newType}) {
   const [media, setMedia] = useState({
     title: '',
     tier: '',
@@ -18,6 +18,7 @@ function UpdateMediaInfo({user}) {
   const [yearString, setYearString] = useState();
   const navigate = useNavigate();
   const userID = user.group;
+  const mediaTypeLoc = newType ? user.newTypes[mediaType] : user[mediaType]
 
   useEffect(() => {
     if(!media.tier) {
@@ -105,7 +106,7 @@ function UpdateMediaInfo({user}) {
               <input
                 type='text'
                 id='title'
-                placeholder={constants.examples[mediaType]}
+                placeholder={constants.examples[mediaType] ? constants.examples[mediaType] : constants.examples['other']}
                 className='form-control'
                 value={media.title}
                 onChange={onChange}
@@ -133,7 +134,7 @@ function UpdateMediaInfo({user}) {
                   onChange={onChange}
                 >
                   {tiers.map((tier) => (
-                    <option key={tier} value={tier}>{user[mediaType][tiersName][tier]}</option>
+                    <option key={tier} value={tier}>{mediaTypeLoc[tiersName][tier]}</option>
                   ))}
                 </select>
               </div>

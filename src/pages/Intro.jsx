@@ -3,6 +3,7 @@ import '../App.css';
 const constants = require('../constants');
 
 const google = () => {
+  console.log('going to', constants['SERVER_URL'])
   window.open(constants['SERVER_URL'] + "/auth/google", "_self");
 }
 
@@ -26,7 +27,7 @@ const Intro = (props) => {
         <div className='col-md-8 m-auto center'>
          <div className="google-btn" onClick={google}>
             <div className="google-icon-wrapper">
-              <img className="google-icon" alt='logo' src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
+              <img className="google-icon" alt='logo' src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"/>
             </div>
             <p className="btn-text"><b>Sign in with Google</b></p>
           </div>
