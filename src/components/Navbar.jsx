@@ -20,7 +20,10 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
     newName = newName.trim().toLowerCase().replace(/ /g, '-')
     if(user.newTypes[newName]) {
       window.alert('Type Already Exists')
-    } else {
+    } else if(Object.keys(user.newTypes).length === 4) {
+      window.alert('Maximum custom types reached (4)')
+    } 
+    else {
       console.log('PUT /api/user/newTypes')
       axios
         .put(constants['SERVER_URL'] + `/api/user/newTypes`, {newType: newName})
@@ -32,7 +35,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
         })
         .catch((err) => {
           console.log(err);
-          window.alert("Create New Type Failed");
+          window.alert("Error on Create New Type");
         });
     }
   };

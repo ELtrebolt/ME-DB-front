@@ -77,8 +77,7 @@ function UpdateMediaInfo({user, newType}) {
   };
 
   console.log(tiersName);
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: currentYear - 1969 }, (_, index) => currentYear - index);
+  const years = Array.from({ length: constants.currentYear - 1969 }, (_, index) => constants.currentYear - index);
   const tiers = ['S', 'A', 'B', 'C', 'D', 'F'];
   const listType = media.toDo ? "To-Do List" : "My Collection";
   if(media.tags !== '') {

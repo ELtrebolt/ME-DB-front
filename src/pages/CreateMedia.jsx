@@ -20,7 +20,7 @@ const CreateMedia = ({user, toDo, newType}) => {
     title: '',
     tier: 'S',
     toDo: toDo.toString(),
-    year: 2023,
+    year: constants.currentYear,
     tags: []
   });
   const mediaTypeLoc = newType ? user.newTypes[mediaType] : user[mediaType]
@@ -51,8 +51,7 @@ const CreateMedia = ({user, toDo, newType}) => {
   };
 
   // console.log("Media", media);
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: currentYear - 1969 }, (_, index) => currentYear - index);
+  const years = Array.from({ length: constants.currentYear - 1969 }, (_, index) => constants.currentYear - index);
   const tiers = ['S', 'A', 'B', 'C', 'D', 'F']
   const tiersName = toDo ? "todoTiers" : "collectionTiers"
   const yearString = toDo ? "Year You First Wanted To Do" : "Year You First Experienced"

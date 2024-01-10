@@ -11,9 +11,12 @@ const json = {
         'restaurants' : 'e.g. McDonald\'s',
         'dates' : 'e.g. Rock Cafe',
         'trends' : 'e.g. Dabbing',          // tags=slang,dance
+        'names' : 'e.g. Steve',
+        'nicknames' : 'e.g. Steve-o',
         'other' : 'e.g. Something-Cool',
         'concerts' : 'e.g. Halsey'
-    }
+    },
+    'currentYear': new Date().getFullYear()
 };
 
 module.exports = json;
