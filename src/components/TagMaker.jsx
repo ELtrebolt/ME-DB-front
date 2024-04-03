@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const constants = require('../constants');
 
-const TagMaker = ({mediaType, media, setMedia, alreadySelected}) => {
+const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder}) => {
   const [suggestions, setSuggestions] = useState();
   // list of {value, label}
   const [selected, setSelected] = useState();
@@ -76,7 +76,8 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected}) => {
         onDelete={onDelete}
         noOptionsText="No matching tags" 
         allowNew={true}
-        suggestionsTransform={suggestionsTransform}/></>
+        suggestionsTransform={suggestionsTransform}
+        placeholderText={placeholder}/></>
     )
   }
 }

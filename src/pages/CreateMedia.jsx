@@ -21,7 +21,8 @@ const CreateMedia = ({user, toDo, newType}) => {
     tier: 'S',
     toDo: toDo.toString(),
     year: constants.currentYear,
-    tags: []
+    tags: [],
+    description: ''
   });
   const mediaTypeLoc = newType ? user.newTypes[mediaType] : user[mediaType]
   
@@ -39,7 +40,8 @@ const CreateMedia = ({user, toDo, newType}) => {
         setMedia({
           title: '',
           toDo: '',
-          tags: []
+          tags: [],
+          description: ''
         });
         
         navigate(-1);
@@ -89,7 +91,7 @@ const CreateMedia = ({user, toDo, newType}) => {
               <div className='form-group'>
                 <input
                   type='text'
-                  placeholder={constants.examples[mediaType] ? constants.examples[mediaType] : constants.examples['other']}
+                  placeholder={constants[mediaType].title ? constants[mediaType].title : constants['other'].title}
                   id='title'
                   className='form-control'
                   value={media.title}
@@ -123,7 +125,21 @@ const CreateMedia = ({user, toDo, newType}) => {
                 </select>
               </div>
 
-              <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={null}></TagMaker>
+              <div className='form-group'>
+                <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={null} placeholder={constants[mediaType].tags}></TagMaker>
+              </div>
+              
+              <label htmlFor='description'>Description (Optional)</label>
+              <div className='form-group'>
+                <input
+                  type='text'
+                  placeholder={constants[mediaType].description}
+                  id='description'
+                  className='form-control'
+                  value={media.description}
+                  onChange={onChange}
+                />
+              </div>
 
               <input
                 type='submit'

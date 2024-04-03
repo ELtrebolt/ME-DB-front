@@ -31,7 +31,7 @@ function Example({show, setShow, onSaveClick}) {
             type='text'
             value={newName}
             onChange={onChange}
-            placeholder={constants['examples']['type']}
+            placeholder={constants.examples['type']}
           />
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>

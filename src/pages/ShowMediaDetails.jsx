@@ -97,6 +97,11 @@ function ShowMediaDetails({user, newType}) {
                 </tr>
                 <tr>
                   <th scope='row'>5</th>
+                  <td>Description</td>
+                  <td>{media.description ? media.description : '-'}</td>
+                </tr>
+                <tr>
+                  <th scope='row'>6</th>
                   <td>List Type</td>
                   <td>{`${listType}`}</td>
                 </tr>

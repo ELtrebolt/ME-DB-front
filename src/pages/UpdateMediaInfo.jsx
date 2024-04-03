@@ -11,7 +11,8 @@ function UpdateMediaInfo({user, newType}) {
     tier: '',
     toDo: '',
     year: '',
-    tags: ''
+    tags: '',
+    description: ''
   });
   const { mediaType, group } = useParams();
   const [tiersName, setTiersName] = useState();
@@ -31,7 +32,8 @@ function UpdateMediaInfo({user, newType}) {
           tier: res.data.tier,
           toDo: res.data.toDo,
           year: res.data.year,
-          tags: res.data.tags
+          tags: res.data.tags,
+          description: res.data.description
         });
         setTiersName(res.data.toDo ? "todoTiers" : "collectionTiers");
         setYearString(res.data.toDo ? "Year You First Wanted To Do" : "Year You First Experienced");
@@ -62,7 +64,8 @@ function UpdateMediaInfo({user, newType}) {
       tier: media.tier,
       toDo: media.toDo,
       year: media.year,
-      tags: media.tags
+      tags: media.tags,
+      description: media.description
     };
 
     axios
@@ -105,7 +108,7 @@ function UpdateMediaInfo({user, newType}) {
               <input
                 type='text'
                 id='title'
-                placeholder={constants.examples[mediaType] ? constants.examples[mediaType] : constants.examples['other']}
+                placeholder={constants[mediaType].title ? constants[mediaType].title : constants['other'].title}
                 className='form-control'
                 value={media.title}
                 onChange={onChange}
@@ -139,7 +142,19 @@ function UpdateMediaInfo({user, newType}) {
               </div>
 
               <div className='form-group'>
-              <TagMaker mediaType={mediaType} toDo={media.toDo} media={media} setMedia={setMedia} alreadySelected={media.tags}></TagMaker>
+                <TagMaker mediaType={mediaType} toDo={media.toDo} media={media} setMedia={setMedia} alreadySelected={media.tags} placeholder={constants[mediaType].tags}></TagMaker>
+              </div>
+
+              <label htmlFor='description'>Description (Optional)</label>
+              <div className='form-group'>
+                <input
+                  type='text'
+                  placeholder={constants[mediaType].description}
+                  id='description'
+                  className='form-control'
+                  value={media.description}
+                  onChange={onChange}
+                />
               </div>
 
               <div className='form-group'>

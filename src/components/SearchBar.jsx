@@ -45,7 +45,7 @@ const Function = ({mediaType, allMedia, searchQuery, setSearchQuery, setSearchCh
   return (
     <><label htmlFor='searchBar-input'>Search by Title</label><ReactTags
     id='searchBar'
-    placeholderText={constants.examples[mediaType] ? constants.examples[mediaType] : constants.examples['other']}
+    placeholderText={constants[mediaType].title ? constants[mediaType].title : constants['other'].title}
     selected={selected}
     suggestions={suggestions}
     onAdd={onAdd}
