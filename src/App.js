@@ -23,6 +23,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userChanged, setUserChanged] = useState(false);
   const [newTypes, setNewTypes] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
 
   // function onUserChanged({foo}) {
   //   setUserChanged(true);
@@ -69,7 +70,7 @@ const App = () => {
             <Route path='/:mediaType/collection/create' element={<RestrictMediaType user={user} n={3} setUserChanged={setUserChanged} newTypes={newTypes}/>} />
             <Route path='/:mediaType/to-do/create' element={<RestrictMediaType user={user} n={4} setUserChanged={setUserChanged} newTypes={newTypes}/>} />
 
-            <Route path='/:mediaType/:group' element={<RestrictMediaType user={user} n={5} setUserChanged={setUserChanged} newTypes={newTypes}/>} />
+            <Route path='/:mediaType/:group' element={<RestrictMediaType user={user} n={5} setUserChanged={setUserChanged} newTypes={newTypes} selectedTags={selectedTags} setSelectedTags={setSelectedTags}/>} />
             <Route path='/:mediaType/:group/edit' element={<RestrictMediaType user={user} n={6} setUserChanged={setUserChanged} newTypes={newTypes}/>} />
             
             <Route path='/404' element={<NotFound/>} />
@@ -81,7 +82,7 @@ const App = () => {
   }
 };
 
-function RestrictMediaType({ user, n, setUserChanged, newTypes}) {
+function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, setSelectedTags}) {
   const defaultTypes = ['anime', 'tv', 'movies', 'games']
   var mediaTypes;
   if(newTypes.length > 0) {
@@ -109,11 +110,11 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes}) {
       }
       else if(group === "collection")
       {
-        return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={false} newType={newType}/>;
+        return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={false} newType={newType} selectedTags={selectedTags} setSelectedTags={setSelectedTags}/>;
       }
       else if(group === "to-do")
       {
-        return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={true} newType={newType}/>;
+        return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={true} newType={newType} selectedTags={selectedTags} setSelectedTags={setSelectedTags}/>;
       }
       else {
         return <Navigate to="/404" />;

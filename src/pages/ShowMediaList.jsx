@@ -94,7 +94,7 @@ function toCapitalNotation(inputString) {
     .join(' '); // Join the words back into a single string
 }
 
-function ShowMediaList({user, setUserChanged, toDo, newType}) {
+function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSelectedTags}) {
   // Data
   const [tierData, setTierData] = useState();
   const { mediaType } = useParams();
@@ -107,7 +107,6 @@ function ShowMediaList({user, setUserChanged, toDo, newType}) {
   const [lastYear, setLastYear] = useState(current_year);
   const [possibleYears, setPossibleYears] = useState([]);
   const [allTags, setAllTags] = useState([]);
-  const [selectedTags, setSelectedTags] = useState([]);
   const [suggestedTags, setSuggestedTags] = useState([]);
   const [searchChanged, setSearchChanged] = useState();
   const [searchQuery, setSearchQuery] = useState('');
