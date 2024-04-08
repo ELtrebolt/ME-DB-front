@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import '../App.css';
 import axios from 'axios';
 import DeleteModal from "../components/DeleteModal";
+import useSwipe from "../useSwipe.tsx";
 const constants = require('../constants');
 
 function toCapitalNotation(inputString) {
@@ -12,10 +13,12 @@ function toCapitalNotation(inputString) {
     .join(' '); // Join the words back into a single string
 }
 
-function ShowMediaDetails({user, newType}) {
+function ShowMediaDetails({user, newType, filteredData}) {
   const [media, setMedia] = useState({});
   const { mediaType, group } = useParams();
   const [loaded, setLoaded] = useState(false)
+  const [curIndex, setCurIndex] = useState(0);
+  const mediaList = filteredData ? Object.values(filteredData).reduce((acc, val) => acc.concat(val), []) : [];
   const navigate = useNavigate();
   const mediaTypeLoc = newType ? user.newTypes[mediaType] : user[mediaType]
   
@@ -29,6 +32,12 @@ function ShowMediaDetails({user, newType}) {
         } else {
           console.log("Details GET /api/media/type/id", res.data)
           setMedia(res.data);
+          
+          for(let i = 0; i < mediaList.length; i++) {
+            if(mediaList[i].title === res.data.title) {
+              setCurIndex(i);
+            }
+          }
           setLoaded(true);
         }
       })
@@ -42,18 +51,40 @@ function ShowMediaDetails({user, newType}) {
     axios
       .delete(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`)
       .then((res) => {
-        const groupStr = res.data.toDo === true ? 'to-do' : 'collection'
+        const groupStr = res.data.toDo === true ? 'to-do' : 'collection';
         navigate(`/${mediaType}/${groupStr}`);
       })
       .catch((err) => {
         console.log('Error form ShowMediaDetails_deleteClick');
       });
   };
+  // https://stackoverflow.com/questions/70612769/how-do-i-recognize-swipe-events-in-react
+  function onNextShortcut() {
+    var nextIndex = curIndex+1;
+    if(nextIndex === mediaList.length){
+      nextIndex = 0;
+    }
+    setCurIndex(nextIndex);
+    nextIndex = mediaList[nextIndex].ID.toString();
+    navigate(`/${mediaType}/${nextIndex}`);
+    setLoaded(false);
+  }
+  function onPreviousShortcut() {
+    var prevIndex = curIndex-1;
+    if(prevIndex === -1){
+      prevIndex = mediaList.length-1;
+    }
+    setCurIndex(prevIndex);
+    prevIndex = mediaList[prevIndex].ID.toString();
+    navigate(`/${mediaType}/${prevIndex}`);
+    setLoaded(false);
+  }
+  const swipeHandlers = useSwipe({ onSwipedLeft: onNextShortcut, onSwipedRight: onPreviousShortcut });
   
   const tiersVariable = media.toDo ? 'todoTiers' : 'collectionTiers';
   const listType = media.toDo ? 'To-Do List' : 'My Collection' 
   return (
-    <div className='ShowMediaDetails'>
+    <div className='ShowMediaDetails' {...swipeHandlers}>
       <div className='container'>
         <br></br>
         <div className='row'>

@@ -94,12 +94,11 @@ function toCapitalNotation(inputString) {
     .join(' '); // Join the words back into a single string
 }
 
-function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSelectedTags}) {
+function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSelectedTags, filteredData, setFilteredData}) {
   // Data
   const [tierData, setTierData] = useState();
   const { mediaType } = useParams();
   const tiers = ["S", "A", "B", "C", "D", "F"];
-  const [filteredData, setFilteredData] = useState();
   const mediaTypeLoc = newType ? user.newTypes[mediaType] : user[mediaType]
   // Filters
   const [firstYear, setFirstYear] = useState();
@@ -118,16 +117,6 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
   const [toDoString, setToDoString] = useState(toDo ? 'to-do' : 'collection');
   const [tierVariable, setTierVariable] = useState(toDo ? 'todoTiers' : 'collectionTiers')
   const navigate = useNavigate();
-
-  function switchToDo() {
-    const newToDoState = !toDoState;
-    setToDoState(newToDoState);
-    const newToDoString = newToDoState ? 'to-do' : 'collection';
-    setToDoString(newToDoString);
-    setTierVariable(newToDoState ? 'todoTiers' : 'collectionTiers')
-    setFirstLoad(true);
-    navigate(`/${mediaType}/${newToDoString}`);
-  }
 
   useEffect(() => {
     if(firstLoad)
@@ -174,7 +163,16 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     const data = filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSuggestedTags, setSearchChanged, setFilteredData, searchQuery);
     setFilteredData(data);
   }
-  
+
+  function switchToDo() {
+    const newToDoState = !toDoState;
+    setToDoState(newToDoState);
+    const newToDoString = newToDoState ? 'to-do' : 'collection';
+    setToDoString(newToDoString);
+    setTierVariable(newToDoState ? 'todoTiers' : 'collectionTiers')
+    setFirstLoad(true);
+    navigate(`/${mediaType}/${newToDoString}`);
+  }
   function exportByYear() {
     var temp = {};
     Object.keys(filteredData).forEach(tier => {

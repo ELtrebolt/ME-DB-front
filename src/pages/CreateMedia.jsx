@@ -11,7 +11,7 @@ function toCapitalNotation(inputString) {
     .join(' '); // Join the words back into a single string
 }
 
-const CreateMedia = ({user, toDo, newType}) => {
+const CreateMedia = ({user, toDo, newType, selectedTags}) => {
   // Define the state with useState hook
   const navigate = useNavigate();
   const { mediaType } = useParams();
@@ -126,7 +126,7 @@ const CreateMedia = ({user, toDo, newType}) => {
               </div>
 
               <div className='form-group'>
-                <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={null} placeholder={constants[mediaType].tags}></TagMaker>
+                <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={selectedTags} placeholder={constants[mediaType].tags}></TagMaker>
               </div>
               
               <label htmlFor='description'>Description (Optional)</label>

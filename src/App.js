@@ -24,6 +24,7 @@ const App = () => {
   const [userChanged, setUserChanged] = useState(false);
   const [newTypes, setNewTypes] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
+  const [filteredData, setFilteredData] = useState();
 
   // function onUserChanged({foo}) {
   //   setUserChanged(true);
@@ -67,10 +68,10 @@ const App = () => {
             <Route path='/home' element={user ? <Navigate to="/anime/collection"/> : <Navigate to="/"/>} />
             <Route path='/logout' element={<Logout/>} />
 
-            <Route path='/:mediaType/collection/create' element={<RestrictMediaType user={user} n={3} setUserChanged={setUserChanged} newTypes={newTypes}/>} />
-            <Route path='/:mediaType/to-do/create' element={<RestrictMediaType user={user} n={4} setUserChanged={setUserChanged} newTypes={newTypes}/>} />
+            <Route path='/:mediaType/collection/create' element={<RestrictMediaType user={user} n={3} setUserChanged={setUserChanged} newTypes={newTypes} selectedTags={selectedTags} setSelectedTags={setSelectedTags}/>} />
+            <Route path='/:mediaType/to-do/create' element={<RestrictMediaType user={user} n={4} setUserChanged={setUserChanged} newTypes={newTypes} selectedTags={selectedTags} setSelectedTags={setSelectedTags}/>} />
 
-            <Route path='/:mediaType/:group' element={<RestrictMediaType user={user} n={5} setUserChanged={setUserChanged} newTypes={newTypes} selectedTags={selectedTags} setSelectedTags={setSelectedTags}/>} />
+            <Route path='/:mediaType/:group' element={<RestrictMediaType user={user} n={5} setUserChanged={setUserChanged} newTypes={newTypes} selectedTags={selectedTags} setSelectedTags={setSelectedTags} filteredData={filteredData} setFilteredData={setFilteredData}/>} />
             <Route path='/:mediaType/:group/edit' element={<RestrictMediaType user={user} n={6} setUserChanged={setUserChanged} newTypes={newTypes}/>} />
             
             <Route path='/404' element={<NotFound/>} />
@@ -82,7 +83,7 @@ const App = () => {
   }
 };
 
-function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, setSelectedTags}) {
+function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, setSelectedTags, filteredData, setFilteredData}) {
   const defaultTypes = ['anime', 'tv', 'movies', 'games']
   var mediaTypes;
   if(newTypes.length > 0) {
@@ -96,25 +97,25 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
   if (mediaTypes.includes(mediaType)) {
     if(n === 3)
     {
-      return <CreateMedia user={user} toDo={false} newType={newType}/>;
+      return <CreateMedia user={user} toDo={false} newType={newType} selectedTags={selectedTags}/>;
     }
     else if(n === 4)
     {
-      return <CreateMedia user={user} toDo={true} newType={newType}/>;
+      return <CreateMedia user={user} toDo={true} newType={newType} selectedTags={selectedTags}/>;
     }
     else if(n === 5)
     {
       if(!isNaN(group))
       {
-        return <ShowMediaDetails user={user} newType={newType}/>;
+        return <ShowMediaDetails user={user} newType={newType} filteredData={filteredData}/>;
       }
       else if(group === "collection")
       {
-        return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={false} newType={newType} selectedTags={selectedTags} setSelectedTags={setSelectedTags}/>;
+        return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={false} newType={newType} selectedTags={selectedTags} setSelectedTags={setSelectedTags} filteredData={filteredData} setFilteredData={setFilteredData}/>;
       }
       else if(group === "to-do")
       {
-        return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={true} newType={newType} selectedTags={selectedTags} setSelectedTags={setSelectedTags}/>;
+        return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={true} newType={newType} selectedTags={selectedTags} setSelectedTags={setSelectedTags} filteredData={filteredData} setFilteredData={setFilteredData}/>;
       }
       else {
         return <Navigate to="/404" />;

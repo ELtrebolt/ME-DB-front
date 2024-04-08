@@ -25,7 +25,7 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder}) =>
         res.data.uniqueTags.forEach((t, index) => {
           if(alreadySelected) {
             for(const s of alreadySelected) {
-              if(s === t) {
+              if(s === t || s['label'] === t) {
                 alreadySelectedList.push({value:index, label:t});
                 break;
               }
