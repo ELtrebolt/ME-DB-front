@@ -200,6 +200,21 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
         console.log(err);
       });
   };
+  function exportToCsv() {
+    const flatListData = filteredData ? Object.values(filteredData).reduce((acc, val) => acc.concat(val), []) : []
+    const csvContent = "data:text/csv;charset=utf-8," + 
+                       "Title,Year,Tier,Tags,Description,ToDo,Type\n" +
+                       flatListData.map(obj => {
+                        const tagsString = Array.isArray(obj.tags) ? obj.tags.join('|') : obj.tags;
+                        return `${obj.title},${obj.year},${obj.tier},${tagsString},${obj.description},${obj.toDo},${obj.mediaType}`;
+                      }).join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "data.csv");
+    document.body.appendChild(link); // Required for Firefox
+    link.click();
+  }
 
   if(exportMode) {
     return (
@@ -293,8 +308,9 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
                 Export
               </button>
               <div className="dropdown-menu" aria-labelledby="exportDropdown">
-                <button className="dropdown-item" onClick={setExportMode.bind(null, 'By-Tier')}>By Tier</button>
-                <button className="dropdown-item" onClick={exportByYear}>By Year</button>
+                <button className="dropdown-item" onClick={setExportMode.bind(null, 'By-Tier')}>Bullets By Tier</button>
+                <button className="dropdown-item" onClick={exportByYear}>Bullets By Year</button>
+                <button className="dropdown-item" onClick={exportToCsv}>Full CSV <i className="fa-solid fa-download"></i></button>
               </div>
             </div>
           </div>
