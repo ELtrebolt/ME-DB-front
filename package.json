@@ -7,19 +7,15 @@
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@react-oauth/google": "^0.11.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
     "axios": "^1.4.0",
     "bootstrap": "^5.3.1",
-    "bootstrap-social": "^5.1.1",
     "match-sorter": "^6.3.1",
     "mdb-react-ui-kit": "^6.2.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.8.0",
     "react-dom": "^18.2.0",
-    "react-helmet": "^6.1.0",
     "react-router-dom": "^6.14.2",
     "react-scripts": "^5.0.1",
     "react-tag-autocomplete": "^7.0.1",
@@ -60,5 +56,9 @@
   "bugs": {
     "url": "https://github.com/ELtrebolt/ME-DB-front/issues"
   },
-  "homepage": "https://me-db.onrender.com"
+  "homepage": "https://me-db.onrender.com",
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "eslint-config-react-app": "^7.0.1"
+  }
 }

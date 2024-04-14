@@ -58,7 +58,7 @@ function ShowMediaDetails({user, newType, filteredData}) {
         console.log('Error form ShowMediaDetails_deleteClick');
       });
   };
-  // https://stackoverflow.com/questions/70612769/how-do-i-recognize-swipe-events-in-react
+
   function onNextShortcut() {
     var nextIndex = curIndex+1;
     if(nextIndex === mediaList.length){

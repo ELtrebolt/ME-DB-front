@@ -1,3 +1,4 @@
+  // https://stackoverflow.com/questions/70612769/how-do-i-recognize-swipe-events-in-react
 import {TouchEvent, useState} from "react";
 
 interface SwipeInput {
@@ -12,28 +13,39 @@ interface SwipeOutput {
 }
 
 function Swiper(input: SwipeInput): SwipeOutput {
-    const [touchStart, setTouchStart] = useState(0);
-    const [touchEnd, setTouchEnd] = useState(0);
+    const [touchStartX, setTouchStartX] = useState(0)
+    const [touchEndX, setTouchEndX] = useState(0)
+    
+    const [touchStartY, setTouchStartY] = useState(0)
+    const [touchEndY, setTouchEndY] = useState(0)
 
-    const minSwipeDistance = 50;
+    const minSwipeDistance = 100;
 
     const onTouchStart = (e: TouchEvent) => {
-        setTouchEnd(0); // otherwise the swipe is fired even with usual touch events
-        setTouchStart(e.targetTouches[0].clientX);
+        setTouchEndX(0);
+        setTouchStartX(e.targetTouches[0].clientX)
+
+        setTouchEndY(0)
+        setTouchStartY(e.targetTouches[0].clientY)
     }
 
-    const onTouchMove = (e: TouchEvent) => setTouchEnd(e.targetTouches[0].clientX);
+    const onTouchMove = (e: TouchEvent) => {
+        setTouchEndX(e.targetTouches[0].clientX)
+        setTouchEndY(e.targetTouches[0].clientY)
+    }
 
     const onTouchEnd = () => {
-        if (!touchStart || !touchEnd) return;
-        const distance = touchStart - touchEnd;
-        const isLeftSwipe = distance > minSwipeDistance;
-        const isRightSwipe = distance < -minSwipeDistance;
-        if (isLeftSwipe) {
-            input.onSwipedLeft();
-        }
-        if (isRightSwipe) {
+        if (!touchStartX || !touchEndX) return;
+        const distanceX = touchStartX - touchEndX
+        const distanceY = touchStartY - touchEndY
+        const isLeftSwipe = distanceX > minSwipeDistance
+        const isRightSwipe = distanceX < -minSwipeDistance
+
+        if (isRightSwipe && Math.abs(distanceX) > distanceY) {
             input.onSwipedRight();
+        } 
+        if (isLeftSwipe && distanceX > distanceY) {
+            input.onSwipedLeft();
         }
     }
 

@@ -9,6 +9,7 @@ import TierTitle from "../components/TierTitle";
 import TagFilter from "../components/TagFilter";
 import SearchBar from "../components/SearchBar";
 import DeleteModal from "../components/DeleteModal";
+import useSwipe from "../useSwipe.tsx";
 
 const constants = require('../constants');
 
@@ -99,8 +100,8 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
   const [tierData, setTierData] = useState();
   const { mediaType } = useParams();
   const tiers = ["S", "A", "B", "C", "D", "F"];
-  const mediaTypeLoc = newType ? user.newTypes[mediaType] : user[mediaType]
-  // Filters
+  const mediaTypeLoc = newType ? user.newTypes[mediaType] : user[mediaType];
+  // Filters = also includes selectedTags param
   const [firstYear, setFirstYear] = useState();
   const current_year = new Date().getFullYear();
   const [lastYear, setLastYear] = useState(current_year);
@@ -149,6 +150,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
         setAllTags(all_tags);
         setTierData(tiers);
         setPossibleYears(Array.from(possible_years).sort((a, b) => a - b));
+        setSearchQuery('');
         setFirstLoad(false);
         setSearchChanged(true);
       })
@@ -215,6 +217,17 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     document.body.appendChild(link); // Required for Firefox
     link.click();
   }
+  function onNextShortcut() {
+    if(toDo) {
+      switchToDo();
+    }
+  }
+  function onPreviousShortcut() {
+    if(!toDo) {
+      switchToDo();
+    }
+  }
+  const swipeHandlers = useSwipe({ onSwipedLeft: onNextShortcut, onSwipedRight: onPreviousShortcut });
 
   if(exportMode) {
     return (
@@ -275,7 +288,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     )
   } else if(user && !firstLoad && filteredData) {
   return (
-    <div className='ShowMediaList'>
+    <div className='ShowMediaList' {...swipeHandlers}>
       <div className='container'>
         <br></br>
         <div className='row'>
