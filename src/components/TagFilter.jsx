@@ -29,14 +29,17 @@ const Function = ({suggestedTags, selected, setSelected, setSearchChanged}) => {
   )
 
   return (
-    <><label htmlFor='tagFilter-input'>Filter By Tags</label><ReactTags
-      id='tagFilter'
-      selected={selected}
-      suggestions={suggestions}
-      onAdd={onAdd}
-      onDelete={onDelete}
-      noOptionsText="No matching tags" 
-      suggestionsTransform={suggestionsTransform}/></>
+    <><div className='form-group'>
+        <label htmlFor='tagFilter-input'>Filter By Tags</label><ReactTags
+        id='tagFilter'
+        selected={selected}
+        suggestions={suggestions}
+        onAdd={onAdd}
+        onDelete={onDelete}
+        noOptionsText="No matching tags" 
+        suggestionsTransform={suggestionsTransform}/>
+    </div>
+    </>
   )
 }
 

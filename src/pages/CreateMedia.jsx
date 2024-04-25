@@ -21,7 +21,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
     tier: 'S',
     toDo: toDo.toString(),
     year: constants.currentYear,
-    tags: [],
+    tags: selectedTags.map(item => item.label),
     description: ''
   });
   const mediaTypeLoc = newType ? user.newTypes[mediaType] : user[mediaType]

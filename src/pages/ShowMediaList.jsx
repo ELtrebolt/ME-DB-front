@@ -213,7 +213,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "data.csv");
+    link.setAttribute("download", `${mediaType}-${toDoString}.csv`);
     document.body.appendChild(link); // Required for Firefox
     link.click();
   }
@@ -308,10 +308,10 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
           
           {/* col-4 */}
           <YearFilter possible_years={possibleYears} firstYear={firstYear} lastYear={lastYear} setFirstYear={setFirstYear} setLastYear={setLastYear} setSearchChanged={setSearchChanged}/>
-          <div className='col-md-4'>
+          <div className='col-md-4 mt-auto'>
             <SearchBar mediaType={mediaType} allMedia={filteredData} searchQuery={searchQuery} setSearchQuery={setSearchQuery} setSearchChanged={setSearchChanged}></SearchBar>
           </div>
-          <div className = 'col-md-3'>
+          <div className = 'col-md-3 mt-auto'>
             <TagFilter suggestedTags={suggestedTags} selected={selectedTags} setSelected={setSelectedTags} setSearchChanged={setSearchChanged}></TagFilter>
           </div>
           
@@ -323,7 +323,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
               <div className="dropdown-menu" aria-labelledby="exportDropdown">
                 <button className="dropdown-item" onClick={setExportMode.bind(null, 'By-Tier')}>Bullets By Tier</button>
                 <button className="dropdown-item" onClick={exportByYear}>Bullets By Year</button>
-                <button className="dropdown-item" onClick={exportToCsv}>Full CSV <i className="fa-solid fa-download"></i></button>
+                <button className="dropdown-item" onClick={exportToCsv}>Download CSV <i className="fa-solid fa-download"></i></button>
               </div>
             </div>
           </div>
