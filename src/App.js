@@ -44,6 +44,7 @@ const App = () => {
         })
         .catch((err) => {
           console.log('Error from client/App.jsx:');
+          console.log(err);
         })
         .finally(() => {
           setIsLoading(false);

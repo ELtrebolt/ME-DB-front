@@ -20,8 +20,8 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
     newName = newName.trim().toLowerCase().replace(/ /g, '-')
     if(user.newTypes[newName]) {
       window.alert('Type Already Exists')
-    } else if(Object.keys(user.newTypes).length === 4) {
-      window.alert('Maximum custom types reached (4)')
+    } else if(Object.keys(user.newTypes).length === constants.maxCustomTypes) {
+      window.alert(`Maximum custom types reached (${constants.maxCustomTypes})`)
     } 
     else {
       console.log('PUT /api/user/newTypes')

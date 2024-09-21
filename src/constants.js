@@ -6,6 +6,7 @@ const json = {
     'examples': {
         'type' : 'e.g. Restaurants',
     },
+    'maxCustomTypes': 6,
     // 4 Basic Media Types
     'anime': {
         'title' : 'e.g. One Piece',
@@ -50,11 +51,11 @@ const json = {
     'references' : {
         'title' : 'e.g. Bing Chilling'
     },
-    'names' : {
-        'title' : 'e.g. Steve'
+    'products' : {
+        'title' : 'e.g. ShamWOOHOO!'
     },
-    'nicknames' : {
-        'title' : 'e.g. Steve-o',
+    'alcohol' : {
+        'title' : 'e.g. Baacon',
     },
     'concerts' : {
         'title' : 'e.g. Halsey'
