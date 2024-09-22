@@ -13,7 +13,7 @@ import useSwipe from "../useSwipe.tsx";
 
 const constants = require('../constants');
 
-function filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSuggestedTags, setSearchChanged, setFilteredData, searchQuery) {
+function filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSuggestedTags, setSearchChanged, searchQuery) {
   var array = [];
   var data = {
     S: [],
@@ -60,7 +60,6 @@ function filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSug
       data[m.tier].push(m);
     }
   });
-  setFilteredData(data);
 
   // Change TagsList Dynamically
   var tags_list = []
@@ -162,7 +161,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
 
   // Filtering
   if(tierData && (searchChanged === undefined || searchChanged === true)) {
-    const data = filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSuggestedTags, setSearchChanged, setFilteredData, searchQuery);
+    const data = filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSuggestedTags, setSearchChanged, searchQuery);
     setFilteredData(data);
   }
 

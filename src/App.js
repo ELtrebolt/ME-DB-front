@@ -39,7 +39,7 @@ const App = () => {
         .get(constants['SERVER_URL'] + '/auth/login/success', {withCredentials: true})
         .then((res) => {
           setUser(res.data.user);
-          setNewTypes(Object.keys(res.data.user.newTypes));
+          setNewTypes(Object.keys(res.data.user.newTypes))
           setUserChanged(false);
         })
         .catch((err) => {
