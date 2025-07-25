@@ -6,7 +6,7 @@ const json = {
     'examples': {
         'type' : 'e.g. Restaurants',
     },
-    'maxCustomTypes': 6,
+    'maxCustomTypes': 8,
     // 4 Basic Media Types
     'anime': {
         'title' : 'e.g. One Piece',
@@ -43,6 +43,11 @@ const json = {
         'title' : 'e.g. Dino Nuggies',
         'tags' : 'e.g. oven',
         'description' : '[How You Feel About Eating This]'
+    },
+    'snacks' : {
+        'title' : 'e.g. Chester\'s Hot Fries',
+        'tags' : 'e.g. chips',  // spicy, candy
+        'description' : '[How You Feel About Nomming On Dis]'
     },
     // Less Common Types
     'trends' : {
