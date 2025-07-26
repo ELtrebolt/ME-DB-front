@@ -1,9 +1,7 @@
-// Auto-detect environment and set server URL
 // For Local:       http://localhost:8082
 // For Deployment:  https://www.api.me-db.live
-const isDevelopment = process.env.NODE_ENV === 'development';
 const json = {
-    'SERVER_URL': isDevelopment ? "http://localhost:8082" : "https://www.api.me-db.live",
+    'SERVER_URL': "https://www.api.me-db.live",
     'currentYear': new Date().getFullYear(),
     'examples': {
         'type' : 'e.g. Restaurants',
