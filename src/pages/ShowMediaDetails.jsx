@@ -51,11 +51,12 @@ function ShowMediaDetails({user, newType, filteredData}) {
     axios
       .delete(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`)
       .then((res) => {
-        const groupStr = res.data.toDo === true ? 'to-do' : 'collection';
+        // Use the media object's toDo property as fallback if res.data.toDo is undefined
+        const groupStr = (res.data && res.data.toDo === true) || media.toDo === true ? 'to-do' : 'collection';
         navigate(`/${mediaType}/${groupStr}`);
       })
       .catch((err) => {
-        console.log('Error form ShowMediaDetails_deleteClick');
+        console.log('Error from ShowMediaDetails_deleteClick:', err);
       });
   };
 

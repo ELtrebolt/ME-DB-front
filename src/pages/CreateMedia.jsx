@@ -91,7 +91,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
               <div className='form-group'>
                 <input
                   type='text'
-                  placeholder={constants[mediaType].title ? constants[mediaType].title : constants['other'].title}
+                  placeholder={constants[mediaType] && constants[mediaType]?.title ? constants[mediaType].title : constants['other'].title}
                   id='title'
                   className='form-control'
                   value={media.title}
@@ -126,14 +126,14 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
               </div>
 
               <div className='form-group'>
-                <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={selectedTags} placeholder={constants[mediaType].tags}></TagMaker>
+                <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={selectedTags} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags}></TagMaker>
               </div>
               
               <label htmlFor='description'>Description (Optional)</label>
               <div className='form-group'>
                 <input
                   type='text'
-                  placeholder={constants[mediaType].description}
+                  placeholder={constants[mediaType] && constants[mediaType]?.description ? constants[mediaType].description : constants['other'].description}
                   id='description'
                   className='form-control'
                   value={media.description}

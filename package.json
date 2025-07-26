@@ -61,11 +61,6 @@
   },
   "homepage": "https://me-db.onrender.com",
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "eslint-config-react-app": "^7.0.1",
-    "eslint": "^8.56.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-jsx-a11y": "^6.7.1"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   }
 }
