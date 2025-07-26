@@ -1,9 +1,9 @@
 // Auto-detect environment and set server URL
 // For Local:       http://localhost:8082
 // For Deployment:  https://www.api.me-db.live
-const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const isDevelopment = process.env.NODE_ENV === 'development';
 const json = {
-    'SERVER_URL': isLocalhost ? "http://localhost:8082" : "https://www.api.me-db.live",
+    'SERVER_URL': isDevelopment ? "http://localhost:8082" : "https://www.api.me-db.live",
     'currentYear': new Date().getFullYear(),
     'examples': {
         'type' : 'e.g. Restaurants',
