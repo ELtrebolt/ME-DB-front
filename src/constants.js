@@ -1,7 +1,5 @@
-// For Local:       http://localhost:8082
-// For Deployment:  https://www.api.me-db.live
 const json = {
-    'SERVER_URL': "http://localhost:8082",
+    'SERVER_URL': process.env.SERVER_URL,
     'currentYear': new Date().getFullYear(),
     'examples': {
         'type' : 'e.g. Restaurants',
