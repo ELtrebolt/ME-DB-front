@@ -44,7 +44,10 @@ const App = () => {
         })
         .catch((err) => {
           console.log('Error from client/App.jsx:');
-          console.log(err);
+          console.log('Error details:', err);
+          console.log('Error response:', err.response);
+          console.log('Error status:', err.response?.status);
+          console.log('Error data:', err.response?.data);
           // If authentication fails, ensure user is set to null
           setUser(null);
         })
