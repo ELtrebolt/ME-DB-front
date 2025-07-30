@@ -48,6 +48,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
         <Navbar.Brand href="/anime/collection">ME-DB</Navbar.Brand>
         <Nav className="me-auto">
           <Nav.Link href="/about">About</Nav.Link>
+          <Nav.Link href="/stats">Stats</Nav.Link>
           <NavDropdown title="Media" id="basic-nav-dropdown">
             <NavDropdown.Item href="/anime/collection">Anime</NavDropdown.Item>
             <NavDropdown.Item href="/tv/collection">TV Shows</NavDropdown.Item>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate, Navigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../App.css';
 import TagMaker from "../components/TagMaker";

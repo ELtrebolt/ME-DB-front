@@ -1,7 +1,7 @@
 // For Local:       http://localhost:8082
 // For Deployment:  https://www.api.me-db.live
 const json = {
-    'SERVER_URL': "https://www.api.me-db.live",
+    'SERVER_URL': "http://localhost:8082",
     'currentYear': new Date().getFullYear(),
     'examples': {
         'type' : 'e.g. Restaurants',
@@ -79,6 +79,49 @@ const json = {
         'title' : 'e.g. Something-Cool',
         'tags' : 'Add a cool tag here to categorize this',
         'description' : '[How You Feel About Experiencing This]'
+    },
+    // Stats Page Configuration
+    'statsPage': {
+        'title': 'My Dashboard',
+        'totalRecords': 'Total Records',
+        'totalCollection': 'Total Collection',
+        'totalToDo': 'Total To-Do',
+        'noCustomTypes': 'No Custom Types to show',
+        'yearFilter': {
+            'all': 'All',
+            'toDo': 'To Do',
+            'collection': 'Collection'
+        },
+        'tierFilter': {
+            'label': 'Select Tier:',
+            'default': 'S'
+        },
+        'tierSort': {
+            'sTier': 'S Tier % desc',
+            'aTier': 'A Tier % desc',
+            'bTier': 'B Tier % desc',
+            'cTier': 'C Tier % desc',
+            'dTier': 'D Tier % desc',
+            'fTier': 'F Tier % desc',
+            'type': 'Type'
+        }
+    },
+    // Type Colors for Charts
+    'typeColors': {
+        'anime': '#FF6B6B',
+        'tv': '#4ECDC4',
+        'movies': '#45B7D1',
+        'games': '#96CEB4',
+        'restaurants': '#FFEAA7',
+        'dates': '#DDA0DD',
+        'meals': '#98D8C8',
+        'snacks': '#F7DC6F',
+        'travel': '#BB8FCE',
+        'trends': '#85C1E9',
+        'products': '#F8C471',
+        'alcohol': '#E74C3C',
+        'concerts': '#9B59B6',
+        'other': '#95A5A6'
     }
 };
 

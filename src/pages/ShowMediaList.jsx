@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../App.css';
 import axios from 'axios';
-import { Link, useParams, useNavigate, Navigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 
 import YearFilter from "../components/YearFilter";
 import CardsContainer from "../components/CardsContainer";

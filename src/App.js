@@ -12,6 +12,7 @@ import About from "./pages/About";
 import Intro from "./pages/Intro";
 import NotFound from "./pages/NotFound";
 import Logout from "./pages/Logout";
+import Stats from "./pages/Stats";
 // Other
 import { useEffect, useState } from "react";
 import axios from 'axios';
@@ -95,6 +96,7 @@ const App = () => {
           <Routes>
             <Route path='/' element={user ? <Navigate to="/anime/collection"/> : <Intro />} />
             <Route path='/about' element={<About/>} />
+            <Route path='/stats' element={user ? <Stats user={user}/> : <Navigate to="/"/>} />
             <Route path='/home' element={user ? <Navigate to="/anime/collection"/> : <Navigate to="/"/>} />
             <Route path='/logout' element={<Logout/>} />
 
