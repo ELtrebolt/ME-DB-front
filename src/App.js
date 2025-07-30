@@ -45,6 +45,8 @@ const App = () => {
         .catch((err) => {
           console.log('Error from client/App.jsx:');
           console.log(err);
+          // If authentication fails, ensure user is set to null
+          setUser(null);
         })
         .finally(() => {
           setIsLoading(false);
@@ -54,6 +56,30 @@ const App = () => {
     };
     getUser();
   });
+
+  // Session refresh mechanism - refresh session every 30 minutes
+  useEffect(() => {
+    if (user) {
+      const sessionRefreshInterval = setInterval(() => {
+        axios
+          .get(constants['SERVER_URL'] + '/auth/login/success', {withCredentials: true})
+          .then((res) => {
+            if (res.data.success) {
+              console.log('Session refreshed successfully');
+            } else {
+              console.log('Session expired, redirecting to login');
+              setUser(null);
+            }
+          })
+          .catch((err) => {
+            console.log('Session refresh failed:', err);
+            setUser(null);
+          });
+      }, 30 * 60 * 1000); // 30 minutes
+
+      return () => clearInterval(sessionRefreshInterval);
+    }
+  }, [user]);
   
   console.log("userChanged", userChanged)
   console.log("user", user);

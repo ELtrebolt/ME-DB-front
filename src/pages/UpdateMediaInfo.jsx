@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import '../App.css';
 import TagMaker from "../components/TagMaker";
@@ -19,7 +19,22 @@ function UpdateMediaInfo({user, newType}) {
   const [yearString, setYearString] = useState();
   const navigate = useNavigate();
   const userID = user.group;
-  const mediaTypeLoc = newType ? user.newTypes[mediaType] : user[mediaType]
+  const mediaTypeLoc = user ? (newType ? user.newTypes[mediaType] : user[mediaType]) : null;
+
+  // Redirect to login if user is not authenticated
+  if (!user) {
+    return (
+      <div className="container mt-5">
+        <div className="row justify-content-center">
+          <div className="col-md-6 text-center">
+            <h3>Session Expired</h3>
+            <p>Your session has expired. Please log in again to continue.</p>
+            <Link to="/" className="btn btn-primary">Go to Login</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     if(!media.tier) {
@@ -136,7 +151,7 @@ function UpdateMediaInfo({user, newType}) {
                   onChange={onChange}
                 >
                   {tiers.map((tier) => (
-                    <option key={tier} value={tier}>{mediaTypeLoc[tiersName][tier]}</option>
+                    <option key={tier} value={tier}>{mediaTypeLoc && mediaTypeLoc[tiersName] ? mediaTypeLoc[tiersName][tier] : tier}</option>
                   ))}
                 </select>
               </div>

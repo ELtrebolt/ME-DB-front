@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../App.css';
 import axios from 'axios';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, Navigate } from 'react-router-dom';
 
 import YearFilter from "../components/YearFilter";
 import CardsContainer from "../components/CardsContainer";
@@ -99,7 +99,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
   const [tierData, setTierData] = useState();
   const { mediaType } = useParams();
   const tiers = ["S", "A", "B", "C", "D", "F"];
-  const mediaTypeLoc = newType ? user.newTypes[mediaType] : user[mediaType];
+  const mediaTypeLoc = user ? (newType ? user.newTypes[mediaType] : user[mediaType]) : null;
   // Filters = also includes selectedTags param
   const [firstYear, setFirstYear] = useState();
   const current_year = new Date().getFullYear();
@@ -117,6 +117,21 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
   const [toDoString, setToDoString] = useState(toDo ? 'to-do' : 'collection');
   const [tierVariable, setTierVariable] = useState(toDo ? 'todoTiers' : 'collectionTiers')
   const navigate = useNavigate();
+
+  // Redirect to login if user is not authenticated
+  if (!user) {
+    return (
+      <div className="container mt-5">
+        <div className="row justify-content-center">
+          <div className="col-md-6 text-center">
+            <h3>Session Expired</h3>
+            <p>Your session has expired. Please log in again to continue.</p>
+            <Link to="/" className="btn btn-primary">Go to Login</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     if(firstLoad)
@@ -155,6 +170,10 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
       })
       .catch((err) => {
         console.log(err);
+        // If authentication fails, redirect to login
+        if (err.response && err.response.status === 401) {
+          navigate('/');
+        }
       });
     }
   })
@@ -263,7 +282,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
 
             {exportMode === 'By-Tier' && (
               Object.keys(filteredData).map((tier) => {
-                return <ul key={tier}><b>{mediaTypeLoc[tierVariable][tier]}</b>
+                return <ul key={tier}><b>{mediaTypeLoc && mediaTypeLoc[tierVariable] ? mediaTypeLoc[tierVariable][tier] : tier}</b>
                   {filteredData[tier].map((item) => (
                     <li key={item.ID}>{item.title}, {item.year}</li>
                   ))}
@@ -334,7 +353,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
 
       {tiers.map((item, index) => (
           <div className='tier-container' key={item}>
-            <TierTitle title={mediaTypeLoc[tierVariable][item]} mediaType={mediaType} group={toDoString} tier={item} setUserChanged={setUserChanged} newType={newType}></TierTitle>
+            <TierTitle title={mediaTypeLoc && mediaTypeLoc[tierVariable] ? mediaTypeLoc[tierVariable][item] : item} mediaType={mediaType} group={toDoString} tier={item} setUserChanged={setUserChanged} newType={newType}></TierTitle>
             <CardsContainer items={filteredData[item]}/>
             <hr />
           </div>
