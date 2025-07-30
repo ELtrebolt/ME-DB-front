@@ -21,21 +21,6 @@ function ShowMediaDetails({user, newType, filteredData}) {
   const mediaList = filteredData ? Object.values(filteredData).reduce((acc, val) => acc.concat(val), []) : [];
   const navigate = useNavigate();
   const mediaTypeLoc = user ? (newType ? user.newTypes[mediaType] : user[mediaType]) : null;
-
-  // Redirect to login if user is not authenticated
-  if (!user) {
-    return (
-      <div className="container mt-5">
-        <div className="row justify-content-center">
-          <div className="col-md-6 text-center">
-            <h3>Session Expired</h3>
-            <p>Your session has expired. Please log in again to continue.</p>
-            <Link to="/" className="btn btn-primary">Go to Login</Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
   
   useEffect(() => {
     if(!loaded) {
@@ -96,6 +81,21 @@ function ShowMediaDetails({user, newType, filteredData}) {
     setLoaded(false);
   }
   const swipeHandlers = useSwipe({ onSwipedLeft: onNextShortcut, onSwipedRight: onPreviousShortcut });
+  
+  // Redirect to login if user is not authenticated
+  if (!user) {
+    return (
+      <div className="container mt-5">
+        <div className="row justify-content-center">
+          <div className="col-md-6 text-center">
+            <h3>Session Expired</h3>
+            <p>Your session has expired. Please log in again to continue.</p>
+            <Link to="/" className="btn btn-primary">Go to Login</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
   
   const tiersVariable = media.toDo ? 'todoTiers' : 'collectionTiers';
   const listType = media.toDo ? 'To-Do List' : 'My Collection' 

@@ -118,21 +118,6 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
   const [tierVariable, setTierVariable] = useState(toDo ? 'todoTiers' : 'collectionTiers')
   const navigate = useNavigate();
 
-  // Redirect to login if user is not authenticated
-  if (!user) {
-    return (
-      <div className="container mt-5">
-        <div className="row justify-content-center">
-          <div className="col-md-6 text-center">
-            <h3>Session Expired</h3>
-            <p>Your session has expired. Please log in again to continue.</p>
-            <Link to="/" className="btn btn-primary">Go to Login</Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   useEffect(() => {
     if(firstLoad)
     {
@@ -246,6 +231,21 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     }
   }
   const swipeHandlers = useSwipe({ onSwipedLeft: onNextShortcut, onSwipedRight: onPreviousShortcut });
+
+  // Redirect to login if user is not authenticated
+  if (!user) {
+    return (
+      <div className="container mt-5">
+        <div className="row justify-content-center">
+          <div className="col-md-6 text-center">
+            <h3>Session Expired</h3>
+            <p>Your session has expired. Please log in again to continue.</p>
+            <Link to="/" className="btn btn-primary">Go to Login</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if(exportMode) {
     return (

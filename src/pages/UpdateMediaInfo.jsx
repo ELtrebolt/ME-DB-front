@@ -21,21 +21,6 @@ function UpdateMediaInfo({user, newType}) {
   const userID = user.group;
   const mediaTypeLoc = user ? (newType ? user.newTypes[mediaType] : user[mediaType]) : null;
 
-  // Redirect to login if user is not authenticated
-  if (!user) {
-    return (
-      <div className="container mt-5">
-        <div className="row justify-content-center">
-          <div className="col-md-6 text-center">
-            <h3>Session Expired</h3>
-            <p>Your session has expired. Please log in again to continue.</p>
-            <Link to="/" className="btn btn-primary">Go to Login</Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   useEffect(() => {
     if(!media.tier) {
       axios
@@ -98,6 +83,22 @@ function UpdateMediaInfo({user, newType}) {
   const years = Array.from({ length: constants.currentYear - 1969 }, (_, index) => constants.currentYear - index);
   const tiers = ['S', 'A', 'B', 'C', 'D', 'F'];
   const listType = media.toDo ? "To-Do List" : "My Collection";
+  
+  // Redirect to login if user is not authenticated
+  if (!user) {
+    return (
+      <div className="container mt-5">
+        <div className="row justify-content-center">
+          <div className="col-md-6 text-center">
+            <h3>Session Expired</h3>
+            <p>Your session has expired. Please log in again to continue.</p>
+            <Link to="/" className="btn btn-primary">Go to Login</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   if(media.tags !== '') {
   return (
     <div className='UpdateMediaInfo'>
