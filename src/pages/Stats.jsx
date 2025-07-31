@@ -12,9 +12,9 @@ const Stats = ({ user }) => {
   const [statsData, setStatsData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [yearFilter, setYearFilter] = useState('all');
   const [selectedTier, setSelectedTier] = useState('S');
   const [tierSort, setTierSort] = useState('type');
+  const [typeFilter, setTypeFilter] = useState('total');
 
   useEffect(() => {
     fetchStats();
@@ -105,13 +105,26 @@ const Stats = ({ user }) => {
         <Col lg={6} className="mb-3">
           <Card>
             <Card.Header>
-              <h5>Distribution by Standard Types</h5>
+              <div className="d-flex justify-content-between align-items-center">
+                <h5>Distribution by Standard Types</h5>
+                <select 
+                  className="form-select w-auto"
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                >
+                  <option value="total">Total</option>
+                  <option value="split">To-Do vs Collection</option>
+                </select>
+              </div>
             </Card.Header>
             <Card.Body>
               <TypeDistributionChart 
                 data={statsData.typeDistribution}
+                toDoData={statsData.tierByTypeToDo}
+                collectionData={statsData.tierByTypeCollection}
                 customTypes={statsData.customTypes}
                 showStandard={true}
+                filter={typeFilter}
               />
             </Card.Body>
           </Card>
@@ -119,13 +132,26 @@ const Stats = ({ user }) => {
         <Col lg={6} className="mb-3">
           <Card>
             <Card.Header>
-              <h5>Distribution by Custom Types</h5>
+              <div className="d-flex justify-content-between align-items-center">
+                <h5>Distribution by Custom Types</h5>
+                <select 
+                  className="form-select w-auto"
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                >
+                  <option value="total">Total</option>
+                  <option value="split">To-Do vs Collection</option>
+                </select>
+              </div>
             </Card.Header>
             <Card.Body>
               <TypeDistributionChart 
                 data={statsData.typeDistribution}
+                toDoData={statsData.tierByTypeToDo}
+                collectionData={statsData.tierByTypeCollection}
                 customTypes={statsData.customTypes}
                 showStandard={false}
+                filter={typeFilter}
               />
             </Card.Body>
           </Card>
@@ -141,18 +167,20 @@ const Stats = ({ user }) => {
                 <h5>Distribution by Year</h5>
                 <select 
                   className="form-select w-auto"
-                  value={yearFilter}
-                  onChange={(e) => setYearFilter(e.target.value)}
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
                 >
-                  <option value="all">{constants.statsPage.yearFilter.all}</option>
-                  <option value="toDo">{constants.statsPage.yearFilter.toDo}</option>
-                  <option value="collection">{constants.statsPage.yearFilter.collection}</option>
+                  <option value="total">Total</option>
+                  <option value="split">To-Do vs Collection</option>
                 </select>
               </div>
             </Card.Header>
             <Card.Body>
               <YearDistributionChart 
-                data={statsData.yearDistributionByFilter[yearFilter]}
+                data={statsData.yearDistributionByFilter.all}
+                toDoData={statsData.yearDistributionByFilter.toDo}
+                collectionData={statsData.yearDistributionByFilter.collection}
+                filter={typeFilter}
               />
             </Card.Body>
           </Card>

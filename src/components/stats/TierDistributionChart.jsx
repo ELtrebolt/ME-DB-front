@@ -56,12 +56,24 @@ const TierDistributionChart = ({ data, selectedTier, group, customTypes }) => {
       {
         label: `Tier ${selectedTier} Records`,
         data: Object.values(filteredData),
-        backgroundColor: Object.keys(filteredData).map(type => 
-          constants.typeColors[type] || constants.typeColors.other
-        ),
-        borderColor: Object.keys(filteredData).map(type => 
-          constants.typeColors[type] || constants.typeColors.other
-        ),
+        backgroundColor: Object.keys(filteredData).map((type, index) => {
+          // Use predefined color for standard types, cycle through custom colors for custom types
+          if (constants.typeColors[type]) {
+            return constants.typeColors[type];
+          } else {
+            // Cycle through custom type colors
+            return constants.customTypeColors[index % constants.customTypeColors.length];
+          }
+        }),
+        borderColor: Object.keys(filteredData).map((type, index) => {
+          // Use predefined color for standard types, cycle through custom colors for custom types
+          if (constants.typeColors[type]) {
+            return constants.typeColors[type];
+          } else {
+            // Cycle through custom type colors
+            return constants.customTypeColors[index % constants.customTypeColors.length];
+          }
+        }),
         borderWidth: 1,
       },
     ],

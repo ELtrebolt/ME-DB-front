@@ -20,24 +20,17 @@ ChartJS.register(
   Legend
 );
 
-const TypeDistributionChart = ({ data, customTypes, showStandard }) => {
+const TypeDistributionChart = ({ data, toDoData, collectionData, customTypes, showStandard, filter }) => {
   const standardTypes = ['anime', 'tv', 'movies', 'games'];
   
-  console.log('TypeDistributionChart props:', { data, customTypes, showStandard });
+  console.log('TypeDistributionChart props:', { data, toDoData, collectionData, customTypes, showStandard, filter });
   
   // Filter data based on whether to show standard or custom types
-  let filteredData = {};
+  let typesToShow = [];
   if (showStandard) {
-    standardTypes.forEach(type => {
-      if (data[type]) {
-        filteredData[type] = data[type];
-      }
-    });
+    typesToShow = standardTypes.filter(type => data[type]);
   } else {
-    customTypes.forEach(type => {
-      // Show custom types even if they have 0 records
-      filteredData[type] = data[type] || 0;
-    });
+    typesToShow = customTypes;
   }
 
   // If no custom types and we're showing custom types, show message
@@ -50,7 +43,7 @@ const TypeDistributionChart = ({ data, customTypes, showStandard }) => {
   }
 
   // If no data for the selected type, show message
-  if (Object.keys(filteredData).length === 0) {
+  if (typesToShow.length === 0) {
     return (
       <div className="text-center py-4">
         <p className="text-muted">
@@ -62,29 +55,85 @@ const TypeDistributionChart = ({ data, customTypes, showStandard }) => {
     );
   }
 
-  const chartData = {
-    labels: Object.keys(filteredData),
-    datasets: [
-      {
-        label: 'Number of Records',
-        data: Object.values(filteredData),
-        backgroundColor: Object.keys(filteredData).map(type => 
-          constants.typeColors[type] || constants.typeColors.other
-        ),
-        borderColor: Object.keys(filteredData).map(type => 
-          constants.typeColors[type] || constants.typeColors.other
-        ),
-        borderWidth: 1,
-      },
-    ],
-  };
+  let chartData;
+  
+  if (filter === 'total') {
+    // Show total counts
+    const totalData = {};
+    typesToShow.forEach(type => {
+      totalData[type] = data[type] || 0;
+    });
+
+    chartData = {
+      labels: Object.keys(totalData),
+      datasets: [
+        {
+          label: 'Number of Records',
+          data: Object.values(totalData),
+          backgroundColor: Object.keys(totalData).map((type, index) => {
+            // Use predefined color for standard types, cycle through custom colors for custom types
+            if (constants.typeColors[type]) {
+              return constants.typeColors[type];
+            } else {
+              // Cycle through custom type colors
+              return constants.customTypeColors[index % constants.customTypeColors.length];
+            }
+          }),
+          borderColor: Object.keys(totalData).map((type, index) => {
+            // Use predefined color for standard types, cycle through custom colors for custom types
+            if (constants.typeColors[type]) {
+              return constants.typeColors[type];
+            } else {
+              // Cycle through custom type colors
+              return constants.customTypeColors[index % constants.customTypeColors.length];
+            }
+          }),
+          borderWidth: 1,
+        },
+      ],
+    };
+  } else {
+    // Show to-do vs collection side by side
+    const toDoCounts = [];
+    const collectionCounts = [];
+    
+    typesToShow.forEach(type => {
+      // Calculate to-do count
+      const toDoCount = toDoData[type] ? Object.values(toDoData[type]).reduce((sum, count) => sum + count, 0) : 0;
+      toDoCounts.push(toDoCount);
+      
+      // Calculate collection count
+      const collectionCount = collectionData[type] ? Object.values(collectionData[type]).reduce((sum, count) => sum + count, 0) : 0;
+      collectionCounts.push(collectionCount);
+    });
+
+    chartData = {
+      labels: typesToShow,
+      datasets: [
+        {
+          label: 'To-Do',
+          data: toDoCounts,
+          backgroundColor: 'rgba(255, 99, 132, 0.6)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 1,
+        },
+        {
+          label: 'Collection',
+          data: collectionCounts,
+          backgroundColor: 'rgba(54, 162, 235, 0.6)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1,
+        },
+      ],
+    };
+  }
 
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false,
+        display: filter === 'split', // Show legend only for split view
       },
       title: {
         display: false,
@@ -95,6 +144,16 @@ const TypeDistributionChart = ({ data, customTypes, showStandard }) => {
         beginAtZero: true,
         ticks: {
           stepSize: 1,
+        },
+        title: {
+          display: true,
+          text: 'Number of Records',
+        },
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Type',
         },
       },
     },
