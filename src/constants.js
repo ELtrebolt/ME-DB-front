@@ -120,9 +120,50 @@ const json = {
         'trends': '#85C1E9',
         'products': '#F8C471',
         'alcohol': '#E74C3C',
-        'concerts': '#9B59B6',
-        'other': '#95A5A6'
-    }
+        'concerts': '#9B59B6'
+    },
+    // Custom Type Colors - will cycle through these for custom types
+    'customTypeColors': [
+        '#FF6B6B', // Red
+        '#4ECDC4', // Teal
+        '#45B7D1', // Blue
+        '#96CEB4', // Green
+        '#FFEAA7', // Yellow
+        '#DDA0DD', // Plum
+        '#98D8C8', // Mint
+        '#F7DC6F', // Gold
+        '#BB8FCE', // Lavender
+        '#85C1E9', // Sky Blue
+        '#F8C471', // Orange
+        '#E74C3C', // Crimson
+        '#9B59B6', // Purple
+        '#95A5A6', // Gray
+        '#E67E22', // Carrot
+        '#27AE60', // Emerald
+        '#8E44AD', // Wisteria
+        '#D35400', // Pumpkin
+        '#16A085', // Green Sea
+        '#C0392B', // Pomegranate
+        '#2980B9', // Belize Hole
+        '#F39C12', // Orange
+        '#1ABC9C', // Turquoise
+        '#E91E63', // Pink
+        '#673AB7', // Deep Purple
+        '#3F51B5', // Indigo
+        '#2196F3', // Blue
+        '#00BCD4', // Cyan
+        '#009688', // Teal
+        '#4CAF50', // Green
+        '#8BC34A', // Light Green
+        '#CDDC39', // Lime
+        '#FFEB3B', // Yellow
+        '#FFC107', // Amber
+        '#FF9800', // Orange
+        '#FF5722', // Deep Orange
+        '#795548', // Brown
+        '#9E9E9E', // Blue Grey
+        '#607D8B'  // Blue Grey
+    ]
 };
 
 module.exports = json;
