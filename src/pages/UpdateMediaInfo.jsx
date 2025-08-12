@@ -124,7 +124,7 @@ function UpdateMediaInfo({user, newType}) {
               <input
                 type='text'
                 id='title'
-                placeholder={constants[mediaType].title ? constants[mediaType].title : constants['other'].title}
+                placeholder={constants[mediaType] && constants[mediaType]?.title ? constants[mediaType].title : constants['other'].title}
                 className='form-control'
                 value={media.title}
                 onChange={onChange}
@@ -158,14 +158,14 @@ function UpdateMediaInfo({user, newType}) {
               </div>
 
               <div className='form-group'>
-                <TagMaker mediaType={mediaType} toDo={media.toDo} media={media} setMedia={setMedia} alreadySelected={media.tags} placeholder={constants[mediaType].tags}></TagMaker>
+                <TagMaker mediaType={mediaType} toDo={media.toDo} media={media} setMedia={setMedia} alreadySelected={media.tags} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags}></TagMaker>
               </div>
 
               <label htmlFor='description'>Description (Optional)</label>
               <div className='form-group'>
                 <input
                   type='text'
-                  placeholder={constants[mediaType].description}
+                  placeholder={constants[mediaType] && constants[mediaType]?.description ? constants[mediaType].description : constants['other'].description}
                   id='description'
                   className='form-control'
                   value={media.description}

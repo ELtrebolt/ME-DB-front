@@ -54,6 +54,11 @@ const json = {
         'tags' : 'e.g. japan, asia, international',
         'description' : '[How You Feel About Visiting This]'
     },
+    'books' : {
+        'title' : 'e.g. Percy Jackson',
+        'tags' : 'e.g. fiction, mythology, romance',
+        'description' : '[How You Feel About Reading This]'
+    },
     // Less Common Types
     'trends' : {
         'title' : 'e.g. Dabbing',         
