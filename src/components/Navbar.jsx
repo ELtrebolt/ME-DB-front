@@ -70,6 +70,11 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
     }
   };
 
+  const switchGoogleAccount = () => {
+    // Force account chooser by passing prompt=select_account
+    window.location.href = `${constants.SERVER_URL}/auth/google?prompt=select_account`;
+  };
+
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
     {user ? (
@@ -102,6 +107,9 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
             <Dropdown.Menu>
               <Dropdown.Item onClick={exportAllData}>
                 Export All Data
+              </Dropdown.Item>
+              <Dropdown.Item onClick={switchGoogleAccount}>
+                Switch Google Account
               </Dropdown.Item>
               <Dropdown.Divider />
               <Dropdown.Item href='/logout'>
