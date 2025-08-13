@@ -1,14 +1,17 @@
 import React from 'react';
-import MediaCard from '../components/MediaCard';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import SortableCard from './SortableCard';
 
-function MyComponent({ items }) {
+function CardsContainer({ items, tier }) {
   return (
-    <div className='cards-container'>
-      {items.map((item, index) => {
-        return <div key={index}><MediaCard media={item}/></div>;
-      })}
-    </div>
+    <SortableContext items={items.map(i => i.ID)} strategy={verticalListSortingStrategy}>
+      <div className='cards-container'>
+        {items.map((item) => (
+          <SortableCard key={item.ID} media={item} />
+        ))}
+      </div>
+    </SortableContext>
   );
 }
 
-export default MyComponent;
+export default CardsContainer;

@@ -5,6 +5,8 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 
 import YearFilter from "../components/YearFilter";
 import CardsContainer from "../components/CardsContainer";
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, KeyboardSensor } from '@dnd-kit/core';
+import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import TierTitle from "../components/TierTitle";
 import TagFilter from "../components/TagFilter";
 import SearchBar from "../components/SearchBar";
@@ -118,6 +120,13 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
   const [tierVariable, setTierVariable] = useState(toDo ? 'todoTiers' : 'collectionTiers')
   const navigate = useNavigate();
 
+  // Local ordering state mirrors filteredData for reorders
+  const [localByTier, setLocalByTier] = useState();
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
   useEffect(() => {
     if(firstLoad)
     {
@@ -167,6 +176,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
   if(tierData && (searchChanged === undefined || searchChanged === true)) {
     const data = filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSuggestedTags, setSearchChanged, searchQuery);
     setFilteredData(data);
+    setLocalByTier(data);
   }
 
   function switchToDo() {
@@ -231,6 +241,68 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     }
   }
   const swipeHandlers = useSwipe({ onSwipedLeft: onNextShortcut, onSwipedRight: onPreviousShortcut });
+
+  // removed unused helper
+
+  function onDragEnd(event) {
+    const { active, over } = event;
+    if (!active || !over || !localByTier) return;
+    const activeId = active.id;
+    const overId = over.id;
+
+    // Find source tier and index
+    let sourceTier = null;
+    let sourceIndex = -1;
+    for (const t of Object.keys(localByTier)) {
+      const idx = (localByTier[t] || []).findIndex(x => x.ID === activeId);
+      if (idx !== -1) { sourceTier = t; sourceIndex = idx; break; }
+    }
+    if (!sourceTier) return;
+
+    // If over is a card, find its tier and index; if over is a tier container, append
+    let destTier = null;
+    let destIndex = -1;
+    for (const t of Object.keys(localByTier)) {
+      const idx = (localByTier[t] || []).findIndex(x => x.ID === overId);
+      if (idx !== -1) { destTier = t; destIndex = idx; break; }
+    }
+    // If dropping onto non-card area inside a tier, default to end of that tier
+    if (!destTier && overId && typeof overId === 'string' && overId.startsWith('tier:')) {
+      destTier = overId.split(':')[1];
+      destIndex = (localByTier[destTier] || []).length;
+    }
+    if (!destTier) {
+      // Fallback: keep in same spot
+      destTier = sourceTier;
+      destIndex = sourceIndex;
+    }
+
+    if (sourceTier === destTier) {
+      const updatedList = arrayMove(localByTier[sourceTier] || [], sourceIndex, destIndex);
+      const updated = { ...localByTier, [sourceTier]: updatedList };
+      setLocalByTier(updated);
+      // Persist intra-tier ordering by IDs
+      const orderedIds = updatedList.map(m => m.ID);
+      axios
+        .put(constants['SERVER_URL'] + `/api/media/${mediaType}/${toDoString}/${sourceTier}/reorder`, { orderedIds })
+        .catch(err => console.log('Error persisting intra-tier order:', err));
+      return;
+    }
+
+    // Cross-tier move
+    const fromList = [...(localByTier[sourceTier] || [])];
+    const toList = [...(localByTier[destTier] || [])];
+    const [dragged] = fromList.splice(sourceIndex, 1);
+    const updatedDragged = { ...dragged, tier: destTier };
+    const clamped = Math.max(0, Math.min(destIndex, toList.length));
+    toList.splice(clamped, 0, updatedDragged);
+    const updated = { ...localByTier, [sourceTier]: fromList, [destTier]: toList };
+    setLocalByTier(updated);
+    setFilteredData(updated);
+    axios
+      .put(constants['SERVER_URL'] + `/api/media/${mediaType}/${activeId}`, { tier: destTier, tags: updatedDragged.tags || [], orderIndex: destIndex })
+      .catch((err) => console.log('Error updating tier via drag:', err));
+  }
 
   // Redirect to login if user is not authenticated
   if (!user) {
@@ -351,13 +423,18 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
 
       <hr />
 
-      {tiers.map((item, index) => (
-          <div className='tier-container' key={item}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+        {tiers.map((item, index) => (
+          <div className='tier-container' key={item} id={`tier-${item}`}>
             <TierTitle title={mediaTypeLoc && mediaTypeLoc[tierVariable] ? mediaTypeLoc[tierVariable][item] : item} mediaType={mediaType} group={toDoString} tier={item} setUserChanged={setUserChanged} newType={newType}></TierTitle>
-            <CardsContainer items={filteredData[item]}/>
+            <CardsContainer
+              tier={item}
+              items={(localByTier && localByTier[item]) ? localByTier[item] : filteredData[item]}
+            />
             <hr />
           </div>
         ))}
+      </DndContext>
 
       <div className='container'>
         <div className='row'>
