@@ -134,6 +134,9 @@ const TypeDistributionChart = ({ data, toDoData, collectionData, customTypes, sh
     plugins: {
       legend: {
         display: filter === 'split', // Show legend only for split view
+        labels: {
+          color: '#e5e7eb', // Light gray for legend text
+        },
       },
       title: {
         display: false,
@@ -144,16 +147,28 @@ const TypeDistributionChart = ({ data, toDoData, collectionData, customTypes, sh
         beginAtZero: true,
         ticks: {
           stepSize: 1,
+          color: '#e5e7eb', // Light gray for y-axis ticks
         },
         title: {
           display: true,
           text: 'Number of Records',
+          color: '#e5e7eb', // Light gray for y-axis title
+        },
+        grid: {
+          color: 'rgba(229, 231, 235, 0.2)', // Light gray grid lines
         },
       },
       x: {
+        ticks: {
+          color: '#e5e7eb', // Light gray for x-axis ticks
+        },
         title: {
           display: true,
           text: 'Type',
+          color: '#e5e7eb', // Light gray for x-axis title
+        },
+        grid: {
+          color: 'rgba(229, 231, 235, 0.2)', // Light gray grid lines
         },
       },
     },

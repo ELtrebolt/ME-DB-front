@@ -1,47 +1,70 @@
 import React from 'react';
 
-const Function = ({possible_years, firstYear, lastYear, setFirstYear, setLastYear, setSearchChanged}) => {
-  const current_year = new Date().getFullYear()
+const YearFilter = ({possible_years, firstYear, lastYear, setFirstYear, setLastYear, setSearchChanged}) => {
+	const current_year = new Date().getFullYear();
 
-  const onChangeFirstYear = (e) => {
-    setFirstYear(e.target.value );
-    console.log("First Year Now:", e.target.value);
-    setSearchChanged(true);
-  };
-  
-  const onChangeLastYear = (e) => {
-    setLastYear(e.target.value );
-    console.log("Last Year Now:", e.target.value);
-    setSearchChanged(true);
-  };
+	console.log('YearFilter rendering with:', { possible_years, firstYear, lastYear });
 
-  return (
-    <><div className='col-md-2 mt-auto'>
-      <div className='form-group'>
-        <label htmlFor='firstYear'>First Year Filter</label>
-        <select className='form-control' id='firstYear' value={firstYear} onChange={onChangeFirstYear}>
-          <option value={possible_years[0]}>Select a year</option>
-          {possible_years.map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          ))}
-        </select>
-      </div>
-    </div><div className='col-md-2 mt-auto'>
-        <div className='form-group'>
-          <label htmlFor='lastYear'>Last Year Filter</label>
-          <select className='form-control' id='lastYear' value={lastYear} onChange={onChangeLastYear}>
-            <option value={current_year}>Select a year</option>
-            {possible_years.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div></>
-  );
-}
+	const onChangeFirstYear = (e) => {
+		setFirstYear(e.target.value);
+		setSearchChanged(true);
+	};
+	
+	const onChangeLastYear = (e) => {
+		setLastYear(e.target.value);
+		setSearchChanged(true);
+	};
 
-export default Function;
+	return (
+		<div style={{display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: '16px', width: '100%'}}>
+			<div style={{flex: '1 1 0%', minWidth: '0'}}>
+				<label htmlFor='firstYear' style={{ display: 'block', marginBottom: '6px', fontWeight: 600 }}>First Year Filter</label>
+				<select 
+					id='firstYear' 
+					value={firstYear} 
+					onChange={onChangeFirstYear}
+					style={{ 
+						backgroundColor: '#ffffff', 
+						color: '#212529', 
+						border: '2px solid #afb8c1',
+						borderRadius: '6px',
+						padding: '0.375rem 0.75rem',
+						width: '100%'
+					}}
+				>
+					<option value={possible_years[0]}>Select a year</option>
+					{possible_years.map((year) => (
+						<option key={year} value={year}>
+							{year}
+						</option>
+					))}
+				</select>
+			</div>
+			<div style={{flex: '1 1 0%', minWidth: '0'}}>
+				<label htmlFor='lastYear' style={{ display: 'block', marginBottom: '6px', fontWeight: 600 }}>Last Year Filter</label>
+				<select 
+					id='lastYear' 
+					value={lastYear} 
+					onChange={onChangeLastYear}
+					style={{ 
+						backgroundColor: '#ffffff', 
+						color: '#212529', 
+						border: '2px solid #afb8c1',
+						borderRadius: '6px',
+						padding: '0.375rem 0.75rem',
+						width: '100%'
+					}}
+				>
+					<option value={current_year}>Select a year</option>
+					{possible_years.map((year) => (
+						<option key={year} value={year}>
+							{year}
+						</option>
+					))}
+				</select>
+			</div>
+		</div>
+	);
+};
+
+export default YearFilter;

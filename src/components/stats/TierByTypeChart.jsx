@@ -131,6 +131,9 @@ const TierByTypeChart = ({ data, customTypes, sortBy }) => {
       legend: {
         display: true,
         position: 'top',
+        labels: {
+          color: '#e5e7eb', // Light gray for legend text
+        },
       },
       title: {
         display: false,
@@ -139,9 +142,16 @@ const TierByTypeChart = ({ data, customTypes, sortBy }) => {
     scales: {
       x: {
         stacked: true,
+        ticks: {
+          color: '#e5e7eb', // Light gray for x-axis ticks
+        },
         title: {
           display: true,
           text: 'Type',
+          color: '#e5e7eb', // Light gray for x-axis title
+        },
+        grid: {
+          color: 'rgba(229, 231, 235, 0.2)', // Light gray grid lines
         },
       },
       y: {
@@ -149,6 +159,7 @@ const TierByTypeChart = ({ data, customTypes, sortBy }) => {
         beginAtZero: true,
         max: 100,
         ticks: {
+          color: '#e5e7eb', // Light gray for y-axis ticks
           callback: function(value) {
             return value + '%';
           },
@@ -156,6 +167,10 @@ const TierByTypeChart = ({ data, customTypes, sortBy }) => {
         title: {
           display: true,
           text: 'Percentage (%)',
+          color: '#e5e7eb', // Light gray for y-axis title
+        },
+        grid: {
+          color: 'rgba(229, 231, 235, 0.2)', // Light gray grid lines
         },
       },
     },

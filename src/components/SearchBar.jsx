@@ -43,19 +43,20 @@ const Function = ({mediaType, allMedia, searchQuery, setSearchQuery, setSearchCh
   
   const noOptionsText = `No matching ${mediaType}`;
   return (
-    <><div className='form-group'>
-      <label htmlFor='searchBar-input'>Search by Title</label><ReactTags
-      id='searchBar'
-      placeholderText={constants[mediaType] && constants[mediaType].title ? constants[mediaType].title : constants['other'].title}
-      selected={selected}
-      suggestions={suggestions}
-      onAdd={onAdd}
-      onInput={onChange}
-      onDelete={onDelete}
-      noOptionsText={noOptionsText}
-      suggestionsTransform={suggestionsTransform}/>
+    <div className='w-100'>
+      <label htmlFor='searchBar-input' className='form-label fw-semibold text-white mb-2'>Search by Title</label>
+      <ReactTags
+        id='searchBar'
+        placeholderText={constants[mediaType] && constants[mediaType].title ? constants[mediaType].title : constants['other'].title}
+        selected={selected}
+        suggestions={suggestions}
+        onAdd={onAdd}
+        onInput={onChange}
+        onDelete={onDelete}
+        noOptionsText={noOptionsText}
+        suggestionsTransform={suggestionsTransform}
+      />
     </div>
-    </>
   )
 }
 

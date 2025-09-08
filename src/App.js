@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Route, Routes, Navigate, useParams } from 'react-router-dom';
-import './App.css';
 
 // Components
 import Navbar from "./components/Navbar";
@@ -12,7 +11,7 @@ import About from "./pages/About";
 import Intro from "./pages/Intro";
 import NotFound from "./pages/NotFound";
 import Logout from "./pages/Logout";
-import Stats from "./pages/Stats";
+import Stats from './pages/Stats';
 // Other
 import { useEffect, useState } from "react";
 import axios from 'axios';
@@ -92,7 +91,9 @@ const App = () => {
     return (
       <Router>
         <div>
-          <Navbar user={user} setUserChanged={setUserChanged} newTypes={newTypes}/>
+          {user ? (
+            <Navbar user={user} setUserChanged={setUserChanged} newTypes={newTypes}/>
+          ) : null}
           <Routes>
             <Route path='/' element={user ? <Navigate to="/anime/collection"/> : <Intro />} />
             <Route path='/about' element={<About/>} />
@@ -105,7 +106,7 @@ const App = () => {
 
             <Route path='/:mediaType' element={<RestrictMediaType user={user} n={5} setUserChanged={setUserChanged} newTypes={newTypes} selectedTags={selectedTags} setSelectedTags={setSelectedTags} filteredData={filteredData} setFilteredData={setFilteredData}/>} />
             <Route path='/:mediaType/:group' element={<RestrictMediaType user={user} n={5} setUserChanged={setUserChanged} newTypes={newTypes} selectedTags={selectedTags} setSelectedTags={setSelectedTags} filteredData={filteredData} setFilteredData={setFilteredData}/>} />
-            <Route path='/:mediaType/:group/edit' element={<RestrictMediaType user={user} n={6} setUserChanged={setUserChanged} newTypes={newTypes}/>} />
+            <Route path='/:mediaType/:id/edit' element={<RestrictMediaType user={user} n={6} setUserChanged={setUserChanged} newTypes={newTypes}/>} />
             
             <Route path='/404' element={<NotFound/>} />
             <Route path="/*" element={<NotFound />} />
@@ -126,6 +127,18 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
   }
   const { mediaType, group } = useParams();
   const newType = newTypes.includes(mediaType);
+
+  // Clear tags when media type changes (navigating to different media type)
+  useEffect(() => {
+    if (setSelectedTags) {
+      console.log('RestrictMediaType: Media type changed to:', mediaType);
+      setSelectedTags([]);
+      // Clear tags from sessionStorage if it exists
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.removeItem('selectedTags');
+      }
+    }
+  }, [mediaType, setSelectedTags]);
 
   if (mediaTypes.includes(mediaType)) {
     if(n === 3)

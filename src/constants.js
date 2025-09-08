@@ -168,7 +168,13 @@ const json = {
         '#795548', // Brown
         '#9E9E9E', // Blue Grey
         '#607D8B'  // Blue Grey
-    ]
+    ],
+    // Main Colors for UI Components
+    'mainColors': {
+        'background': '#2c3e50', // Dark blue-gray background used in ShowMediaList and CreateMedia
+        'buttons': '#ffc107',     // Warning/Orange color used for primary buttons
+        'table': '#1a252f'        // Darker version of background for table fills
+    }
 };
 
 module.exports = json;
