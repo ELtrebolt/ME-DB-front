@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import DeleteModal from "../components/DeleteModal";
@@ -17,9 +17,14 @@ function ShowMediaDetails({user, newType, filteredData}) {
   const { mediaType, group } = useParams();
   const [loaded, setLoaded] = useState(false)
   const [curIndex, setCurIndex] = useState(0);
-  const mediaList = filteredData ? Object.values(filteredData).reduce((acc, val) => acc.concat(val), []) : [];
+  
   const navigate = useNavigate();
   const mediaTypeLoc = user ? (newType ? user.newTypes[mediaType] : user[mediaType]) : null;
+  
+  // Build mediaList from filteredData (clean React approach)
+  const mediaList = useMemo(() => {
+    return filteredData ? Object.values(filteredData).reduce((acc, val) => acc.concat(val), []) : [];
+  }, [filteredData]);
   
   useEffect(() => {
     if(!loaded) {
@@ -32,9 +37,11 @@ function ShowMediaDetails({user, newType, filteredData}) {
           console.log("Details GET /api/media/type/id", res.data)
           setMedia(res.data);
           
+          // Find current media index in the mediaList
           for(let i = 0; i < mediaList.length; i++) {
             if(mediaList[i].title === res.data.title) {
               setCurIndex(i);
+              break;
             }
           }
           setLoaded(true);
@@ -44,7 +51,7 @@ function ShowMediaDetails({user, newType, filteredData}) {
         console.log('Error from ShowMediaDetails');
     });
     }
-  });
+  }, [loaded, mediaType, group, navigate, mediaList]);
 
   function onDeleteClick() {
     axios
@@ -60,25 +67,52 @@ function ShowMediaDetails({user, newType, filteredData}) {
   };
 
   function onNextShortcut() {
+    console.log('onNextShortcut - mediaList.length:', mediaList.length);
+    console.log('onNextShortcut - curIndex:', curIndex);
+    
+    if (mediaList.length === 0) {
+      console.log('No media to navigate to - mediaList is empty');
+      return;
+    }
+    
     var nextIndex = curIndex+1;
     if(nextIndex === mediaList.length){
       nextIndex = 0;
     }
+    
+    const nextMedia = mediaList[nextIndex];
+    if (!nextMedia || !nextMedia.ID) {
+      console.log('Error: nextMedia is undefined or missing ID', nextMedia);
+      return;
+    }
+    
     setCurIndex(nextIndex);
-    nextIndex = mediaList[nextIndex].ID.toString();
-    navigate(`/${mediaType}/${nextIndex}`);
+    const nextId = nextMedia.ID.toString();
+    console.log('Navigating to next media:', nextId);
+    navigate(`/${mediaType}/${nextId}`);
     setLoaded(false);
   }
+  
   function onPreviousShortcut() {
+    if (mediaList.length === 0) return; // No media to navigate to
+    
     var prevIndex = curIndex-1;
     if(prevIndex === -1){
       prevIndex = mediaList.length-1;
     }
+    
+    const prevMedia = mediaList[prevIndex];
+    if (!prevMedia || !prevMedia.ID) {
+      console.log('Error: prevMedia is undefined or missing ID', prevMedia);
+      return;
+    }
+    
     setCurIndex(prevIndex);
-    prevIndex = mediaList[prevIndex].ID.toString();
-    navigate(`/${mediaType}/${prevIndex}`);
+    const prevId = prevMedia.ID.toString();
+    navigate(`/${mediaType}/${prevId}`);
     setLoaded(false);
   }
+  
   const swipeHandlers = useSwipe({ onSwipedLeft: onNextShortcut, onSwipedRight: onPreviousShortcut });
   
   // Redirect to login if user is not authenticated

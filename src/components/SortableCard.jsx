@@ -19,7 +19,7 @@ function SortableCard({ media, className }) {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.3 : 1,
-    cursor: 'grab',
+    cursor: 'default',
     touchAction: 'none',
     zIndex: isDragging ? 1000 : 'auto'
   };
@@ -29,10 +29,9 @@ function SortableCard({ media, className }) {
       ref={setNodeRef} 
       style={style} 
       {...attributes} 
-      {...listeners} 
       className={className}
     >
-      <MediaCard media={media} />
+      <MediaCard media={media} listeners={listeners} />
     </div>
   );
 }

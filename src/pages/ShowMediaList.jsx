@@ -195,7 +195,11 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
   }, []);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Require 8px movement before drag starts
+      },
+    }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
@@ -320,11 +324,18 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
       switchToDo();
     }
   }
-  const swipeHandlers = useSwipe({ onSwipedLeft: onNextShortcut, onSwipedRight: onPreviousShortcut });
 
   // removed unused helper
 
   const [activeId, setActiveId] = useState(null);
+  
+  const swipeHandlers = useSwipe({ 
+    onSwipedLeft: onNextShortcut, 
+    onSwipedRight: onPreviousShortcut,
+    disabled: activeId !== null // Disable swipe when dragging
+  });
+  
+  console.log('Swipe handlers disabled:', activeId !== null, 'activeId:', activeId);
 
   function onDragStart(event) {
     console.log('ShowMediaList onDragStart:', event);
@@ -366,6 +377,20 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
         // Remove from source tier
         const updatedSourceTier = [...localByTier[sourceTier]];
         const [movedItem] = updatedSourceTier.splice(sourceIndex, 1);
+        
+        // Check if the moved item belongs to the current list type
+        const itemToDo = movedItem.toDo === true;
+        const currentListToDo = toDoState === true;
+        
+        if (itemToDo !== currentListToDo) {
+          console.log('Preventing cross-list edge drop:', { 
+            itemToDo, 
+            currentListToDo, 
+            itemTitle: movedItem.title 
+          });
+          // Don't allow moving items between to-do and collection lists
+          return;
+        }
         
         // Add to target tier
         const updatedTargetTier = [...(localByTier[targetTier] || [])];
@@ -439,10 +464,25 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
       return;
     }
 
-    // Cross-tier move
+    // Cross-tier move - but only within the same list type (to-do vs collection)
     const fromList = [...(localByTier[sourceTier] || [])];
     const toList = [...(localByTier[destTier] || [])];
     const [dragged] = fromList.splice(sourceIndex, 1);
+    
+    // Check if the dragged item belongs to the current list type
+    const itemToDo = dragged.toDo === true;
+    const currentListToDo = toDoState === true;
+    
+    if (itemToDo !== currentListToDo) {
+      console.log('Preventing cross-list move:', { 
+        itemToDo, 
+        currentListToDo, 
+        itemTitle: dragged.title 
+      });
+      // Don't allow moving items between to-do and collection lists
+      return;
+    }
+    
     const updatedDragged = { ...dragged, tier: destTier };
     const clamped = Math.max(0, Math.min(destIndex, toList.length));
     toList.splice(clamped, 0, updatedDragged);
@@ -547,6 +587,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     )
   } else if(user && !firstLoad && filteredData) {
   return (
+    <>
     <div className='ShowMediaList' {...swipeHandlers}>
       <div className='container'>
         <div className='pt-4'>
@@ -675,6 +716,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
           </button>
         </div>
       </div>
+    </>
 
   );
   }

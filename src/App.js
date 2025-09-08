@@ -24,7 +24,7 @@ const App = () => {
   const [userChanged, setUserChanged] = useState(false);
   const [newTypes, setNewTypes] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
-  const [filteredData, setFilteredData] = useState();
+  const [filteredData, setFilteredData] = useState({});
 
   // function onUserChanged({foo}) {
   //   setUserChanged(true);
@@ -139,6 +139,47 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
       }
     }
   }, [mediaType, setSelectedTags]);
+
+  // Fetch media data if filteredData is empty and we're navigating to a media details page
+  useEffect(() => {
+    if (!isNaN(group) && (!filteredData || Object.keys(filteredData).length === 0)) {
+      console.log('RestrictMediaType: Fetching media data for', mediaType, 'because filteredData is empty');
+      console.log('RestrictMediaType: Valid media types:', mediaTypes);
+      console.log('RestrictMediaType: Is mediaType valid?', mediaTypes.includes(mediaType));
+      
+      // Only fetch if mediaType is valid
+      if (mediaTypes.includes(mediaType)) {
+        // Fetch both collection and to-do data to get all media
+        Promise.all([
+          axios.get(constants['SERVER_URL'] + `/api/media/${mediaType}/collection`),
+          axios.get(constants['SERVER_URL'] + `/api/media/${mediaType}/to-do`)
+        ])
+        .then(([collectionRes, toDoRes]) => {
+          console.log('RestrictMediaType: Fetched collection data:', collectionRes.data);
+          console.log('RestrictMediaType: Fetched to-do data:', toDoRes.data);
+          
+          // Combine both responses into filteredData format
+          const combinedData = {
+            S: [...(collectionRes.data.media || []).filter(m => m.tier === 'S'), ...(toDoRes.data.media || []).filter(m => m.tier === 'S')],
+            A: [...(collectionRes.data.media || []).filter(m => m.tier === 'A'), ...(toDoRes.data.media || []).filter(m => m.tier === 'A')],
+            B: [...(collectionRes.data.media || []).filter(m => m.tier === 'B'), ...(toDoRes.data.media || []).filter(m => m.tier === 'B')],
+            C: [...(collectionRes.data.media || []).filter(m => m.tier === 'C'), ...(toDoRes.data.media || []).filter(m => m.tier === 'C')],
+            D: [...(collectionRes.data.media || []).filter(m => m.tier === 'D'), ...(toDoRes.data.media || []).filter(m => m.tier === 'D')],
+            F: [...(collectionRes.data.media || []).filter(m => m.tier === 'F'), ...(toDoRes.data.media || []).filter(m => m.tier === 'F')]
+          };
+          
+          console.log('RestrictMediaType: Combined data:', combinedData);
+          setFilteredData(combinedData);
+        })
+        .catch((err) => {
+          console.log('RestrictMediaType: Error fetching media data:', err);
+          console.log('RestrictMediaType: Error details:', err.response?.status, err.response?.data);
+        });
+      } else {
+        console.log('RestrictMediaType: Invalid mediaType, not fetching data');
+      }
+    }
+  }, [mediaType, group, filteredData, setFilteredData, mediaTypes]);
 
   if (mediaTypes.includes(mediaType)) {
     if(n === 3)

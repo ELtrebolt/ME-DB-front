@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const MediaCard = ({ media }) => {
+const MediaCard = ({ media, listeners }) => {
   // Calculate dynamic width based on title length
   const calculateWidth = () => {
     const titleLength = media.title.length;
@@ -21,14 +21,30 @@ const MediaCard = ({ media }) => {
       className='card shadow-soft h-100 media-card-outline transition-all duration-200 hover:shadow-medium' 
       style={{ 
         minWidth: 0, 
-        width: `${cardWidth}px`
+        width: `${cardWidth}px`,
+        cursor: 'grab'
       }}
+      {...listeners}
     >
       <div className='card-body p-2'>
         <h6 className='card-title title-clamp mb-1' style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-          <Link className='text-decoration-underline text-primary' to={`/${media.mediaType}/${media.ID}`}>{media.title}</Link>
+          <Link 
+            className='text-decoration-underline text-primary' 
+            to={`/${media.mediaType}/${media.ID}`}
+            style={{ 
+              cursor: 'pointer',
+              pointerEvents: 'auto'
+            }}
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+          >
+            {media.title}
+          </Link>
         </h6>
-        <p className='card-text text-white mb-0'>Year: {media.year}</p>
+        <p className='card-text text-white mb-0'>
+          Year: {media.year}
+        </p>
       </div>
     </div>
   );

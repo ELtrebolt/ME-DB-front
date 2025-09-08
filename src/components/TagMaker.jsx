@@ -54,10 +54,10 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder}) =>
         console.log(err);
       });
     } else {
-      // If suggestions exist, just update the selected tags based on alreadySelected
-      var alreadySelectedList = [];
-      if (alreadySelected && alreadySelected.length > 0 && suggestions) {
+      // If suggestions exist, only update selected tags if they haven't been set yet
+      if (selected.length === 0 && alreadySelected && alreadySelected.length > 0 && suggestions) {
         console.log('Updating selected tags with alreadySelected:', alreadySelected);
+        var alreadySelectedList = [];
         suggestions.forEach((t, index) => {
           for(const s of alreadySelected) {
             if(s === t || s['label'] === t) {
@@ -66,43 +66,19 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder}) =>
             }
           }
         });
+        console.log('Updating selected tags:', alreadySelectedList);
+        setSelected(alreadySelectedList);
       }
-      console.log('Updating selected tags:', alreadySelectedList);
-      setSelected(alreadySelectedList);
     }
-  }, [mediaType, alreadySelected, suggestions]);
+  }, [mediaType, suggestions, alreadySelected, selected.length]);
 
-  // Add a separate effect to handle alreadySelected changes when suggestions are available
+  // Separate effect to handle initial alreadySelected tags
   useEffect(() => {
-    if (suggestions && alreadySelected && alreadySelected.length > 0) {
-      console.log('Processing alreadySelected with available suggestions:', { suggestions, alreadySelected });
-      var alreadySelectedList = [];
-      
-      // First, try to find exact matches in suggestions
-      suggestions.forEach((suggestion, index) => {
-        for(const selectedTag of alreadySelected) {
-          if (selectedTag.label === suggestion.label) {
-            console.log('Found exact match:', selectedTag.label, 'at index:', index);
-            alreadySelectedList.push({value: index, label: suggestion.label});
-            break;
-          }
-        }
-      });
-      
-      // If no exact matches found, try to create new tag objects
-      if (alreadySelectedList.length === 0) {
-        console.log('No exact matches found, creating new tag objects');
-        alreadySelected.forEach((tag, index) => {
-          if (tag.label) {
-            alreadySelectedList.push({value: `custom-${index}`, label: tag.label});
-          }
-        });
-      }
-      
-      console.log('Final alreadySelectedList:', alreadySelectedList);
-      setSelected(alreadySelectedList);
+    if (alreadySelected && alreadySelected.length > 0 && selected.length === 0) {
+      console.log('Setting initial selected tags from alreadySelected:', alreadySelected);
+      setSelected(alreadySelected);
     }
-  }, [suggestions, alreadySelected]);
+  }, [alreadySelected, selected.length]);
 
   function suggestionsTransform(value, suggestions) {
     return matchSorter(suggestions, value, { keys: ['label'] })

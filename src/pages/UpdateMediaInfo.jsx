@@ -165,6 +165,8 @@ function UpdateMediaInfo({user, newType}) {
                   </div>
 
                   <div className='mb-3'>
+                    {console.log('UpdateMediaInfo - media.tags:', media.tags)}
+                    {console.log('UpdateMediaInfo - alreadySelected:', media.tags ? media.tags.map(tag => ({ label: tag, value: tag })) : [])}
                     <TagMaker 
                       mediaType={mediaType} 
                       toDo={media.toDo} 
