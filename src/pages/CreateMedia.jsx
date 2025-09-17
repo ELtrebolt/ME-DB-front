@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import TagMaker from "../components/TagMaker";
@@ -18,7 +18,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
   console.log('CreateMedia: Current URL:', location.pathname + location.search);
   
   // Get selected tags from URL parameters
-  const getTagsFromURL = () => {
+  const getTagsFromURL = useCallback(() => {
     const urlParams = new URLSearchParams(location.search);
     const tagsParam = urlParams.get('tags');
     
@@ -27,7 +27,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
       return tagLabels.map(label => ({ label, value: label }));
     }
     return [];
-  };
+  }, [location.search]);
   
   // Try to get selected tags from URL if props are empty
   const [effectiveSelectedTags, setEffectiveSelectedTags] = useState(() => {
@@ -70,7 +70,6 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
     description: ''
   });
   const [titleError, setTitleError] = useState(false);
-  const [originalTags, setOriginalTags] = useState('');
   const mediaTypeLoc = user ? (newType ? user.newTypes[mediaType] : user[mediaType]) : null;
 
   // Update media tags when effectiveSelectedTags changes
@@ -87,23 +86,11 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
     console.log('CreateMedia: URL changed, location.search:', location.search);
     console.log('CreateMedia: getTagsFromURL result:', urlTags);
     
-    // Store the original tags string for navigation
-    const urlParams = new URLSearchParams(location.search);
-    const tagsParam = urlParams.get('tags');
-    console.log('CreateMedia: Raw tagsParam from URL:', tagsParam);
-    
-    if (tagsParam) {
-      setOriginalTags(tagsParam);
-      console.log('CreateMedia: Stored original tags:', tagsParam);
-    } else {
-      console.log('CreateMedia: No tags in URL');
-    }
-    
     if (urlTags.length > 0) {
       console.log('CreateMedia: URL changed, updating effectiveSelectedTags:', urlTags);
       setEffectiveSelectedTags(urlTags);
     }
-  }, [location.search]);
+  }, [location.search, getTagsFromURL]);
 
   // Ensure tags are captured on initial mount
   useEffect(() => {
@@ -111,12 +98,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
     const urlParams = new URLSearchParams(location.search);
     const tagsParam = urlParams.get('tags');
     console.log('CreateMedia: Initial mount - tagsParam:', tagsParam);
-    
-    if (tagsParam) {
-      setOriginalTags(tagsParam);
-      console.log('CreateMedia: Initial mount - stored original tags:', tagsParam);
-    }
-  }, []); // Empty dependency array = run only on mount
+  }, [location.search]); // Include location.search dependency
 
   // Redirect to login if user is not authenticated
   if (!user) {
@@ -197,8 +179,55 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
   const yearString = toDo ? "Year You First Wanted To Do" : "Year You First Experienced"
   return (
     <div className='CreateMedia' style={{backgroundColor: '#2c3e50', minHeight: '100vh', color: 'white'}}>
-      <div className='container py-5'>
-        <div className='row mb-4'>
+      <div className='container py-2 py-md-3'>
+        {/* Mobile layout - only visible on mobile */}
+        <div className='row mb-2 d-md-none align-items-center'>
+          <div className='col-3 d-flex justify-content-start'>
+            <button 
+              className='btn btn-outline-warning btn-xs'
+              onClick={() => {
+                const urlParams = new URLSearchParams(location.search);
+                const currentTags = urlParams.get('tags');
+                const fromParam = urlParams.get('from');
+                
+                let targetURL = `/${mediaType}/${toDo ? 'to-do' : 'collection'}`;
+                if (currentTags) {
+                  targetURL += `?tags=${currentTags}`;
+                  if (fromParam) {
+                    targetURL += `&from=${fromParam}`;
+                  }
+                }
+                navigate(targetURL);
+              }}
+              style={{ 
+                whiteSpace: 'nowrap', 
+                fontSize: '0.7rem', 
+                padding: '0.5rem 0.6rem',
+                minWidth: 'fit-content',
+                width: '100%',
+                maxWidth: '100%',
+                height: 'auto',
+                minHeight: '2.5rem'
+              }}
+            >
+              <i className="fas fa-arrow-left me-1"></i>Back
+            </button>
+          </div>
+          <div className='col-6 text-center'>
+            <h1 className='fw-light text-white mb-0' style={{ 
+              fontFamily: 'Roboto, sans-serif', 
+              fontSize: 'clamp(18px, 5vw, 28px)',
+              minFontSize: '18px',
+              whiteSpace: 'nowrap'
+            }}>
+              { toDo ? `Add ${toCapitalNotation(mediaType)} to To-Do` : `Add ${toCapitalNotation(mediaType)} to Collection` }
+            </h1>
+          </div>
+          <div className='col-3'></div>
+        </div>
+
+        {/* Desktop layout - hidden on mobile */}
+        <div className='row mb-3 d-none d-md-flex'>
           <div className='col-md-2 d-flex align-items-center'>
             <button 
               className='btn btn-outline-warning btn-lg'
@@ -241,86 +270,217 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
         </div>
         
         <div className='row justify-content-center'>
-          <div className='col-lg-8 col-md-10'>
-            <div className="card shadow-soft border-0" style={{backgroundColor: constants.mainColors.table, border: '1px solid rgba(255,255,255,0.2)'}}>
-              <div className="card-body p-5">
+          <div className='col-lg-10 col-md-12'>
+            <div className="card shadow-soft border-0" style={{backgroundColor: constants.mainColors.table}}>
+              <div className="card-body p-0" style={{backgroundColor: constants.mainColors.table}}>
                 <form noValidate onSubmit={onSubmit}>
-                  <div className='mb-4'>
-                    <label htmlFor='title' className='form-label fw-semibold text-white'>Title</label>
-                    <input
-                      type='text'
-                      placeholder={constants[mediaType] && constants[mediaType]?.title ? constants[mediaType].title : constants['other'].title}
-                      id='title'
-                      className={`form-control form-control-lg ${titleError ? 'is-invalid border-danger' : ''}`}
-                      value={media.title}
-                      onChange={(e) => {
-                        onChange(e);
-                        // Clear error when user starts typing
-                        if (titleError) {
-                          setTitleError(false);
-                        }
-                      }}
-                      style={titleError ? {borderColor: '#dc3545', boxShadow: '0 0 0 0.2rem rgba(220, 53, 69, 0.25)'} : {}}
-                    />
-                    {titleError && (
-                      <div className="invalid-feedback d-block text-danger fw-semibold">
-                        Title is required!
+                  <div className="table-responsive d-none d-md-block" style={{overflow: 'visible'}}>
+                    <table className='table table-hover mb-0 text-white' style={{backgroundColor: constants.mainColors.table, overflow: 'visible'}}>
+                      <tbody style={{backgroundColor: constants.mainColors.table}}>
+                        <tr style={{backgroundColor: constants.mainColors.table}}>
+                          <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>1</th>
+                          <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Title</td>
+                          <td className='px-4 py-3' style={{backgroundColor: constants.mainColors.table}}>
+                            <input
+                              type='text'
+                              placeholder={constants[mediaType] && constants[mediaType]?.title ? constants[mediaType].title : constants['other'].title}
+                              id='title'
+                              className={`form-control form-control-sm ${titleError ? 'is-invalid border-danger' : ''}`}
+                              value={media.title}
+                              onChange={(e) => {
+                                onChange(e);
+                                if (titleError) {
+                                  setTitleError(false);
+                                }
+                              }}
+                              style={titleError ? {borderColor: '#dc3545', boxShadow: '0 0 0 0.2rem rgba(220, 53, 69, 0.25)'} : {}}
+                            />
+                            {titleError && (
+                              <div className="invalid-feedback d-block text-danger fw-semibold mt-1">
+                                Title is required!
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                        <tr style={{backgroundColor: constants.mainColors.table}}>
+                          <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>2</th>
+                          <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>{yearString}</td>
+                          <td className='px-4 py-3' style={{backgroundColor: constants.mainColors.table}}>
+                            <select className='form-select form-select-sm' id='year' value={media.year} onChange={onChange}>
+                              {years.map((year) => (
+                                <option key={year} value={year}>
+                                  {year}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                        </tr>
+                        <tr style={{backgroundColor: constants.mainColors.table}}>
+                          <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>3</th>
+                          <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Tier</td>
+                          <td className='px-4 py-3' style={{backgroundColor: constants.mainColors.table}}>
+                            <select
+                              id='tier'
+                              className='form-select form-select-sm'
+                              value={media.tier}
+                              onChange={onChange}
+                            >
+                              {tiers.map((tier) => (
+                                <option key={tier} value={tier}>{mediaTypeLoc && mediaTypeLoc[tiersName] ? mediaTypeLoc[tiersName][tier] : tier}</option>
+                              ))}
+                            </select>
+                          </td>
+                        </tr>
+                        <tr style={{backgroundColor: constants.mainColors.table}}>
+                          <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>4</th>
+                          <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Tags (Optional)</td>
+                          <td className='px-4 py-3' style={{backgroundColor: constants.mainColors.table, overflow: 'visible', position: 'relative', zIndex: 999}}>
+                            <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={effectiveSelectedTags} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags} hideLabel={true}></TagMaker>
+                          </td>
+                        </tr>
+                        <tr style={{backgroundColor: constants.mainColors.table}}>
+                          <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>5</th>
+                          <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Description (Optional)</td>
+                          <td className='px-4 py-3' style={{backgroundColor: constants.mainColors.table}}>
+                            <input
+                              type='text'
+                              placeholder={constants[mediaType] && constants[mediaType]?.description ? constants[mediaType].description : constants['other'].description}
+                              id='description'
+                              className='form-control form-control-sm'
+                              value={media.description}
+                              onChange={onChange}
+                            />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  {/* Mobile Form Layout */}
+                  <div className="d-md-none p-1">
+                    <div className="form-group mb-1">
+                      <label className="form-label text-white fw-semibold mb-1" style={{fontSize: '0.75rem'}}><span className="text-warning">1.</span> Title</label>
+                      <input
+                        type='text'
+                        placeholder={constants[mediaType] && constants[mediaType]?.title ? constants[mediaType].title : constants['other'].title}
+                        id='title'
+                        className={`form-control form-control-sm ${titleError ? 'is-invalid border-danger' : ''}`}
+                        value={media.title}
+                        onChange={(e) => {
+                          onChange(e);
+                          if (titleError) {
+                            setTitleError(false);
+                          }
+                        }}
+                        style={{
+                          ...(titleError ? {borderColor: '#dc3545', boxShadow: '0 0 0 0.2rem rgba(220, 53, 69, 0.25)'} : {}),
+                          fontSize: '0.75rem',
+                          padding: '0.2rem 0.4rem',
+                          height: 'auto',
+                          minHeight: '28px'
+                        }}
+                      />
+                      {titleError && (
+                        <div className="invalid-feedback d-block text-danger fw-semibold mt-1" style={{fontSize: '0.65rem'}}>
+                          Title is required!
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="form-group mb-1">
+                      <label className="form-label text-white fw-semibold mb-1" style={{fontSize: '0.75rem'}}><span className="text-warning">2.</span> {yearString}</label>
+                      <select 
+                        className='form-select form-select-sm' 
+                        id='year' 
+                        value={media.year} 
+                        onChange={onChange}
+                        style={{
+                          fontSize: '0.75rem',
+                          padding: '0.2rem 0.4rem',
+                          height: 'auto',
+                          minHeight: '28px'
+                        }}
+                      >
+                        {years.map((year) => (
+                          <option key={year} value={year}>
+                            {year}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    
+                    <div className="form-group mb-1">
+                      <label className="form-label text-white fw-semibold mb-1" style={{fontSize: '0.75rem'}}><span className="text-warning">3.</span> Tier</label>
+                      <select
+                        id='tier'
+                        className='form-select form-select-sm'
+                        value={media.tier}
+                        onChange={onChange}
+                        style={{
+                          fontSize: '0.75rem',
+                          padding: '0.2rem 0.4rem',
+                          height: 'auto',
+                          minHeight: '28px'
+                        }}
+                      >
+                        {tiers.map((tier) => (
+                          <option key={tier} value={tier}>{mediaTypeLoc && mediaTypeLoc[tiersName] ? mediaTypeLoc[tiersName][tier] : tier}</option>
+                        ))}
+                      </select>
+                    </div>
+                    
+                    <div className="form-group mb-1">
+                      <label className="form-label text-white fw-semibold mb-1" style={{fontSize: '0.75rem'}}><span className="text-warning">4.</span> Tags (Optional)</label>
+                      <div style={{fontSize: '0.75rem'}}>
+                        <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={effectiveSelectedTags} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags} hideLabel={true}></TagMaker>
                       </div>
-                    )}
+                    </div>
+                    
+                    <div className="form-group mb-1">
+                      <label className="form-label text-white fw-semibold mb-1" style={{fontSize: '0.75rem'}}><span className="text-warning">5.</span> Description (Optional)</label>
+                      <input
+                        type='text'
+                        placeholder={constants[mediaType] && constants[mediaType]?.description ? constants[mediaType].description : constants['other'].description}
+                        id='description'
+                        className='form-control form-control-sm'
+                        value={media.description}
+                        onChange={onChange}
+                        style={{
+                          fontSize: '0.75rem',
+                          padding: '0.2rem 0.4rem',
+                          height: 'auto',
+                          minHeight: '28px'
+                        }}
+                      />
+                    </div>
                   </div>
-
-                  <div className='mb-4'>
-                    <label htmlFor='year' className='form-label fw-semibold text-white'>{yearString}</label>
-                    <select className='form-select form-select-lg' id='year' value={media.year} onChange={onChange}>
-                      {years.map((year) => (
-                        <option key={year} value={year}>
-                          {year}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className='mb-4'>
-                    <label htmlFor='tier' className='form-label fw-semibold text-white'>Tier</label>
-                    <select
-                      placeholder='S'
-                      id='tier'
-                      className='form-select form-select-lg'
-                      value={media.tier}
-                      onChange={onChange}
-                    >
-                      {tiers.map((tier) => (
-                        <option key={tier} value={tier}>{mediaTypeLoc && mediaTypeLoc[tiersName] ? mediaTypeLoc[tiersName][tier] : tier}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className='mb-4'>
-                    <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={effectiveSelectedTags} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags}></TagMaker>
-                  </div>
-                   
-                  <div className='mb-4'>
-                    <label htmlFor='description' className='form-label text-white'>Description (Optional)</label>
-                    <input
-                      type='text'
-                      placeholder={constants[mediaType] && constants[mediaType]?.description ? constants[mediaType].description : constants['other'].description}
-                      id='description'
-                      className='form-control form-control-lg'
-                      value={media.description}
-                      onChange={onChange}
-                    />
-                  </div>
-
-                  <button 
-                    type='submit' 
-                    className='btn btn-warning btn-lg w-100'
-                  >
-                    <i className="fas fa-plus me-2"></i>Create Media
-                  </button>
                 </form>
               </div>
             </div>
           </div>
+        </div>
+        
+        <div className='row mt-2'>
+          <div className='col-md-4'></div>
+          <div className='col-md-4 text-center'>
+            <button 
+              onClick={onSubmit}
+              className='btn btn-warning btn-lg d-none d-md-inline-block'
+            >
+              <i className="fas fa-plus me-2"></i>Create Media
+            </button>
+            <button 
+              onClick={onSubmit}
+              className='btn btn-warning btn-sm d-md-none'
+              style={{
+                fontSize: '0.8rem',
+                padding: '0.375rem 0.75rem'
+              }}
+            >
+              <i className="fas fa-plus me-1"></i>Create Media
+            </button>
+          </div>
+          <div className='col-md-4'></div>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 
@@ -9,7 +9,6 @@ import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import TierTitle from "../components/TierTitle";
 import TagFilter from "../components/TagFilter";
 import SearchBar from "../components/SearchBar";
-import DeleteModal from "../components/DeleteModal";
 import useSwipe from "../useSwipe.tsx";
 
 const constants = require('../constants');
@@ -106,11 +105,15 @@ function toCapitalNotation(inputString) {
 }
 
 function getTruncatedTitle(mediaType, toDoString) {
-  const fullTitle = `${toCapitalNotation(mediaType)} ${toCapitalNotation(toDoString)} Tier List`;
+  // Handle special case for "to-do" to display as "To-Do"
+  const displayToDoString = toDoString === 'to-do' ? 'To-Do' : toCapitalNotation(toDoString);
   
-  // If the title is longer than 30 characters, truncate it
-  if (fullTitle.length > 30) {
-    return `${toCapitalNotation(mediaType)} ${toCapitalNotation(toDoString)}`;
+  const fullTitle = `${toCapitalNotation(mediaType)} ${displayToDoString} Tier List`;
+  const shortTitle = `${toCapitalNotation(mediaType)} ${displayToDoString}`;
+  
+  // If the full title is longer than 20 characters, use the short version
+  if (fullTitle.length > 20) {
+    return shortTitle;
   }
   
   return fullTitle;
@@ -120,7 +123,66 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
   console.log('ShowMediaList props:', { user, toDo, newType, selectedTags, setSelectedTags, filteredData });
   
   const location = useLocation();
+
+  // Calculate dynamic width for mobile settings dropdown
+  const calculateMobileSettingsDropdownWidth = () => {
+    // Calculate width for each option, accounting for icons
+    const options = [
+      { text: 'Bullets By Tier', hasIcon: false },
+      { text: 'Bullets By Year', hasIcon: false },
+      { text: 'Download CSV', hasIcon: true },
+      { text: 'Delete Type', hasIcon: false }
+    ];
+    
+    // Find the option that would take the most space
+    const widths = options.map(option => {
+      let width = option.text.length * 6 + 24; // base text width + padding
+      if (option.hasIcon) {
+        width += 30; // add space for icon (emoji is wider than single char)
+      }
+      return width;
+    });
+    
+    const maxWidth = Math.max(...widths);
+    
+    // Add small buffer and ensure minimum width
+    return Math.max(maxWidth, 100);
+  };
+
+  // Calculate dynamic width for desktop settings dropdown
+  const calculateDesktopSettingsDropdownWidth = () => {
+    // Calculate width for each option, accounting for icons
+    const options = [
+      { text: 'Bullets By Tier', hasIcon: false },
+      { text: 'Bullets By Year', hasIcon: false },
+      { text: 'Download CSV', hasIcon: true },
+      { text: 'Delete Type', hasIcon: false }
+    ];
+    
+    // Find the option that would take the most space
+    const widths = options.map(option => {
+      let width = option.text.length * 7 + 32; // base text width + padding
+      if (option.hasIcon) {
+        width += 30; // add space for icon (emoji is wider than single char)
+      }
+      return width;
+    });
+    
+    const maxWidth = Math.max(...widths);
+    
+    // Add small buffer and ensure minimum width
+    return Math.max(maxWidth, 120);
+  };
   
+  // Set CSS custom properties for dynamic settings dropdown widths
+  useEffect(() => {
+    const mobileSettingsDropdownWidth = calculateMobileSettingsDropdownWidth();
+    const desktopSettingsDropdownWidth = calculateDesktopSettingsDropdownWidth();
+    
+    document.documentElement.style.setProperty('--mobile-settings-dropdown-width', `${mobileSettingsDropdownWidth}px`);
+    document.documentElement.style.setProperty('--desktop-settings-dropdown-width', `${desktopSettingsDropdownWidth}px`);
+  }, []);
+
   // Read tags from URL parameters on mount
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -139,7 +201,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
       console.log('ShowMediaList: No tags in URL, clearing selected tags');
       setSelectedTags([]);
     }
-  }, [location.search, setSelectedTags, selectedTags.length]);
+  }, [location.search, selectedTags.length, setSelectedTags]);
 
   // Data
   const [tierData, setTierData] = useState();
@@ -177,27 +239,12 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
 
   // Local ordering state mirrors filteredData for reorders
   const [localByTier, setLocalByTier] = useState();
-  const [isExportOpen, setIsExportOpen] = useState(false);
-  const exportDropdownRef = useRef(null);
-
-  // Close export dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (exportDropdownRef.current && !exportDropdownRef.current.contains(event.target)) {
-        setIsExportOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // Require 8px movement before drag starts
+        distance: 15, // Require 15px movement before drag starts (increased for better click handling)
       },
     }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -299,6 +346,11 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
         console.log(err);
       });
   };
+
+  function handleDeleteConfirm() {
+    onDeleteClick();
+    setShowDeleteModal(false);
+  };
   function exportToCsv() {
     const flatListData = filteredData ? Object.values(filteredData).reduce((acc, val) => acc.concat(val), []) : []
     const csvContent = "data:text/csv;charset=utf-8," + 
@@ -314,12 +366,13 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     document.body.appendChild(link); // Required for Firefox
     link.click();
   }
-  function onNextShortcut() {
+  function onSwipeLeft() {
     if(toDo) {
       switchToDo();
     }
   }
-  function onPreviousShortcut() {
+  
+  function onSwipeRight() {
     if(!toDo) {
       switchToDo();
     }
@@ -330,15 +383,12 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
   const [activeId, setActiveId] = useState(null);
   
   const swipeHandlers = useSwipe({ 
-    onSwipedLeft: onNextShortcut, 
-    onSwipedRight: onPreviousShortcut,
-    disabled: activeId !== null // Disable swipe when dragging
+    onSwipedLeft: onSwipeLeft, 
+    onSwipedRight: onSwipeRight,
+    disabled: activeId !== null // Re-enable the disabled check to prevent swipes during drag
   });
-  
-  console.log('Swipe handlers disabled:', activeId !== null, 'activeId:', activeId);
 
   function onDragStart(event) {
-    console.log('ShowMediaList onDragStart:', event);
     setActiveId(event.active.id);
   }
 
@@ -588,17 +638,86 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
   } else if(user && !firstLoad && filteredData) {
   return (
     <>
-    <div className='ShowMediaList' {...swipeHandlers}>
+    <div 
+      className='ShowMediaList' 
+      {...swipeHandlers}
+      onTouchStart={(e) => {
+        console.log('ShowMediaList - Touch start detected on main div');
+        if (swipeHandlers.onTouchStart) {
+          swipeHandlers.onTouchStart(e);
+        }
+      }}
+      onMouseDown={(e) => {
+        console.log('ShowMediaList - Mouse down detected on main div');
+        if (swipeHandlers.onMouseDown) {
+          swipeHandlers.onMouseDown(e);
+        }
+      }}
+    >
       <div className='container'>
         <div className='pt-4'>
-          <div className='row align-items-center mb-3'>
+          {/* Mobile buttons row with title - only visible on mobile */}
+          <div className='row d-md-none mb-3 align-items-center'>
+            <div className='col-3 d-flex justify-content-start'>
+              <button 
+                className='btn btn-warning btn-xs'
+                onClick={switchToDo}
+                style={{ 
+                  whiteSpace: 'nowrap', 
+                  fontSize: '0.65rem', 
+                  padding: '0.3rem 0.4rem',
+                  minWidth: 'fit-content',
+                  width: '100%',
+                  maxWidth: '100%'
+                }}
+                >
+                <i className="fas fa-exchange-alt me-1"></i>My {toDoState ? toCapitalNotation('collection') : 'To-Do'}
+              </button>
+            </div>
+            <div className='col-6 text-center'>
+              <h1 className='fw-light text-white mb-0' style={{ 
+                fontFamily: 'Roboto, sans-serif', 
+                fontSize: 'clamp(18px, 5vw, 28px)',
+                minFontSize: '18px',
+                whiteSpace: 'nowrap'
+              }}>
+                {getTruncatedTitle(mediaType, toDoString)}
+              </h1>
+            </div>
+            <div className='col-3 d-flex justify-content-end'>
+              <div className="dropdown">
+                <button className="btn btn-warning btn-xs dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style={{ 
+                  fontSize: '0.65rem', 
+                  padding: '0.3rem 0.4rem',
+                  minWidth: 'fit-content',
+                  width: '100%',
+                  maxWidth: '100%'
+                }}>
+                  Settings
+                </button>
+                <ul className="dropdown-menu mobile-settings-dropdown" style={{ minWidth: `${calculateMobileSettingsDropdownWidth()}px`, width: `${calculateMobileSettingsDropdownWidth()}px` }}>
+                  <li><button className="dropdown-item py-1" style={{fontSize: '0.75rem'}} onClick={() => setExportMode('By-Tier')}>Bullets By Tier</button></li>
+                  <li><button className="dropdown-item py-1" style={{fontSize: '0.75rem'}} onClick={() => exportByYear()}>Bullets By Year</button></li>
+                  <li><button className="dropdown-item py-1" style={{fontSize: '0.75rem'}} onClick={() => exportToCsv()}>Download CSV <i className="fa-solid fa-download"></i></button></li>
+                  {newType && (
+                    <li><button className="dropdown-item py-1 text-danger" style={{fontSize: '0.75rem'}} onClick={() => setShowDeleteModal(true)}>
+                      <i className="fas fa-trash me-1"></i>Delete Type
+                    </button></li>
+                  )}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop layout - hidden on mobile */}
+          <div className='row align-items-center mb-3 d-none d-md-flex'>
             <div className='col-md-2'>
               <button 
                 className='btn btn-warning btn-lg'
                 onClick={switchToDo}
                 style={{ whiteSpace: 'nowrap' }}
                 >
-                <i className="fas fa-exchange-alt me-2"></i>My {toCapitalNotation(toDoState ? 'collection' : 'to-do')}
+                <i className="fas fa-exchange-alt me-2"></i>My {toDoState ? toCapitalNotation('collection') : 'To-Do'}
               </button>
             </div>
             <div className='col-md-8 text-center'>
@@ -611,39 +730,37 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
               </h1>
             </div>
             <div className='col-md-2 text-center'>
-              {newType && (
-                <DeleteModal onDeleteClick={onDeleteClick} type={mediaType}></DeleteModal>
-              )}
+              <div className="dropdown">
+                <button className="btn btn-warning btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Settings
+                </button>
+                <ul className="dropdown-menu desktop-settings-dropdown" style={{ minWidth: `${calculateDesktopSettingsDropdownWidth()}px` }}>
+                  <li><button className="dropdown-item py-1" style={{fontSize: '1rem'}} onClick={() => setExportMode('By-Tier')}>Bullets By Tier</button></li>
+                  <li><button className="dropdown-item py-1" style={{fontSize: '1rem'}} onClick={() => exportByYear()}>Bullets By Year</button></li>
+                  <li><button className="dropdown-item py-1" style={{fontSize: '1rem'}} onClick={() => exportToCsv()}>Download CSV <i className="fa-solid fa-download"></i></button></li>
+                  {newType && (
+                    <li><button className="dropdown-item py-1 text-danger" style={{fontSize: '1rem'}} onClick={() => setShowDeleteModal(true)}>
+                      <i className="fas fa-trash me-1"></i>Delete Type
+                    </button></li>
+                  )}
+                </ul>
+              </div>
             </div>
           </div>
 
 
 
-          <div className='row g-3 mb-4'>
+
+          <div className='row g-1 g-md-2 mb-2 mb-md-3' style={{overflow: 'visible', position: 'relative', display: 'flex', flexWrap: 'nowrap'}}>
           
-          <div className='col-lg-4 col-md-6'>
+          <div className='col-lg-4 col-md-4 col-sm-4' style={{flex: '0 0 33.333333%', maxWidth: '33.333333%', overflow: 'visible', position: 'relative', paddingLeft: '0.25rem', paddingRight: '0.25rem'}}>
             <YearFilter possible_years={possibleYears} firstYear={firstYear} lastYear={lastYear} setFirstYear={setFirstYear} setLastYear={setLastYear} setSearchChanged={setSearchChanged}/>
           </div>
-          <div className='col-lg-4 col-md-6'>
+          <div className='col-lg-4 col-md-4 col-sm-4' style={{flex: '0 0 33.333333%', maxWidth: '33.333333%', overflow: 'visible', position: 'relative', paddingLeft: '0.25rem', paddingRight: '0.25rem'}}>
             <SearchBar mediaType={mediaType} allMedia={filteredData} searchQuery={searchQuery} setSearchQuery={setSearchQuery} setSearchChanged={setSearchChanged}></SearchBar>
           </div>
-          <div className='col-lg-3 col-md-6'>
+          <div className='col-lg-4 col-md-4 col-sm-4' style={{overflow: 'visible', position: 'relative', flex: '0 0 33.333333%', maxWidth: '33.333333%', paddingLeft: '0.25rem', paddingRight: '0.25rem'}}>
             <TagFilter suggestedTags={suggestedTags} selected={selectedTags} setSelected={setSelectedTags} setSearchChanged={setSearchChanged}></TagFilter>
-          </div>
-          
-          <div className='col-lg-1 col-md-6'>
-            <div className="dropdown" ref={exportDropdownRef}>
-              <button className="btn btn-warning btn-lg dropdown-toggle" type="button" id="exportDropdown" onClick={() => setIsExportOpen(!isExportOpen)}>
-                Export
-              </button>
-              {isExportOpen && (
-                <div className="dropdown-menu show" style={{ minWidth: '140px' }}>
-                  <button className="dropdown-item py-1" onClick={() => { setExportMode('By-Tier'); setIsExportOpen(false); }}>Bullets By Tier</button>
-                  <button className="dropdown-item py-1" onClick={() => { exportByYear(); setIsExportOpen(false); }}>Bullets By Year</button>
-                  <button className="dropdown-item py-1" onClick={() => { exportToCsv(); setIsExportOpen(false); }}>Download CSV <i className="fa-solid fa-download"></i></button>
-                </div>
-              )}
-            </div>
           </div>
           
         </div>
@@ -666,7 +783,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
               tier={item}
               items={(localByTier && localByTier[item]) ? localByTier[item] : filteredData[item]}
             />
-            <hr />
+            {index < tiers.length - 1 && <hr />}
           </div>
         ))}
         
@@ -716,6 +833,34 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
           </button>
         </div>
       </div>
+      
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="modal fade show d-block" style={{backgroundColor: 'rgba(0,0,0,0.5)'}} tabIndex="-1">
+          <div className="modal-dialog" style={{
+            marginTop: '5vh',
+            marginBottom: 'auto'
+          }}>
+            <div className="modal-content shadow-strong">
+              <div className="modal-header border-bottom">
+                <h5 className="modal-title fw-semibold text-dark">Delete Confirmation</h5>
+                <button type="button" className="btn-close" onClick={() => setShowDeleteModal(false)} aria-label="Close"></button>
+              </div>
+              <div className="modal-body">
+                <p className="fw-semibold text-dark">
+                  Are you sure you want to delete the entirety of your To-Do List & Collection from ~{mediaType.charAt(0).toUpperCase() + mediaType.slice(1)}~?
+                </p>
+              </div>
+              <div className="modal-footer border-top">
+                <button type="button" className="btn btn-secondary btn-sm d-md-none" onClick={() => setShowDeleteModal(false)}>Cancel</button>
+                <button type="button" className="btn btn-danger btn-sm d-md-none" onClick={handleDeleteConfirm}>Yes, Delete Everything</button>
+                <button type="button" className="btn btn-secondary btn-lg d-none d-md-inline-block" onClick={() => setShowDeleteModal(false)}>Cancel</button>
+                <button type="button" className="btn btn-danger btn-lg d-none d-md-inline-block" onClick={handleDeleteConfirm}>Yes, Delete Everything</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
 
   );

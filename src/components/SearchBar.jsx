@@ -43,7 +43,7 @@ const Function = ({mediaType, allMedia, searchQuery, setSearchQuery, setSearchCh
   
   const noOptionsText = `No matching ${mediaType}`;
   return (
-    <div className='w-100'>
+    <div>
       <label htmlFor='searchBar-input' className='form-label fw-semibold text-white mb-2'>Search by Title</label>
       <ReactTags
         id='searchBar'

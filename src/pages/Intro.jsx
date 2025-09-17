@@ -9,13 +9,13 @@ const google = () => {
 const Intro = (props) => {
 
   return (
-    <div className="container-fluid min-vh-100 d-flex align-items-center" style={{background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)'}}>
+    <div className="container-fluid min-vh-100 d-flex align-items-center intro-container" style={{background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)'}}>
       <div className="container">
         <div className="row justify-content-center">
-          <div className="col-lg-8 col-md-10 text-center text-white">
+          <div className="col-lg-8 col-md-10 col-12 text-center text-white">
             <div className="mb-4">
-              <h1 className="display-3 fw-bold mb-3">Welcome to ME-DB</h1>
-              <h2 className="h4 opacity-75">Your Media Entertainment Database</h2>
+              <h1 className="display-3 fw-bold mb-3 intro-title text-white">Welcome to ME-DB</h1>
+              <h2 className="h4 opacity-75 intro-subtitle">Your Media Entertainment Database</h2>
               <div className="border-bottom border-3 border-white w-25 mx-auto mt-3"></div>
             </div>
             
@@ -34,13 +34,13 @@ const Intro = (props) => {
               <div className="text-warning fs-4 fw-semibold mb-3">
                 Customize your own Tier Lists
               </div>
-              <div className="text-white fs-5 opacity-90">
-                <div className="mb-2">Your Collection • Your To-Do List • All in One</div>
+              <div className="text-white fs-5 opacity-90 intro-text">
+                <div className="mb-2">Your Collection • Your To-Do List • <span className="text-nowrap">All in One</span></div>
               </div>
             </div>
 
-            <div className="mt-4">
-              <div className="badge bg-white text-primary fs-5 px-4 py-2 rounded-pill">
+            <div className="mt-4 d-flex justify-content-center">
+              <div className="badge bg-white text-primary fs-5 px-3 py-2 rounded-pill intro-badge">
                 Anime | Movies | TV Shows | Games
               </div>
             </div>

@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const constants = require('../constants');
 
-const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder}) => {
+const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hideLabel = false, size = 'normal'}) => {
   const [suggestions, setSuggestions] = useState();
   // list of {value, label}
   const [selected, setSelected] = useState([]);
@@ -105,17 +105,46 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder}) =>
   )
 
   if(selected !== null) {
+    const containerStyle = size === 'small' ? { 
+      fontSize: '0.75rem',
+      position: 'relative',
+      zIndex: 1000,
+      overflow: 'visible'
+    } : size === 'extra-small' ? { 
+      fontSize: '0.7rem',
+      position: 'relative',
+      zIndex: 1000,
+      overflow: 'visible'
+    } : {
+      position: 'relative',
+      zIndex: 1000,
+      overflow: 'visible'
+    };
+    const reactTagsStyle = size === 'small' ? { 
+      fontSize: '0.75rem',
+      minHeight: '28px'
+    } : size === 'extra-small' ? {
+      fontSize: '0.7rem',
+      minHeight: '26px'
+    } : {};
+    
     return (
       <>
-      <label className="tags-label fw-bold text-white">Tags (Optional)</label><ReactTags
-        selected={selected}
-        suggestions={suggestions}
-        onAdd={onAdd}
-        onDelete={onDelete}
-        noOptionsText="No matching tags" 
-        allowNew={true}
-        suggestionsTransform={suggestionsTransform}
-        placeholderText={placeholder}/></>
+      {!hideLabel && <label className="form-label fw-semibold text-white edit-media-mobile-label">Tags (Optional)</label>}
+      <div style={containerStyle}>
+        <ReactTags
+          selected={selected}
+          suggestions={suggestions}
+          onAdd={onAdd}
+          onDelete={onDelete}
+          noOptionsText="No matching tags" 
+          allowNew={true}
+          suggestionsTransform={suggestionsTransform}
+          placeholderText={placeholder}
+          style={reactTagsStyle}
+        />
+      </div>
+      </>
     )
   }
   

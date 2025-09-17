@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import DeleteModal from "../components/DeleteModal";
+import TagMaker from "../components/TagMaker";
 import useSwipe from "../useSwipe.tsx";
 const constants = require('../constants');
 
@@ -17,9 +18,26 @@ function ShowMediaDetails({user, newType, filteredData}) {
   const { mediaType, group } = useParams();
   const [loaded, setLoaded] = useState(false)
   const [curIndex, setCurIndex] = useState(0);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingFields, setEditingFields] = useState(new Set());
+  const [tempMedia, setTempMedia] = useState({});
   
   const navigate = useNavigate();
+  const location = useLocation();
   const mediaTypeLoc = user ? (newType ? user.newTypes[mediaType] : user[mediaType]) : null;
+  
+  // Function to build back URL with preserved query parameters
+  const buildBackUrl = () => {
+    const baseUrl = `/${mediaType}/${media.toDo === true ? 'to-do' : 'collection'}`;
+    const currentSearch = location.search;
+    
+    // If there are query parameters (like tags), preserve them
+    if (currentSearch) {
+      return `${baseUrl}${currentSearch}`;
+    }
+    
+    return baseUrl;
+  };
   
   // Build mediaList from filteredData (clean React approach)
   const mediaList = useMemo(() => {
@@ -36,6 +54,7 @@ function ShowMediaDetails({user, newType, filteredData}) {
         } else {
           console.log("Details GET /api/media/type/id", res.data)
           setMedia(res.data);
+          setTempMedia(res.data); // Initialize temp media for editing
           
           // Find current media index in the mediaList
           for(let i = 0; i < mediaList.length; i++) {
@@ -53,67 +72,163 @@ function ShowMediaDetails({user, newType, filteredData}) {
     }
   }, [loaded, mediaType, group, navigate, mediaList]);
 
+  // Editing functions
+  const startEditing = (field) => {
+    setIsEditing(true);
+    setEditingFields(prev => new Set([...prev, field]));
+  };
+
+  // const stopEditing = (field) => {
+  //   setEditingFields(prev => {
+  //     const newSet = new Set(prev);
+  //     newSet.delete(field);
+  //     return newSet;
+  //   });
+  //   
+  //   // If no fields are being edited, exit editing mode
+  //   if (editingFields.size === 1) {
+  //     setIsEditing(false);
+  //   }
+  // };
+
+  const cancelEditing = () => {
+    setIsEditing(false);
+    setEditingFields(new Set());
+    setTempMedia(media); // Reset to original values
+  };
+
+  const handleFieldChange = (field, value) => {
+    setTempMedia(prev => ({
+      ...prev,
+      [field]: field === 'toDo' ? value === 'true' : 
+               field === 'year' ? parseInt(value) : value
+    }));
+  };
+
+  const saveChanges = () => {
+    console.log("=== SAVE CHANGES DEBUG ===");
+    console.log("Current tempMedia state:", tempMedia);
+    console.log("Original media state:", media);
+    
+    const data = {
+      title: tempMedia.title,
+      tier: tempMedia.tier,
+      toDo: tempMedia.toDo,
+      year: tempMedia.year,
+      tags: tempMedia.tags,
+      description: tempMedia.description
+    };
+
+    console.log("Data being sent to backend:", data);
+    console.log("API endpoint:", constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`);
+
+    axios
+      .put(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`, data)
+      .then((res) => {
+        console.log("PUT /api/media/type/id success:", res.data);
+        console.log("Updated media data:", tempMedia);
+        setMedia(tempMedia);
+        setIsEditing(false);
+        setEditingFields(new Set());
+      })
+      .catch((err) => {
+        console.log("PUT /api/media/type/id error:", err);
+        console.log("Error details:", err.response?.data || err.message);
+        // Reset on error
+        setTempMedia(media);
+      });
+  };
+
   function onDeleteClick() {
     axios
       .delete(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`)
       .then((res) => {
         // Use the media object's toDo property as fallback if res.data.toDo is undefined
         const groupStr = (res.data && res.data.toDo === true) || media.toDo === true ? 'to-do' : 'collection';
-        navigate(`/${mediaType}/${groupStr}`);
+        const backUrl = `/${mediaType}/${groupStr}`;
+        const currentSearch = location.search;
+        
+        // Preserve query parameters when navigating back after delete
+        const finalUrl = currentSearch ? `${backUrl}${currentSearch}` : backUrl;
+        navigate(finalUrl);
       })
       .catch((err) => {
         console.log('Error from ShowMediaDetails_deleteClick:', err);
       });
   };
 
-  function onNextShortcut() {
-    console.log('onNextShortcut - mediaList.length:', mediaList.length);
-    console.log('onNextShortcut - curIndex:', curIndex);
-    
+  function onSwipeLeft() {
     if (mediaList.length === 0) {
-      console.log('No media to navigate to - mediaList is empty');
       return;
     }
     
-    var nextIndex = curIndex+1;
+    // Go to next media (forward)
+    var nextIndex = curIndex + 1;
     if(nextIndex === mediaList.length){
       nextIndex = 0;
     }
     
     const nextMedia = mediaList[nextIndex];
     if (!nextMedia || !nextMedia.ID) {
-      console.log('Error: nextMedia is undefined or missing ID', nextMedia);
       return;
     }
     
     setCurIndex(nextIndex);
     const nextId = nextMedia.ID.toString();
-    console.log('Navigating to next media:', nextId);
-    navigate(`/${mediaType}/${nextId}`);
+    
+    // Preserve query parameters when navigating to next media
+    const nextUrl = `/${mediaType}/${nextId}`;
+    const currentSearch = location.search;
+    const finalNextUrl = currentSearch ? `${nextUrl}${currentSearch}` : nextUrl;
+    
+    navigate(finalNextUrl);
     setLoaded(false);
   }
   
-  function onPreviousShortcut() {
-    if (mediaList.length === 0) return; // No media to navigate to
+  function onSwipeRight() {
+    if (mediaList.length === 0) {
+      return;
+    }
     
-    var prevIndex = curIndex-1;
+    // Go to previous media (backward)
+    var prevIndex = curIndex - 1;
     if(prevIndex === -1){
-      prevIndex = mediaList.length-1;
+      prevIndex = mediaList.length - 1;
     }
     
     const prevMedia = mediaList[prevIndex];
     if (!prevMedia || !prevMedia.ID) {
-      console.log('Error: prevMedia is undefined or missing ID', prevMedia);
       return;
     }
     
     setCurIndex(prevIndex);
     const prevId = prevMedia.ID.toString();
-    navigate(`/${mediaType}/${prevId}`);
+    
+    // Preserve query parameters when navigating to previous media
+    const prevUrl = `/${mediaType}/${prevId}`;
+    const currentSearch = location.search;
+    const finalPrevUrl = currentSearch ? `${prevUrl}${currentSearch}` : prevUrl;
+    
+    navigate(finalPrevUrl);
     setLoaded(false);
   }
   
-  const swipeHandlers = useSwipe({ onSwipedLeft: onNextShortcut, onSwipedRight: onPreviousShortcut });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const swipeHandlers = useSwipe({ 
+    onSwipedLeft: onSwipeLeft, 
+    onSwipedRight: onSwipeRight,
+    disabled: isModalOpen // Disable swipe when modal is open
+  });
+  
+  // Handle modal state changes
+  const handleModalOpen = () => {
+    setIsModalOpen(true);
+  };
+  
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
   
   // Redirect to login if user is not authenticated
   if (!user) {
@@ -136,62 +251,201 @@ function ShowMediaDetails({user, newType, filteredData}) {
     );
   }
   
-  const tiersVariable = media.toDo ? 'todoTiers' : 'collectionTiers';
-  const listType = media.toDo ? 'To-Do List' : 'My Collection' 
+  const tiersVariable = (tempMedia.toDo !== undefined ? tempMedia.toDo : media.toDo) ? 'todoTiers' : 'collectionTiers';
+  
+  // Helper function to render editable fields
+  const renderEditableField = (field, value, type = 'text') => {
+    if (editingFields.has(field)) {
+      switch (type) {
+        case 'select':
+          if (field === 'year') {
+            const years = Array.from({ length: constants.currentYear - 1969 }, (_, index) => constants.currentYear - index);
+            return (
+              <select 
+                className='form-select form-select-sm' 
+                value={tempMedia[field]} 
+                onChange={(e) => handleFieldChange(field, e.target.value)}
+                style={{ width: 'auto', minWidth: '80px' }}
+              >
+                {years.map((year) => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            );
+          } else if (field === 'tier') {
+            const tiers = ['S', 'A', 'B', 'C', 'D', 'F'];
+            return (
+              <select 
+                className='form-select form-select-sm' 
+                value={tempMedia[field]} 
+                onChange={(e) => handleFieldChange(field, e.target.value)}
+                style={{ width: 'auto', minWidth: '60px' }}
+              >
+                {tiers.map((tier) => (
+                  <option key={tier} value={tier}>{mediaTypeLoc && mediaTypeLoc[tiersVariable] ? mediaTypeLoc[tiersVariable][tier] : tier}</option>
+                ))}
+              </select>
+            );
+          } else if (field === 'toDo') {
+            return (
+              <select 
+                className='form-select form-select-sm' 
+                value={tempMedia[field] ? 'true' : 'false'} 
+                onChange={(e) => handleFieldChange(field, e.target.value)}
+                style={{ width: 'auto', minWidth: '120px' }}
+              >
+                <option value='true'>To-Do List</option>
+                <option value='false'>My Collection</option>
+              </select>
+            );
+          }
+          break;
+        case 'tags':
+          return (
+            <TagMaker 
+              mediaType={mediaType} 
+              toDo={tempMedia.toDo} 
+              media={tempMedia} 
+              setMedia={setTempMedia} 
+              alreadySelected={tempMedia.tags ? tempMedia.tags.map(tag => ({ label: tag, value: tag })) : []} 
+              placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags}
+              hideLabel={true}
+              size="extra-small"
+            />
+          );
+        default:
+          const isDescription = field === 'description';
+          return (
+            <input
+              type='text'
+              className='form-control form-control-sm'
+              value={tempMedia[field]}
+              onChange={(e) => handleFieldChange(field, e.target.value)}
+              style={{ 
+                width: 'auto', 
+                minWidth: '100px',
+                maxWidth: isDescription ? '500px' : '300px',
+                resize: 'horizontal'
+              }}
+              size={Math.max(tempMedia[field]?.length || 0, isDescription ? 20 : 10)}
+            />
+          );
+      }
+    } else {
+      return (
+        <span 
+          style={{ cursor: 'pointer', color: '#ffffff' }}
+          onDoubleClick={() => startEditing(field)}
+          title="Double-click to edit"
+        >
+          {field === 'tier' ? 
+            (mediaTypeLoc && mediaTypeLoc[tiersVariable] ? mediaTypeLoc[tiersVariable][tempMedia[field] || media[field]] : tempMedia[field] || media[field]) :
+            field === 'tags' ?
+              ((tempMedia[field] || media[field]) && (tempMedia[field] || media[field]).length > 0 ? (tempMedia[field] || media[field]).join(', ') : '-') :
+              field === 'toDo' ?
+                ((tempMedia[field] !== undefined ? tempMedia[field] : media[field]) ? 'To-Do List' : 'My Collection') :
+                (tempMedia[field] || value)
+          }
+        </span>
+      );
+    }
+  };
+  
   return (
     <div className='ShowMediaDetails min-vh-100' style={{backgroundColor: '#2c3e50', color: 'white'}} {...swipeHandlers}>
-      <div className='container py-5'>
-        <div className='row mb-4'>
-          <div className='col-md-2 d-flex justify-content-end align-items-center'>
-            <Link to={`/${mediaType}/${media.toDo === true ? 'to-do' : 'collection'}`} className='btn btn-outline-warning btn-lg'>
+      <div className='container-fluid px-2 py-3'>
+        {/* Mobile layout - single row */}
+        <div className='row mb-4 d-md-none align-items-center'>
+          <div className='col-3'>
+            <Link to={buildBackUrl()} className='btn btn-outline-warning btn-sm w-100'>
+              <i className="fas fa-arrow-left me-1"></i>Back
+            </Link>
+          </div>
+          <div className='col-6 text-center'>
+            <h1 className='fw-bold text-white mb-1' style={{fontSize: '1.2rem', lineHeight: '1.2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{toCapitalNotation(mediaType)} Record</h1>
+            <div className="border-bottom border-2 border-warning mx-auto" style={{width: '60%'}}></div>
+          </div>
+          <div className='col-3'>
+            <div className='d-flex justify-content-end'>
+              <DeleteModal 
+                onDeleteClick={onDeleteClick} 
+                type='media'
+                onModalOpen={handleModalOpen}
+                onModalClose={handleModalClose}
+              ></DeleteModal>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop layout - hidden on mobile */}
+        <div className='row mb-4 d-none d-md-flex align-items-center'>
+          <div className='col-md-2 d-flex justify-content-start'>
+            <Link to={buildBackUrl()} className='btn btn-outline-warning btn-lg'>
               <i className="fas fa-arrow-left me-2"></i>Go Back
             </Link>
           </div>
           <div className='col-md-8 text-center'>
-            <h1 className='display-4 fw-bold text-white'>{toCapitalNotation(mediaType)}'s Record</h1>
+            <h1 className='display-4 fw-bold text-white mb-0'>{toCapitalNotation(mediaType)} Record</h1>
             <div className="border-bottom border-3 border-warning w-25 mx-auto"></div>
           </div>
-          <div className='col-md-2 d-flex justify-content-center align-items-center'>
-            <DeleteModal onDeleteClick={onDeleteClick} type='media'></DeleteModal>
+          <div className='col-md-2 d-flex justify-content-end'>
+            <DeleteModal 
+              onDeleteClick={onDeleteClick} 
+              type='media'
+              onModalOpen={handleModalOpen}
+              onModalClose={handleModalClose}
+            ></DeleteModal>
           </div>
         </div>
         
         <div className='row justify-content-center'>
           <div className='col-lg-10 col-md-12'>
-            <div className="card shadow-soft border-0" style={{backgroundColor: constants.mainColors.table, border: '2px solid white'}}>
+            <div className="card shadow-soft border-0" style={{backgroundColor: constants.mainColors.table}}>
               <div className="card-body p-0" style={{backgroundColor: constants.mainColors.table}}>
                 <div className="table-responsive">
-                  <table className='table table-hover mb-0 text-white' style={{backgroundColor: constants.mainColors.table, border: '1px solid white'}}>
+                  <table className='table table-hover mb-0 text-white' style={{backgroundColor: constants.mainColors.table}}>
                     <tbody style={{backgroundColor: constants.mainColors.table}}>
-                      <tr className="border-bottom border-white" style={{backgroundColor: constants.mainColors.table}}>
+                      <tr style={{backgroundColor: constants.mainColors.table}}>
                         <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>1</th>
                         <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Title</td>
-                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table}}>{media.title}</td>
+                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table}}>
+                          {renderEditableField('title', media.title)}
+                        </td>
                       </tr>
-                      <tr className="border-bottom border-white" style={{backgroundColor: constants.mainColors.table}}>
+                      <tr style={{backgroundColor: constants.mainColors.table}}>
                         <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>2</th>
                         <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Year</td>
-                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table}}>{media.year}</td>
+                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table}}>
+                          {renderEditableField('year', media.year, 'select')}
+                        </td>
                       </tr>
-                      <tr className="border-bottom border-white" style={{backgroundColor: constants.mainColors.table}}>
+                      <tr style={{backgroundColor: constants.mainColors.table}}>
                         <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>3</th>
                         <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Tier</td>
-                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table}}>{mediaTypeLoc && mediaTypeLoc[tiersVariable] ? mediaTypeLoc[tiersVariable][media.tier] : media.tier}</td>
+                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table}}>
+                          {renderEditableField('tier', mediaTypeLoc && mediaTypeLoc[tiersVariable] ? mediaTypeLoc[tiersVariable][media.tier] : media.tier, 'select')}
+                        </td>
                       </tr>
-                      <tr className="border-bottom border-white" style={{backgroundColor: constants.mainColors.table}}>
+                      <tr style={{backgroundColor: constants.mainColors.table}}>
                         <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>4</th>
                         <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Tags</td>
-                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table}}>{media.tags && media.tags[0] ? media.tags.join(', ') : '-'}</td>
+                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table, overflow: 'visible', position: 'relative', zIndex: 999}}>
+                          {renderEditableField('tags', media.tags && media.tags[0] ? media.tags.join(', ') : '-', 'tags')}
+                        </td>
                       </tr>
-                      <tr className="border-bottom border-white" style={{backgroundColor: constants.mainColors.table}}>
+                      <tr style={{backgroundColor: constants.mainColors.table}}>
                         <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>5</th>
                         <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Description</td>
-                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table}}>{media.description ? media.description : '-'}</td>
+                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table}}>
+                          {renderEditableField('description', media.description ? media.description : '-')}
+                        </td>
                       </tr>
                       <tr style={{backgroundColor: constants.mainColors.table}}>
                         <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>6</th>
                         <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>List Type</td>
-                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table}}>{`${listType}`}</td>
+                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table}}>
+                          {renderEditableField('toDo', media.toDo, 'select')}
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -204,9 +458,26 @@ function ShowMediaDetails({user, newType, filteredData}) {
         <div className='row mt-4'>
           <div className='col-md-4'></div>
           <div className='col-md-4 text-center'>
-            <Link to={`/${mediaType}/${media.ID}/edit`} className='btn btn-warning btn-lg'>
-              <i className="fas fa-edit me-2"></i>Edit
-            </Link>
+            {isEditing ? (
+              <div className='d-flex gap-2 justify-content-center'>
+                <button 
+                  onClick={saveChanges}
+                  className='btn btn-warning btn-lg'
+                >
+                  <i className="fas fa-save me-2"></i>Update Media
+                </button>
+                <button 
+                  onClick={cancelEditing}
+                  className='btn btn-secondary btn-lg'
+                >
+                  <i className="fas fa-times me-2"></i>Cancel
+                </button>
+              </div>
+            ) : (
+              <div className='text-warning'>
+                <small><strong>Double-click any field value to edit</strong></small>
+              </div>
+            )}
           </div>
           <div className='col-md-4'></div>
         </div>

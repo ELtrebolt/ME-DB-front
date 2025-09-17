@@ -108,28 +108,28 @@ const Stats = ({ user }) => {
         
         {/* Top Row - Total Records in styled boxes */}
         <div className="mb-5">
-          <div className="row g-4">
-            <div className="col-lg-4 col-md-6">
+          <div className="row g-2 g-md-4">
+            <div className="col-4 col-lg-4 col-md-6">
               <div className="card border-primary border-2 h-100 shadow-soft" style={{backgroundColor: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)'}}>
-                <div className="card-body text-center p-4">
-                  <h3 className="text-primary display-6 fw-bold mb-2">{statsData.totals.totalToDo}</h3>
-                  <p className="text-white fw-medium mb-0">{constants.statsPage.totalToDo}</p>
+                <div className="card-body text-center p-2 p-md-4">
+                  <h3 className="text-primary display-6 fw-bold mb-2 stats-number-mobile">{statsData.totals.totalToDo}</h3>
+                  <p className="text-white fw-medium mb-0 stats-label-mobile">{constants.statsPage.totalToDo}</p>
                 </div>
               </div>
             </div>
-            <div className="col-lg-4 col-md-6">
+            <div className="col-4 col-lg-4 col-md-6">
               <div className="card border-success border-2 h-100 shadow-soft" style={{backgroundColor: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)'}}>
-                <div className="card-body text-center p-4">
-                  <h3 className="text-success display-6 fw-bold mb-2">{statsData.totals.totalRecords}</h3>
-                  <p className="text-white fw-medium mb-0">{constants.statsPage.totalRecords}</p>
+                <div className="card-body text-center p-2 p-md-4">
+                  <h3 className="text-success display-6 fw-bold mb-2 stats-number-mobile">{statsData.totals.totalRecords}</h3>
+                  <p className="text-white fw-medium mb-0 stats-label-mobile">{constants.statsPage.totalRecords}</p>
                 </div>
               </div>
             </div>
-            <div className="col-lg-4 col-md-6">
+            <div className="col-4 col-lg-4 col-md-6">
               <div className="card border-warning border-2 h-100 shadow-soft" style={{backgroundColor: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)'}}>
-                <div className="card-body text-center p-4">
-                  <h3 className="text-warning display-6 fw-bold mb-2">{statsData.totals.totalCollection}</h3>
-                  <p className="text-white fw-medium mb-0">{constants.statsPage.totalCollection}</p>
+                <div className="card-body text-center p-2 p-md-4">
+                  <h3 className="text-warning display-6 fw-bold mb-2 stats-number-mobile">{statsData.totals.totalCollection}</h3>
+                  <p className="text-white fw-medium mb-0 stats-label-mobile">{constants.statsPage.totalCollection}</p>
                 </div>
               </div>
             </div>

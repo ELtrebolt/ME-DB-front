@@ -17,17 +17,36 @@ function EditableText({title, mediaType, group, tier, setUserChanged, newType}) 
   const handleCheckmarkMouseDown = (event) => {
     event.preventDefault();
     const groupKey = group === 'to-do' ? 'todo' : 'collection';
+    
+    console.log('TierTitle: Updating tier title:', {
+      mediaType,
+      groupKey,
+      tier,
+      newTitle: editedText,
+      newType: newType || 'default'
+    });
+    
     axios
-      .put(constants['SERVER_URL'] + `/api/user/${mediaType}/${groupKey}/${tier}`, { newTitle: editedText, newType })
+      .put(constants['SERVER_URL'] + `/api/user/${mediaType}/${groupKey}/${tier}`, { 
+        newTitle: editedText, 
+        newType: newType 
+      })
       .then(() => {
         setText(editedText);
         setIsEditing(false);
         setUserChanged(true);
+        console.log('TierTitle: Successfully updated tier title');
       })
-      .catch(() => console.log('Error in TierTitle!'));
+      .catch((error) => {
+        console.log('Error in TierTitle:', error.response?.data || error.message);
+      });
   };
 
-  const inputStyle = { width: editedText.length > 6 ? `${editedText.length * 25}px` : '150px' };
+  const inputStyle = { 
+    width: `${Math.min(Math.max(editedText.length * 18, 120), Math.min(window.innerWidth * 0.6, 800))}px`,
+    minWidth: '120px',
+    maxWidth: `${Math.min(window.innerWidth * 0.6, 800)}px`
+  };
 
   return (
     <div className='px-4'>
@@ -38,14 +57,22 @@ function EditableText({title, mediaType, group, tier, setUserChanged, newType}) 
             value={editedText}
             onChange={handleInputChange}
             onBlur={handleInputBlur}
-            className="form-control text-center fs-4 fw-normal text-white"
+            className="form-control text-center fw-normal text-white fs-2"
+            data-large-input="true"
             style={{
               ...inputStyle,
               backgroundColor: 'rgba(30, 41, 59, 0.8)',
               border: '2px solid #f59e0b',
               borderRadius: '8px',
               outline: 'none',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              fontSize: 'clamp(18px, 5vw, 28px) !important',
+              fontFamily: 'Roboto, sans-serif !important',
+              padding: '8px 12px !important',
+              minHeight: 'auto !important',
+              height: 'auto !important',
+              lineHeight: '1.2 !important',
+              fontWeight: 'normal !important'
             }}
             autoFocus
             onFocus={(e) => {
@@ -58,7 +85,10 @@ function EditableText({title, mediaType, group, tier, setUserChanged, newType}) 
             style={{
               width: '32px',
               height: '32px',
-              transition: 'background-color 0.2s ease'
+              transition: 'background-color 0.2s ease',
+              fontSize: '14px',
+              padding: '0',
+              border: 'none'
             }}
             onMouseDown={handleCheckmarkMouseDown}
             onMouseEnter={(e) => e.target.style.backgroundColor = '#15803d'}
@@ -70,7 +100,10 @@ function EditableText({title, mediaType, group, tier, setUserChanged, newType}) 
         </div>
       ) : (
         <div className='d-flex align-items-center justify-content-center gap-3' style={{ position: 'relative' }}>
-          <h2 className='text-center fs-2 fw-normal text-white' onDoubleClick={handleDoubleClick}>{text}</h2>
+          <h2 className='text-center fs-2 fw-normal text-white' onDoubleClick={handleDoubleClick} style={{ 
+            fontFamily: 'Roboto, sans-serif', 
+            fontSize: 'clamp(18px, 5vw, 28px)'
+          }}>{text}</h2>
           {/* Add button next to title in center */}
           <a
             href={`/${mediaType}/${group}/create?tier=${tier}`}
@@ -79,7 +112,9 @@ function EditableText({title, mediaType, group, tier, setUserChanged, newType}) 
             className='tier-add-btn animate-scale-in btn btn-outline-warning rounded-circle d-flex align-items-center justify-content-center'
             style={{ 
               width: '32px',
-              height: '32px'
+              height: '32px',
+              fontSize: '14px',
+              padding: '0'
             }}
             onClick={(e) => {
               e.preventDefault();

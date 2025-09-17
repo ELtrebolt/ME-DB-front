@@ -74,8 +74,8 @@ const Function = ({suggestedTags, selected, setSelected, setSearchChanged}) => {
   )
 
   return (
-    <div className='w-100'>
-      <label htmlFor='tagFilter-input' className='form-label fw-semibold text-white mb-2'>Filter By Tags</label>
+    <div>
+      <label htmlFor='tagFilter-input' className='form-label fw-semibold text-white mb-2'>Filter by Tags</label>
       <ReactTags
         id='tagFilter'
         selected={selected}

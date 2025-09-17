@@ -12,13 +12,6 @@
   color: white;
 }
 
-/* UpdateMediaInfo.jsx */
-.UpdateMediaInfo {
-  background-color: #2c3e50;
-  min-height: 100vh;
-  color: white;
-}
-
 /* ShowMediaList.jsx */
 .ShowMediaList {
   background-color: #2c3e50;
@@ -34,7 +27,7 @@
   border: none;
   height: 2px;
   background-color: rgba(255, 255, 255, 0.3);
-  margin: 24px 0;
+  margin: 8px 0;
 }
 
 /* Dark mode styles */
@@ -145,6 +138,7 @@
 .title-clamp {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -157,9 +151,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   padding: 0;
   cursor: pointer;
   transition: all .2s ease;
@@ -234,9 +228,15 @@
   object-fit: cover;
 }
 
+/* Navbar dropdown item hover styles */
+.navbar-dropdown-item:hover {
+  background-color: #f3f4f6 !important;
+  color: #1f2937 !important;
+}
+
 /* Intro.js - Professional Google Sign-in Button */
 .google-btn {
-  display: inline-flex !important;
+  display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
   width: 240px !important;
@@ -259,14 +259,12 @@
 }
 
 /* More specific selector to override any conflicts */
-.card-body .google-btn,
-.card .google-btn {
+.card-body .google-btn {
+  display: flex !important;
   width: 240px !important;
-  height: 42px !important;
   min-width: 240px !important;
   max-width: 240px !important;
-  flex-shrink: 0 !important;
-  display: inline-flex !important;
+  box-sizing: border-box !important;
 }
 
 .google-btn:hover {
@@ -279,9 +277,9 @@
   background-color: #2a56c6 !important;
   transform: translateY(0) !important;
 }
-
+  
 .google-btn .google-icon-wrapper {
-  position: absolute !important;
+    position: absolute !important;
   left: 1px !important;
   top: 1px !important;
   width: 40px !important;
@@ -305,67 +303,729 @@
   top: 50% !important;
   transform: translate(-50%, -50%) !important;
   color: #ffffff !important;
-  font-size: 14px !important;
+  font-size: clamp(12px, 2vw, 14px) !important;
   font-weight: 500 !important;
   letter-spacing: 0.25px !important;
   white-space: nowrap !important;
   margin: 0 !important;
   padding: 0 !important;
-}
+  }
+  
+  /* Ensure filter row containers don't clip dropdowns */
+  .row.g-3.mb-4 {
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
 
-.google-btn:hover {
-  box-shadow: 0 0 6px #4285f4;
-}
-
-.google-btn:active {
-  background: #1669F2;
-}
-
-.intro-title { 
-  color: #1669F2; 
-  font-family: 'Raleway',sans-serif; 
-  font-size: 58px; 
-  font-weight: 800; 
-  line-height: 72px; 
-  margin: 0 0 24px; 
-  text-transform: uppercase; 
-}
-
-.intro-subtitle { 
-  font-family: 'Raleway',sans-serif; 
-  font-size: 18px; 
-  font-weight: 500; 
-  line-height: 32px; 
-  margin: 0 0 24px; 
-}
-
-.center-input {
-  text-align: center;
-  font-size: 24px;
-}
-
-.checkmark {
-  font-size: 32px;
-  margin-left: 10px; 
-  cursor: pointer;
-  color: green;
+/* Force filter row to stay on one line on desktop */
+@media (min-width: 768px) {
+  .ShowMediaList .row.g-3.mb-4 {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+  }
+  
+  .ShowMediaList .row.g-3.mb-4 .col-lg-4,
+  .ShowMediaList .row.g-3.mb-4 .col-md-4 {
+    flex: 0 0 33.333333% !important;
+    max-width: 33.333333% !important;
+    min-width: 0 !important;
+  }
 }
 
 .centered-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.center{
   height: 100%;
-  display: flex;
   align-items: center;
-  justify-content: center;
   position: relative;
 }
 
-/* TagFilter */
+/* Page title sizing */
+.page-title {
+  font-size: 4rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+/* Bottom action buttons styling */
+.action-button {
+  background-color: transparent;
+  border: 2px solid #f59e0b;
+  color: #f59e0b;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.action-button:hover {
+  background-color: #f59e0b;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+/* Custom Variables */
+:root {
+  --primary-color: #1e293b;
+  --secondary-color: #475569;
+  --success-color: #059669;
+  --warning-color: #d97706;
+  --danger-color: #dc2626;
+  --light-color: #f8fafc;
+  --desktop-card-padding: 8px;
+  --desktop-card-min-width: 140px;
+  --desktop-card-max-width: 150px;
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+}
+
+/* Tags label bold */
+.tags-label {
+  font-weight: bold !important;
+}
+
+/* Title input error styling */
+.form-control.is-invalid {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.invalid-feedback {
+  color: #dc3545 !important;
+  font-weight: 600 !important;
+  margin-top: 0.25rem !important;
+}
+  
+
+/* Intro page responsive styles - Dynamic font sizing using clamp() */
+.intro-title {
+  /* Scales from 2rem (mobile) to 4rem (desktop) based on viewport width */
+  font-size: clamp(2rem, 4vw + 1rem, 4rem) !important;
+  line-height: 1.2 !important;
+}
+
+.intro-subtitle {
+  /* Scales from 1rem (mobile) to 1.5rem (desktop) */
+  font-size: clamp(1rem, 2vw + 0.5rem, 1.5rem) !important;
+  line-height: 1.3 !important;
+  }
+  
+  .intro-text {
+  /* Scales from 0.9rem (mobile) to 1.25rem (desktop) */
+  font-size: clamp(0.9rem, 1.5vw + 0.5rem, 1.25rem) !important;
+    line-height: 1.4 !important;
+}
+
+.intro-badge {
+  /* Scales from 0.8rem (mobile) to 1.1rem (desktop) */
+  font-size: clamp(0.8rem, 1.5vw + 0.4rem, 1.1rem) !important;
+  word-break: keep-all !important;
+  line-height: 1.3 !important;
+}
+
+/* Additional responsive refinements for specific breakpoints */
+@media (max-width: 576px) {
+  .intro-title {
+    font-size: clamp(1.8rem, 6vw, 2.5rem) !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .intro-subtitle {
+    font-size: clamp(0.95rem, 4vw, 1.2rem) !important;
+    margin-bottom: 1.5rem !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .intro-title {
+    font-size: clamp(2.5rem, 4vw, 3.5rem) !important;
+  }
+  
+  .intro-subtitle {
+    font-size: clamp(1.1rem, 2.5vw, 1.4rem) !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .intro-title {
+    font-size: clamp(3.5rem, 4vw, 4.5rem) !important;
+  }
+  
+  .intro-subtitle {
+    font-size: clamp(1.3rem, 2vw, 1.6rem) !important;
+  }
+  
+  .intro-text {
+    font-size: clamp(1.1rem, 1.5vw, 1.3rem) !important;
+  }
+}
+
+/* Make the warning text (fs-4) responsive too */
+.text-warning.fs-4 {
+  font-size: clamp(1rem, 2vw + 0.5rem, 1.5rem) !important;
+}
+
+/* Responsive Google button sizing */
+@media (max-width: 576px) {
+  .google-btn {
+    width: clamp(200px, 80vw, 240px) !important;
+    min-width: clamp(200px, 80vw, 240px) !important;
+    max-width: clamp(200px, 80vw, 240px) !important;
+    height: clamp(36px, 8vw, 42px) !important;
+  }
+  
+  .google-btn .google-icon-wrapper {
+    width: clamp(34px, 8vw, 40px) !important;
+    height: clamp(34px, 8vw, 40px) !important;
+  }
+  
+  .google-btn .google-icon {
+    width: clamp(14px, 4vw, 18px) !important;
+    height: clamp(14px, 4vw, 18px) !important;
+  }
+}
+
+/* Mobile TagMaker components - cleaned up, proper styling handled at end of file */
+
+/* Year filter components */
+  .year-filter-container label {
+    font-size: 0.875rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .year-filter-container select {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+  }
+  
+  /* ShowMediaList Filter Row */
+  .row.g-3 {
+    --bs-gutter-x: 0.75rem !important;
+    --bs-gutter-y: 0.75rem !important;
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 1 !important;
+  gap: 0.75rem !important;
+  margin-bottom: 1rem !important;
+  }
+  
+  /* Keep filters on one line for mobile - optimized for 428px */
+  @media (max-width: 767.98px) {
+  .ShowMediaList .row.g-3 .col-lg-4 {
+    flex: 0 0 33.333333% !important;
+    max-width: 33.333333% !important;
+    padding-left: 0.25rem !important;
+    padding-right: 0.25rem !important;
+    }
+  }
+  
+/* Mobile compact styling for ShowMediaList */
+  .ShowMediaList .row.g-3 .col-lg-4 .form-label {
+    font-size: 0.7rem !important;
+    margin-bottom: 0 !important;
+    line-height: 1.1 !important;
+  }
+  
+  
+/* Duplicate ReactTags CSS removed - clean styling handled at end of file */
+  
+/* Year filter container styling */
+  .year-filter-container {
+    overflow-y: visible !important;
+  }
+  
+  /* Make media cards for 5 per line - 2 lines of 10 chars each */
+  .media-card-outline {
+    min-height: 36px !important;
+    padding: 0 !important;
+    font-size: 0.75rem !important;
+    width: 100% !important;
+  /* Make TagMaker components match other form controls on mobile */
+  .CreateMedia .react-tags,
+  .ShowMediaDetails .react-tags {
+    font-size: 0.875rem !important;
+    padding: 0.25rem 0.4rem !important;
+    min-height: 28px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .CreateMedia .react-tags__combobox,
+  .ShowMediaDetails .react-tags__combobox {
+    padding: 0.2rem 0.3rem !important;
+  }
+  
+  .CreateMedia .react-tags__tag,
+  .ShowMediaDetails .react-tags__tag {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    margin: 0.125rem 0.25rem 0.125rem 0 !important;
+  }
+  
+  .CreateMedia .react-tags__combobox-input,
+  .ShowMediaDetails .react-tags__combobox-input {
+    font-size: 0.875rem !important;
+  }
+  
+  
+    font-size: 0.875rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  /* Make tier add button smaller on mobile to prevent clipping */
+  .tier-add-btn {
+    width: 28px !important;
+    height: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  .tier-add-btn span {
+    font-size: 0.875rem !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Center NewTypeModal on mobile - more specific targeting */
+  .modal.fade.show.d-block {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 100vh !important;
+  }
+  
+  .modal.fade.show.d-block .modal-dialog-centered {
+    margin: 0 !important;
+    max-width: 90% !important;
+    width: auto !important;
+    position: relative !important;
+    transform: none !important;
+  }
+  
+  /* Override centering for modals with custom marginTop (individual delete modal) */
+  .modal.fade.show.d-block .modal-dialog[style*="marginTop"] {
+    align-self: flex-start !important;
+    margin-top: 5vh !important;
+  }
+  
+  /* Override centering for delete type modal on mobile - maximum specificity */
+  body .modal.fade.show.d-block .modal-dialog-centered {
+    align-self: flex-start !important;
+    margin-top: 5vh !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    margin-bottom: auto !important;
+  }
+  
+  .modal.fade.show.d-block .modal-content {
+    margin: 0 !important;
+    max-height: calc(100vh - 2rem) !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Reduce spacing between tiers */
+  .tier-container {
+    margin-bottom: 0.5rem !important;
+    width: 100% !important;
+    overflow: visible !important;
+  }
+  
+  
+  .tier-container hr {
+    margin: 8px 0 !important;
+  }
+  
+  
+  
+  
+  /* Prevent any element from causing horizontal overflow */
+  * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Compact Media Record and Edit Media Pages */
+  .ShowMediaDetails {
+    padding: 0.5rem !important;
+  }
+  
+  .ShowMediaDetails .container {
+    padding: 0.5rem !important;
+  }
+  
+  /* Make form elements smaller */
+  .ShowMediaDetails .form-control, 
+  .ShowMediaDetails .form-select {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  /* Make form labels smaller */
+  .ShowMediaDetails .form-label {
+    font-size: 0.875rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  /* Make buttons smaller */
+  .ShowMediaDetails .btn {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  /* Make page titles smaller */
+  .ShowMediaDetails h1 {
+    font-size: 1.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .ShowMediaDetails h2 {
+    font-size: 1.25rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .ShowMediaDetails h3 {
+    font-size: 1.1rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  /* Make cards more compact */
+  .ShowMediaDetails .card {
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .ShowMediaDetails .card-body {
+    padding: 0.75rem !important;
+  }
+  
+  /* Make tables more compact */
+  /* Make TagMaker components match other form controls on mobile */
+  .CreateMedia .react-tags,
+  .ShowMediaDetails .react-tags {
+    font-size: 0.875rem !important;
+    padding: 0.25rem 0.4rem !important;
+    min-height: 28px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .CreateMedia .react-tags__combobox,
+  .ShowMediaDetails .react-tags__combobox {
+    padding: 0.2rem 0.3rem !important;
+  }
+  
+  .CreateMedia .react-tags__tag,
+  .ShowMediaDetails .react-tags__tag {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    margin: 0.125rem 0.25rem 0.125rem 0 !important;
+  }
+  
+  .CreateMedia .react-tags__combobox-input,
+  .ShowMediaDetails .react-tags__combobox-input {
+    font-size: 0.875rem !important;
+  }
+  
+  
+  .ShowMediaDetails .d-md-none .col-4:last-child .btn {
+    width: 100% !important;
+  }
+  
+  /* Make title smaller on mobile for col-4 layout */
+  .ShowMediaDetails .d-md-none h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  /* Make mobile dropdown text smaller and wider */
+  .navbar .dropdown-menu {
+    font-size: 0.875rem !important;
+    min-width: 360px !important;
+    width: auto !important;
+  }
+  
+  .navbar .dropdown-item {
+    font-size: 0.875rem !important;
+    padding: 0.375rem 0.75rem !important;
+    white-space: nowrap !important;
+  }
+  
+  /* Ensure mobile navbar dropdowns are wider */
+  @media (max-width: 768px) {
+    .navbar .dropdown-menu {
+      min-width: 360px !important;
+      width: auto !important;
+    }
+    
+    /* Mobile dropdown specific styling */
+    .mobile-profile-dropdown {
+      width: var(--mobile-profile-dropdown-width, 180px) !important;
+      min-width: var(--mobile-profile-dropdown-width, 180px) !important;
+    }
+    
+    .mobile-media-dropdown {
+      width: var(--mobile-media-dropdown-width, 120px) !important;
+      min-width: var(--mobile-media-dropdown-width, 120px) !important;
+    }
+  }
+
+  /* Desktop dropdown specific styling */
+  .desktop-profile-dropdown {
+    width: var(--desktop-profile-dropdown-width, 200px) !important;
+    min-width: var(--desktop-profile-dropdown-width, 200px) !important;
+  }
+  
+  .desktop-media-dropdown {
+    width: var(--desktop-media-dropdown-width, 140px) !important;
+    min-width: var(--desktop-media-dropdown-width, 140px) !important;
+  }
+
+  /* Settings dropdown specific styling */
+  .mobile-settings-dropdown {
+    width: var(--mobile-settings-dropdown-width, 120px) !important;
+    min-width: var(--mobile-settings-dropdown-width, 120px) !important;
+  }
+  
+  .desktop-settings-dropdown {
+    width: var(--desktop-settings-dropdown-width, 140px) !important;
+    min-width: var(--desktop-settings-dropdown-width, 140px) !important;
+  }
+  
+  /* Make both buttons same height in simplified col-6 layout */
+  .ShowMediaList .d-md-none .col-6 .btn {
+    min-height: 38px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+  
+  /* Ensure dropdown button matches height */
+  .ShowMediaList .d-md-none .col-6 .dropdown .btn {
+    min-height: 38px !important;
+  }
+  
+  /* Shift Settings button right for perfect symmetry */
+  .ShowMediaList .d-md-none .col-6:last-child {
+    padding-right: 0 !important;
+    margin-right: -1rem !important;
+  }
+  
+  .ShowMediaList .d-md-none .col-6:last-child .dropdown {
+    margin-left: auto !important;
+    margin-right: 0 !important;
+}
+
+/* Stats page mobile responsive styles */
+@media (max-width: 767.98px) {
+  .stats-number-mobile {
+    font-size: 1.5rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .stats-label-mobile {
+    font-size: 0.75rem !important;
+    line-height: 1.2 !important;
+  }
+}
+
+/* Mobile About Page Styles */
+@media (max-width: 768px) {
+  .about-container {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+  
+  .about-title {
+    font-size: 2.5rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .about-content {
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+  }
+  
+  .about-card {
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .about-badge {
+    font-size: 0.9rem !important;
+    padding: 0.5rem 1rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .about-title {
+    font-size: 2rem !important;
+  }
+  
+  .about-content {
+    font-size: 0.9rem !important;
+  }
+  
+  .about-card {
+    padding: 0.75rem !important;
+  }
+  
+  .about-badge {
+    font-size: 0.8rem !important;
+    padding: 0.4rem 0.8rem !important;
+  }
+}
+
+/* Mobile Form Pages - CreateMedia */
+@media (max-width: 768px) {
+  /* CSS constant for mobile form font size */
+  :root {
+    --mobile-form-font-size: 0.7rem;
+  }
+  
+  /* Make form controls smaller on mobile */
+  .form-control-md,
+  .form-select-md {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+  
+  
+  /* Make buttons smaller on mobile */
+  .btn-md {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+  
+  /* Make form labels smaller on mobile */
+  .form-label {
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Reduce card padding on mobile */
+  .card-body {
+    padding: 1rem !important;
+  }
+  
+  /* Make container padding smaller on mobile */
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  /* Make form spacing more compact */
+  .mb-3 {
+    margin-bottom: 0.75rem !important;
+  }
+  
+  /* Make small buttons even smaller */
+  .btn-xs {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+  
+  /* Make form labels smaller on mobile - applies to all form labels including tags */
+  .form-label {
+    font-size: 0.8rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+}
+
+  /* Desktop form controls - larger sizes */
+@media (min-width: 769px) {
+  .form-control-lg-md,
+  .form-select-lg-md {
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  .btn-lg-md {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  /* Desktop CreateMedia page - smaller title and form elements */
+  .CreateMedia .display-4 {
+    font-size: 2rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .CreateMedia .form-label {
+    font-size: 0.9rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  .CreateMedia .form-control,
+  .CreateMedia .form-select {
+    font-size: 0.9rem !important;
+    padding: 0.375rem 0.5rem !important;
+  }
+  
+  .CreateMedia .btn {
+    font-size: 0.9rem !important;
+    padding: 0.5rem 1rem !important;
+  }
+  
+  
+  /* Desktop media card overrides - using CSS variables from constants.js */
+  .media-card-outline {
+    min-height: var(--desktop-card-height) !important;
+    padding: var(--desktop-card-padding) !important;
+    font-size: var(--desktop-card-font-size) !important;
+    width: auto !important;
+    max-width: var(--desktop-card-max-width) !important;
+    min-width: var(--desktop-card-min-width) !important;
+    border: 0.25px solid rgba(0, 0, 0, 0.6) !important;
+    border-radius: 6px !important;
+  }
+  
+  .media-card-outline .card-title {
+    font-size: var(--desktop-card-title-font-size) !important;
+    line-height: 1.3 !important;
+    margin-bottom: 0.375rem !important;
+  }
+  
+  .media-card-outline .card-text {
+    font-size: var(--desktop-card-year-font-size) !important;
+    line-height: 1.2 !important;
+    margin-bottom: 0 !important;
+  }
+  
+  /* Desktop tier flex layout - restore original spacing */
+  .tier-flex {
+    gap: 10px !important;
+    padding: 6px 6px 0 6px !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+  
+  .tier-flex .sortable-card {
+    min-width: 140px !important;
+    max-width: 150px !important;
+    width: auto !important;
+    flex: 0 0 auto !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* ===== REACT TAGS STYLING ===== */
+
+/* Base ReactTags styling - Clean version from working previousApp.css */
 .react-tags {
   position: relative;
   padding: 0.25rem 0 0 0.25rem;
@@ -422,6 +1082,7 @@
   background-color: #4f46e5;
 }
 
+/* X button for removing tags */
 .react-tags__tag::after {
   content: '';
   display: inline-block;
@@ -504,91 +1165,275 @@
   background-color: #ffdd00;
 }
 
-/* Force filters to be on one row */
-.filters-row {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: flex-end;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
+/* ===== MOBILE RESPONSIVE STYLING ===== */
 
-.filters-row > * {
-  flex-shrink: 0;
-}
-
-/* Page title sizing remains large but color handled in component/theme */
-.page-title {
-  font-size: 4rem;
-  font-weight: 900;
-  text-align: center;
-  margin-bottom: 2rem;
-  letter-spacing: 0.05em;
-}
-
-/* Bottom action buttons styling */
-.action-button {
-  background-color: transparent;
-  border: 2px solid #f59e0b;
-  color: #f59e0b;
-  padding: 0.75rem 1.5rem;
-  font-size: 1.125rem;
-  border-radius: 0.375rem;
-  transition: all 0.2s ease;
-  text-decoration: none;
-  display: inline-block;
-  cursor: pointer;
-}
-
-.action-button:hover {
-  background-color: #f59e0b;
-  color: #ffffff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
-}
-
-/* Custom Variables */
-:root {
-  --primary-color: #1e293b;
-  --secondary-color: #475569;
-  --success-color: #059669;
-  --info-color: #0891b2;
-  --warning-color: #d97706;
-  --danger-color: #dc2626;
-  --light-color: #f8fafc;
-  --dark-color: #0f172a;
+/* Mobile - smaller font sizes and padding */
+@media (max-width: 767.98px) {
+  .react-tags {
+    font-size: 0.875rem;
+    min-height: 32px;
+  }
   
-  --border-radius: 0.5rem;
-  --box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-  --box-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+  .react-tags__tag {
+    padding: 0.25rem 0.375rem;
+    font-size: 0.875rem;
+    margin: 0 0.125rem 0.125rem 0;
+  }
+  
+  .react-tags__combobox {
+    padding: 0.25rem 0.125rem;
+  }
+  
+  .react-tags__combobox-input {
+    font-size: 0.875rem;
+  }
+  
+  .react-tags__listbox {
+    max-height: 10rem;
+  }
 }
 
-.bg-gradient-primary {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+/* ===== PAGE-SPECIFIC OVERRIDES ===== */
+
+/* ShowMediaList dropdown overlay fix - simple approach like previousApp.css */
+.ShowMediaList .react-tags__listbox {
+  max-height: 15rem;
 }
 
-/* TagMaker component - make tags label bold */
-.tags-label {
-  font-weight: bold !important;
+/* Ensure ShowMediaList containers allow dropdown overflow */
+.ShowMediaList .container {
+  overflow: visible;
 }
 
-/* Title input error styling */
-.form-control.is-invalid {
-  border-color: #dc3545 !important;
-  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
-  background-color: rgba(220, 53, 69, 0.1) !important;
+/* Ensure TagFilter doesn't block navbar dropdowns */
+.ShowMediaList .react-tags {
+  overflow: visible;
+  position: relative;
+  z-index: auto;
 }
 
-.form-control.is-invalid:focus {
-  border-color: #dc3545 !important;
-  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+/* Ensure filter row doesn't block navbar dropdowns */
+.ShowMediaList .row.g-2.mb-3 {
+  overflow: visible;
+  position: relative;
+  z-index: auto;
 }
 
-.invalid-feedback {
-  display: block !important;
-  color: #dc3545 !important;
-  font-weight: 600 !important;
-  margin-top: 0.25rem !important;
-  font-size: 0.875rem !important;
+/* Tighten up ShowMediaList filter layout for desktop */
+@media (min-width: 768px) {
+  .ShowMediaList .row .form-label,
+  .ShowMediaList .year-filter-container .form-label {
+    font-size: 0.9rem !important;
+    margin-bottom: 0.25rem !important;
+    font-weight: 600 !important;
+  }
+  
+  .ShowMediaList .row .react-tags {
+    font-size: 0.9rem;
+    padding: 0.2rem 0 0 0.2rem;
+    min-height: 36px;
+  }
+  
+  .ShowMediaList .row select,
+  .ShowMediaList .year-filter-container select {
+    font-size: 0.9rem !important;
+    padding: 0.3rem 0.4rem !important;
+    min-height: 36px !important;
+  }
+}
+
+/* Compact ShowMediaList filter layout for mobile */
+@media (max-width: 767.98px) {
+  .ShowMediaList .row .form-label,
+  .ShowMediaList .year-filter-container .form-label {
+    font-size: 0.65rem !important;
+    margin-bottom: 0.1rem !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+  }
+  
+  /* Mobile card layout - readable cards centered in tier */
+  .ShowMediaList .tier-flex {
+    gap: 6px !important;
+    padding: 6px 6px 0 6px !important;
+    justify-content: center !important;
+  }
+  
+  .ShowMediaList .tier-flex .sortable-card {
+    min-width: 75px !important;
+    max-width: 85px !important;
+    width: auto !important;
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+  }
+  
+  /* Mobile card styling - readable and compact */
+  .ShowMediaList .media-card-outline {
+    padding: 3px !important;
+    min-height: 50px !important;
+    border-width: 1px !important;
+  }
+  
+  .ShowMediaList .media-card-outline .card-body {
+    padding: 2px 3px !important;
+  }
+  
+  .ShowMediaList .media-card-outline .card-title {
+    font-size: 0.7rem !important;
+    line-height: 1.2 !important;
+    font-weight: 600 !important;
+    margin-bottom: 2px !important;
+    /* Text ellipsis for long titles */
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    word-break: break-word !important;
+  }
+  
+  .ShowMediaList .media-card-outline .card-text {
+    font-size: 0.6rem !important;
+    line-height: 1.1 !important;
+    margin-bottom: 0 !important;
+  }
+  
+  .ShowMediaList .row .react-tags {
+    font-size: 0.7rem;
+    padding: 0.15rem 0 0 0.15rem;
+    min-height: 28px;
+    border-width: 1px;
+  }
+  
+  .ShowMediaList .row .react-tags__combobox {
+    padding: 0.2rem 0.1rem;
+    margin-bottom: 0.1rem;
+  }
+  
+  .ShowMediaList .row .react-tags__combobox-input {
+    font-size: 0.7rem;
+  }
+  
+  .ShowMediaList .row .react-tags__tag {
+    padding: 0.1rem 0.2rem;
+    font-size: 0.6rem;
+    margin: 0 0.1rem 0.1rem 0;
+  }
+  
+  .ShowMediaList .row select,
+  .ShowMediaList .year-filter-container select {
+    font-size: 0.7rem !important;
+    padding: 0.2rem 0.3rem !important;
+    min-height: 28px !important;
+    border-width: 1px !important;
+  }
+  
+  /* Extra compact for very small screens */
+  @media (max-width: 480px) {
+    .ShowMediaList .row .form-label,
+    .ShowMediaList .year-filter-container .form-label {
+      font-size: 0.6rem !important;
+    }
+    
+    .ShowMediaList .row .react-tags {
+      font-size: 0.65rem;
+      min-height: 26px;
+    }
+    
+    .ShowMediaList .row .react-tags__combobox-input {
+      font-size: 0.65rem;
+    }
+    
+    .ShowMediaList .row .react-tags__tag {
+      font-size: 0.55rem;
+      padding: 0.05rem 0.15rem;
+    }
+    
+    .ShowMediaList .row select,
+    .ShowMediaList .year-filter-container select {
+      font-size: 0.65rem !important;
+      padding: 0.15rem 0.25rem !important;
+      min-height: 26px !important;
+    }
+    
+    /* Extra small screen cards - compact but readable */
+    .ShowMediaList .tier-flex {
+      gap: 5px !important;
+      padding: 5px 5px 0 5px !important;
+    }
+    
+    .ShowMediaList .tier-flex .sortable-card {
+      min-width: 70px !important;
+      max-width: 80px !important;
+    }
+    
+    .ShowMediaList .media-card-outline .card-title {
+      font-size: 0.65rem !important;
+      line-height: 1.1 !important;
+    }
+    
+    .ShowMediaList .media-card-outline .card-text {
+      font-size: 0.55rem !important;
+    }
+  }
+}
+
+/* CreateMedia and ShowMediaDetails smaller styling */
+.CreateMedia .react-tags,
+.ShowMediaDetails .react-tags {
+  font-size: 0.875rem;
+  min-height: 28px;
+  padding: 0.15rem 0 0 0.15rem;
+}
+
+.CreateMedia .react-tags__tag,
+.ShowMediaDetails .react-tags__tag {
+  padding: 0.2rem 0.3rem;
+  font-size: 0.875rem;
+  margin: 0 0.125rem 0.125rem 0;
+}
+
+.CreateMedia .react-tags__combobox,
+.ShowMediaDetails .react-tags__combobox {
+  padding: 0.15rem 0.1rem;
+}
+
+.CreateMedia .react-tags__combobox-input,
+.ShowMediaDetails .react-tags__combobox-input {
+  font-size: 0.875rem;
+}
+
+.CreateMedia .react-tags__listbox,
+.ShowMediaDetails .react-tags__listbox {
+  max-height: 12rem;
+}
+
+/* Hide numbered column on mobile for ShowMediaDetails table */
+@media (max-width: 767.98px) {
+  .ShowMediaDetails th[scope="row"] {
+    display: none !important;
+  }
+}
+
+/* Fix tags dropdown clipping in ShowMediaDetails - comprehensive approach */
+.ShowMediaDetails .table-responsive {
+  overflow: visible !important;
+}
+
+.ShowMediaDetails table {
+  overflow: visible;
+}
+
+/* Make ShowMediaDetails buttons bigger to match CreateMedia */
+.ShowMediaDetails .btn-lg {
+  padding: 0.75rem 1.5rem !important;
+  font-size: 1.125rem !important;
+  line-height: 1.5 !important;
+}
+
+/* Make ShowMediaDetails title bigger to match button size */
+.ShowMediaDetails .display-4 {
+  font-size: 3rem !important;
+  line-height: 1.2 !important;
 }

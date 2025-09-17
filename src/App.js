@@ -6,7 +6,6 @@ import Navbar from "./components/Navbar";
 import CreateMedia from './pages/CreateMedia';
 import ShowMediaList from './pages/ShowMediaList';
 import ShowMediaDetails from './pages/ShowMediaDetails';
-import UpdateMediaInfo from './pages/UpdateMediaInfo';
 import About from "./pages/About";
 import Intro from "./pages/Intro";
 import NotFound from "./pages/NotFound";
@@ -59,6 +58,21 @@ const App = () => {
     };
     getUser();
   });
+
+  // Set CSS variables from constants for desktop card styling
+  useEffect(() => {
+    const cardConstants = constants.components?.cards?.desktop;
+    if (cardConstants) {
+      const root = document.documentElement;
+      root.style.setProperty('--desktop-card-height', cardConstants.height);
+      root.style.setProperty('--desktop-card-font-size', cardConstants.fontSize);
+      root.style.setProperty('--desktop-card-title-font-size', cardConstants.titleFontSize);
+      root.style.setProperty('--desktop-card-year-font-size', cardConstants.yearFontSize);
+      root.style.setProperty('--desktop-card-padding', cardConstants.padding);
+      root.style.setProperty('--desktop-card-min-width', cardConstants.minWidth);
+      root.style.setProperty('--desktop-card-max-width', cardConstants.maxWidth);
+    }
+  }, []);
 
   // Session refresh mechanism - refresh session every 30 minutes
   useEffect(() => {
@@ -129,16 +143,19 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
   const newType = newTypes.includes(mediaType);
 
   // Clear tags when media type changes (navigating to different media type)
+  // Only clear if we're actually switching between different media types
+  const [previousMediaType, setPreviousMediaType] = useState(null);
   useEffect(() => {
-    if (setSelectedTags) {
-      console.log('RestrictMediaType: Media type changed to:', mediaType);
+    if (setSelectedTags && previousMediaType && previousMediaType !== mediaType) {
+      console.log('RestrictMediaType: Media type changed from', previousMediaType, 'to:', mediaType);
       setSelectedTags([]);
       // Clear tags from sessionStorage if it exists
       if (typeof sessionStorage !== 'undefined') {
         sessionStorage.removeItem('selectedTags');
       }
     }
-  }, [mediaType, setSelectedTags]);
+    setPreviousMediaType(mediaType);
+  }, [mediaType, setSelectedTags, previousMediaType]);
 
   // Fetch media data if filteredData is empty and we're navigating to a media details page
   useEffect(() => {
@@ -192,8 +209,10 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
     }
     else if(n === 5)
     {
+      console.log('RestrictMediaType: n=5, group=', group, 'isNaN(group)=', isNaN(group));
       if(!isNaN(group))
       {
+        console.log('RestrictMediaType: Rendering ShowMediaDetails for group:', group);
         return <ShowMediaDetails user={user} newType={newType} filteredData={filteredData}/>;
       }
       else if(group === "collection" || group === undefined)
@@ -210,7 +229,8 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
     }
     else if(n === 6)
     {
-      return <UpdateMediaInfo user={user} newType={newType} />;
+      // Redirect to ShowMediaDetails since we now have inline editing
+      return <Navigate to={`/${mediaType}/${group}`} replace />;
     }
   } else {
     console.log(n, group);

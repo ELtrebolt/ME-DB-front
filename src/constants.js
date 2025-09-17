@@ -1,7 +1,7 @@
 // For Local:       http://localhost:8082
 // For Deployment:  https://www.api.me-db.app
 const json = {
-    'SERVER_URL': "https://www.api.me-db.app",
+    'SERVER_URL': "http://localhost:8082",
     'currentYear': new Date().getFullYear(),
     'examples': {
         'type' : 'e.g. Restaurants',
@@ -174,6 +174,26 @@ const json = {
         'background': '#2c3e50', // Dark blue-gray background used in ShowMediaList and CreateMedia
         'buttons': '#ffc107',     // Warning/Orange color used for primary buttons
         'table': '#1a252f'        // Darker version of background for table fills
+    },
+    // Component Styling
+    'components': {
+        'navbar': {
+            'hr': {
+                'thickness': '2px',
+                'color': '#9ca3af'
+            }
+        },
+        'cards': {
+            'desktop': {
+                'height': '70px',
+                'fontSize': '1rem',
+                'titleFontSize': '1rem',
+                'yearFontSize': '0.875rem',
+                'padding': '8px',
+                'minWidth': '140px',
+                'maxWidth': '150px'
+            }
+        }
     }
 };
 
