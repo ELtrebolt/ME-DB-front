@@ -1,7 +1,9 @@
 // For Local:       http://localhost:8082
 // For Deployment:  https://www.api.me-db.app
+
+require('dotenv').config();
+
 const json = {
-    'SERVER_URL': "http://localhost:8082",
     'currentYear': new Date().getFullYear(),
     'examples': {
         'type' : 'e.g. Restaurants',
@@ -197,4 +199,12 @@ const json = {
     }
 };
 
+if(process.env.STATUS === 'local')
+{
+    json['SERVER_URL'] = "http://localhost:8082";
+}
+else
+{
+    json['SERVER_URL'] = "https://www.api.me-db.app";
+}
 module.exports = json;
