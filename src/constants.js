@@ -1,7 +1,7 @@
 // For Local:       http://localhost:8082
 // For Deployment:  https://www.api.me-db.app
 
-require('dotenv').config();
+// Don't use require('dotenv').config(); b/c breaks Vercel deployment
 
 const json = {
     'currentYear': new Date().getFullYear(),
@@ -199,7 +199,7 @@ const json = {
     }
 };
 
-if(process.env.STATUS === 'local')
+if(process.env.REACT_APP_STATUS === 'local')
 {
     json['SERVER_URL'] = "http://localhost:8082";
 }
