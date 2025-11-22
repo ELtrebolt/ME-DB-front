@@ -205,6 +205,6 @@ if(process.env.REACT_APP_STATUS === 'local')
 }
 else
 {
-    json['SERVER_URL'] = "https://www.api.me-db.app";
+    json['SERVER_URL'] = "https://api.me-db.app";  // Remove 'www.' to match backend
 }
 module.exports = json;
