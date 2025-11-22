@@ -10,22 +10,13 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hid
   // list of {value, label}
   const [selected, setSelected] = useState([]);
 
-  // Debug logging
-  console.log('TagMaker props:', { mediaType, alreadySelected, placeholder });
-  console.log('TagMaker state:', { suggestions, selected });
-
   // get suggestions by iterating through all current media
   useEffect(() => {
-    console.log('TagMaker useEffect running with:', { mediaType, alreadySelected, suggestions });
-    console.log('alreadySelected type:', typeof alreadySelected, 'length:', alreadySelected?.length);
-    console.log('alreadySelected content:', alreadySelected);
-    
     // Get suggestions if they don't exist
     if(!suggestions) {
       axios
       .get(constants['SERVER_URL'] + '/api/media/' + mediaType + '/tags')
       .then((res) => {
-        console.log(`TagMaker GET ${mediaType}/tags`, res.data);
         var all_tags = [];
         var alreadySelectedList = [];
         // keep tag IDs the same betwen ToDo and Collection
@@ -33,11 +24,8 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hid
         if (res.data.uniqueTags) {
           res.data.uniqueTags.forEach((t, index) => {
             if(alreadySelected && alreadySelected.length > 0) {
-              console.log('Checking tag:', t, 'against alreadySelected:', alreadySelected);
               for(const s of alreadySelected) {
-                console.log('Comparing:', s, 'with:', t);
                 if(s === t || s['label'] === t) {
-                  console.log('Match found! Adding to alreadySelectedList');
                   alreadySelectedList.push({value:index, label:t});
                   break;
                 }
@@ -46,7 +34,6 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hid
             all_tags.push({value:index, label:t})
           })
         }
-        console.log('Setting suggestions and selected:', { all_tags, alreadySelectedList });
         setSuggestions(all_tags);  
         setSelected(alreadySelectedList);
       })
@@ -56,7 +43,6 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hid
     } else {
       // If suggestions exist, only update selected tags if they haven't been set yet
       if (selected.length === 0 && alreadySelected && alreadySelected.length > 0 && suggestions) {
-        console.log('Updating selected tags with alreadySelected:', alreadySelected);
         var alreadySelectedList = [];
         suggestions.forEach((t, index) => {
           for(const s of alreadySelected) {
@@ -66,7 +52,6 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hid
             }
           }
         });
-        console.log('Updating selected tags:', alreadySelectedList);
         setSelected(alreadySelectedList);
       }
     }
@@ -75,7 +60,6 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hid
   // Separate effect to handle initial alreadySelected tags
   useEffect(() => {
     if (alreadySelected && alreadySelected.length > 0 && selected.length === 0) {
-      console.log('Setting initial selected tags from alreadySelected:', alreadySelected);
       setSelected(alreadySelected);
     }
   }, [alreadySelected, selected.length]);
@@ -89,14 +73,14 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hid
       const newSelected = [...selected, newTag];
       setSelected(newSelected);
       setMedia({ ...media, tags: newSelected.map(item => item.label) });
-      console.log("Added Tag:", newTag.label);
+      console.log("Added tag:", newTag.label);
     },
     [selected, setSelected, media, setMedia]
   )
 
   const onDelete = useCallback(
     (tagIndex) => {
-      console.log("Deleting Tag:", selected[tagIndex].label);
+      console.log("Deleting tag:", selected[tagIndex].label);
       const newSelected = selected.filter((_, i) => i !== tagIndex);
       setSelected(newSelected);
       setMedia({ ...media, tags: newSelected.map(item => item.label) });

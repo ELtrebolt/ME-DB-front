@@ -23,8 +23,6 @@ ChartJS.register(
 const TypeDistributionChart = ({ data, toDoData, collectionData, customTypes, showStandard, filter }) => {
   const standardTypes = ['anime', 'tv', 'movies', 'games'];
   
-  console.log('TypeDistributionChart props:', { data, toDoData, collectionData, customTypes, showStandard, filter });
-  
   // Filter data based on whether to show standard or custom types
   let typesToShow = [];
   if (showStandard) {

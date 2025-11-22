@@ -68,8 +68,8 @@ function CardsContainer({ items, tier, onEdgeDrop }) {
           ref={setNodeRef}
           className='tier-flex'
           style={{ 
-            minHeight: items.length > 0 ? '80px' : '0px',
-            padding: items.length > 0 ? '8px' : '0px',
+            minHeight: items && items.length > 0 ? '80px' : '0px',
+            padding: items && items.length > 0 ? '8px' : '0px',
             position: 'relative',
             backgroundColor: isOver ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
             border: isOver ? '2px dashed rgba(59, 130, 246, 0.5)' : '2px dashed transparent',
@@ -77,7 +77,7 @@ function CardsContainer({ items, tier, onEdgeDrop }) {
             transition: 'all 0.2s ease'
           }}
         >
-          {items.map((item) => (
+          {items && items.map((item) => (
             <SortableCard key={item.ID} media={item} className="sortable-card" />
           ))}
         </div>

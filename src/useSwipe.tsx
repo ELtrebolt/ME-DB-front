@@ -68,9 +68,11 @@ function Swiper(input: SwipeInput): SwipeOutput {
         setIsTracking(false);
 
         if (isRightSwipe && Math.abs(distanceX) > distanceY) {
+            console.log('Swipe detected: Right');
             input.onSwipedRight();
         } 
         if (isLeftSwipe && distanceX > distanceY) {
+            console.log('Swipe detected: Left');
             input.onSwipedLeft();
         }
     }
@@ -119,9 +121,11 @@ function Swiper(input: SwipeInput): SwipeOutput {
         setIsTracking(false);
 
         if (isRightSwipe && Math.abs(distanceX) > distanceY) {
+            console.log('Swipe detected: Right (mouse)');
             input.onSwipedRight();
         } 
         if (isLeftSwipe && distanceX > distanceY) {
+            console.log('Swipe detected: Left (mouse)');
             input.onSwipedLeft();
         }
     }

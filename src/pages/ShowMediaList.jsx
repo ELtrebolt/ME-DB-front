@@ -120,7 +120,6 @@ function getTruncatedTitle(mediaType, toDoString) {
 }
 
 function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSelectedTags, filteredData, setFilteredData}) {
-  console.log('ShowMediaList props:', { user, toDo, newType, selectedTags, setSelectedTags, filteredData });
   
   const location = useLocation();
 
@@ -192,13 +191,11 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
       // Parse tags from URL and convert to tag objects
       const tagLabels = tagsParam.split(',');
       const urlTags = tagLabels.map(label => ({ label, value: label }));
-      console.log('ShowMediaList: Found tags in URL:', urlTags);
       setSelectedTags(urlTags);
       
 
     } else if (selectedTags.length > 0) {
       // Clear tags if no URL params but we have selected tags
-      console.log('ShowMediaList: No tags in URL, clearing selected tags');
       setSelectedTags([]);
     }
   }, [location.search, selectedTags.length, setSelectedTags]);
@@ -215,7 +212,6 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     const tagsParam = urlParams.get('tags');
     
     if (tagsParam) {
-      console.log('ShowMediaList: Media type changed, tags will be preserved if same media type');
     }
   }, [mediaType, location.search]); // This will run when mediaType changes
 
@@ -295,12 +291,14 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     }
   })
 
-  // Filtering
-  if(tierData && (searchChanged === undefined || searchChanged === true)) {
-    const data = filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSuggestedTags, setSearchChanged, searchQuery);
-    setFilteredData(data);
-    setLocalByTier(data);
-  }
+  // Filtering - wrapped in useEffect to avoid setState during render
+  useEffect(() => {
+    if(tierData && (searchChanged === undefined || searchChanged === true)) {
+      const data = filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSuggestedTags, setSearchChanged, searchQuery);
+      setFilteredData(data);
+      setLocalByTier(data);
+    }
+  }, [tierData, searchChanged, firstYear, lastYear, allTags, selectedTags, searchQuery, setFilteredData]);
 
   function switchToDo() {
     const newToDoState = !toDoState;
@@ -406,7 +404,6 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     // Check if dropping on an edge (moving between tiers)
     if (overId && typeof overId === 'string' && (overId.includes('-top') || overId.includes('-bottom'))) {
       const targetTier = overId.split('-')[1]; // Extract tier from "tier-X-top" or "tier-X-bottom"
-      console.log('Edge drop detected:', { activeId, targetTier, overId });
       
       // Find source tier
       let sourceTier = null;
@@ -422,11 +419,16 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
       }
       
       if (sourceTier && sourceTier !== targetTier) {
-        console.log('Moving item between tiers:', { sourceTier, targetTier, activeId });
-        
         // Remove from source tier
         const updatedSourceTier = [...localByTier[sourceTier]];
         const [movedItem] = updatedSourceTier.splice(sourceIndex, 1);
+        
+        console.log('Moving card between tiers (edge drop):', { 
+          from: sourceTier, 
+          to: targetTier, 
+          cardTitle: movedItem.title,
+          cardId: activeId 
+        });
         
         // Check if the moved item belongs to the current list type
         const itemToDo = movedItem.toDo === true;
@@ -532,6 +534,13 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
       // Don't allow moving items between to-do and collection lists
       return;
     }
+    
+    console.log('Moving card between tiers:', { 
+      from: sourceTier, 
+      to: destTier, 
+      cardTitle: dragged.title,
+      cardId: activeId 
+    });
     
     const updatedDragged = { ...dragged, tier: destTier };
     const clamped = Math.max(0, Math.min(destIndex, toList.length));
@@ -641,18 +650,16 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     <div 
       className='ShowMediaList' 
       {...swipeHandlers}
-      onTouchStart={(e) => {
-        console.log('ShowMediaList - Touch start detected on main div');
-        if (swipeHandlers.onTouchStart) {
-          swipeHandlers.onTouchStart(e);
-        }
-      }}
-      onMouseDown={(e) => {
-        console.log('ShowMediaList - Mouse down detected on main div');
-        if (swipeHandlers.onMouseDown) {
-          swipeHandlers.onMouseDown(e);
-        }
-      }}
+        onTouchStart={(e) => {
+          if (swipeHandlers.onTouchStart) {
+            swipeHandlers.onTouchStart(e);
+          }
+        }}
+        onMouseDown={(e) => {
+          if (swipeHandlers.onMouseDown) {
+            swipeHandlers.onMouseDown(e);
+          }
+        }}
     >
       <div className='container'>
         <div className='pt-4'>

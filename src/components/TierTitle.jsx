@@ -129,7 +129,6 @@ function EditableText({title, mediaType, group, tier, setUserChanged, newType}) 
                 createURL += `&tags=${currentTags}`;
               }
               
-              console.log('TierTitle: Navigating to create with tags:', currentTags);
               console.log('TierTitle: Create URL:', createURL);
               
               // Navigate using React Router

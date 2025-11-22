@@ -19,7 +19,7 @@ const Function = ({mediaType, allMedia, searchQuery, setSearchQuery, setSearchCh
   }
 
   useEffect(() => {
-    console.log("Query:", searchQuery);
+    // console.log("Query:", searchQuery);
     setSearchChanged(true);
   }, [searchQuery, setSearchChanged]);
 
@@ -30,14 +30,14 @@ const Function = ({mediaType, allMedia, searchQuery, setSearchQuery, setSearchCh
 
   const onAdd = useCallback(
     (media) => {
-      console.log("Selected:", media.value, media.label)
+      // console.log("Selected:", media.value, media.label)
       navigate(`/${mediaType}/${media.value}`)
     }, [navigate, mediaType]
   )
 
   const onDelete = useCallback(
     (media) => {
-      console.log("Deleting Selection");
+      // console.log("Deleting Selection");
     }, []
   )
   

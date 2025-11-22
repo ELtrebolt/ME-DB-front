@@ -2,7 +2,6 @@ import React from 'react';
 const constants = require('../constants');
 
 const google = () => {
-  console.log('going to', constants['SERVER_URL'])
   window.open(constants['SERVER_URL'] + "/auth/google", "_self");
 }
 

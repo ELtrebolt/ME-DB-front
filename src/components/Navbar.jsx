@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import NewTypeModal from "../components/NewTypeModal";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -28,7 +28,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
   };
 
   // Calculate dynamic width for mobile media dropdown
-  const calculateMediaDropdownWidth = () => {
+  const calculateMediaDropdownWidth = useCallback(() => {
     const staticLabels = ['Anime', 'TV Shows', 'Movies', 'Games', 'Add New'];
     const customLabels = navNewTypes.map(type => type.charAt(0).toUpperCase() + type.slice(1));
     const allLabels = [...staticLabels, ...customLabels];
@@ -40,10 +40,10 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
     
     // Add small buffer and ensure minimum width
     return Math.max(estimatedWidth, 80);
-  };
+  }, [navNewTypes]);
 
   // Calculate dynamic width for desktop media dropdown
-  const calculateDesktopMediaDropdownWidth = () => {
+  const calculateDesktopMediaDropdownWidth = useCallback(() => {
     const staticLabels = ['Anime', 'TV Shows', 'Movies', 'Games', 'Add New'];
     const customLabels = navNewTypes.map(type => type.charAt(0).toUpperCase() + type.slice(1));
     const allLabels = [...staticLabels, ...customLabels];
@@ -54,7 +54,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
     
     // Add small buffer and ensure minimum width
     return Math.max(estimatedWidth, 100);
-  };
+  }, [navNewTypes]);
 
   // Calculate dynamic width for desktop profile dropdown
   const calculateDesktopProfileDropdownWidth = () => {
@@ -581,11 +581,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                         objectFit: 'cover'
                       }}
                       onError={(e) => {
-                        console.log('Profile picture failed to load:', user.profilePic);
                         e.target.style.display = 'none';
-                      }}
-                      onLoad={() => {
-                        console.log('Profile picture loaded successfully:', user.profilePic);
                       }}
                     />
                     <span style={{

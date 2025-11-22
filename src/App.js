@@ -42,12 +42,10 @@ const App = () => {
           setUserChanged(false);
         })
         .catch((err) => {
-          console.log('Error from client/App.jsx:');
-          console.log('Error details:', err);
-          console.log('Error response:', err.response);
-          console.log('Error status:', err.response?.status);
-          console.log('Error data:', err.response?.data);
-          // If authentication fails, ensure user is set to null
+          // Only log if it's not a normal 401/403 (expected when not logged in)
+          if (err.response?.status && err.response.status !== 401 && err.response.status !== 403) {
+            console.error('Auth error:', err.response?.status, err.response?.data);
+          }
           setUser(null);
         })
         .finally(() => {
@@ -81,15 +79,11 @@ const App = () => {
         axios
           .get(constants['SERVER_URL'] + '/auth/login/success', {withCredentials: true})
           .then((res) => {
-            if (res.data.success) {
-              console.log('Session refreshed successfully');
-            } else {
-              console.log('Session expired, redirecting to login');
+            if (!res.data.success) {
               setUser(null);
             }
           })
           .catch((err) => {
-            console.log('Session refresh failed:', err);
             setUser(null);
           });
       }, 30 * 60 * 1000); // 30 minutes
@@ -98,8 +92,6 @@ const App = () => {
     }
   }, [user]);
   
-  console.log("userChanged", userChanged)
-  console.log("user", user);
   if(!isLoading && !userChanged)
   {
     return (
@@ -147,7 +139,6 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
   const [previousMediaType, setPreviousMediaType] = useState(null);
   useEffect(() => {
     if (setSelectedTags && previousMediaType && previousMediaType !== mediaType) {
-      console.log('RestrictMediaType: Media type changed from', previousMediaType, 'to:', mediaType);
       setSelectedTags([]);
       // Clear tags from sessionStorage if it exists
       if (typeof sessionStorage !== 'undefined') {
@@ -160,10 +151,6 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
   // Fetch media data if filteredData is empty and we're navigating to a media details page
   useEffect(() => {
     if (!isNaN(group) && (!filteredData || Object.keys(filteredData).length === 0)) {
-      console.log('RestrictMediaType: Fetching media data for', mediaType, 'because filteredData is empty');
-      console.log('RestrictMediaType: Valid media types:', mediaTypes);
-      console.log('RestrictMediaType: Is mediaType valid?', mediaTypes.includes(mediaType));
-      
       // Only fetch if mediaType is valid
       if (mediaTypes.includes(mediaType)) {
         // Fetch both collection and to-do data to get all media
@@ -172,9 +159,6 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
           axios.get(constants['SERVER_URL'] + `/api/media/${mediaType}/to-do`)
         ])
         .then(([collectionRes, toDoRes]) => {
-          console.log('RestrictMediaType: Fetched collection data:', collectionRes.data);
-          console.log('RestrictMediaType: Fetched to-do data:', toDoRes.data);
-          
           // Combine both responses into filteredData format
           const combinedData = {
             S: [...(collectionRes.data.media || []).filter(m => m.tier === 'S'), ...(toDoRes.data.media || []).filter(m => m.tier === 'S')],
@@ -185,15 +169,11 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
             F: [...(collectionRes.data.media || []).filter(m => m.tier === 'F'), ...(toDoRes.data.media || []).filter(m => m.tier === 'F')]
           };
           
-          console.log('RestrictMediaType: Combined data:', combinedData);
           setFilteredData(combinedData);
         })
         .catch((err) => {
-          console.log('RestrictMediaType: Error fetching media data:', err);
-          console.log('RestrictMediaType: Error details:', err.response?.status, err.response?.data);
+          console.error('Error fetching media data:', err.response?.status, err.message);
         });
-      } else {
-        console.log('RestrictMediaType: Invalid mediaType, not fetching data');
       }
     }
   }, [mediaType, group, filteredData, setFilteredData, mediaTypes]);
@@ -209,10 +189,8 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
     }
     else if(n === 5)
     {
-      console.log('RestrictMediaType: n=5, group=', group, 'isNaN(group)=', isNaN(group));
       if(!isNaN(group))
       {
-        console.log('RestrictMediaType: Rendering ShowMediaDetails for group:', group);
         return <ShowMediaDetails user={user} newType={newType} filteredData={filteredData}/>;
       }
       else if(group === "collection" || group === undefined)
@@ -233,8 +211,6 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
       return <Navigate to={`/${mediaType}/${group}`} replace />;
     }
   } else {
-    console.log(n, group);
-    console.log(mediaType, 'not valid type', mediaTypes);
     return <Navigate to="/404" />;
   }
 }

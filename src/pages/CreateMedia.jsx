@@ -12,10 +12,8 @@ function toCapitalNotation(inputString) {
 }
 
 const CreateMedia = ({user, toDo, newType, selectedTags}) => {
-  console.log('CreateMedia props:', { user, toDo, newType, selectedTags });
   
   const location = useLocation();
-  console.log('CreateMedia: Current URL:', location.pathname + location.search);
   
   // Get selected tags from URL parameters
   const getTagsFromURL = useCallback(() => {
@@ -31,28 +29,20 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
   
   // Try to get selected tags from URL if props are empty
   const [effectiveSelectedTags, setEffectiveSelectedTags] = useState(() => {
-    console.log('CreateMedia: Initializing effectiveSelectedTags');
-    console.log('CreateMedia: selectedTags prop:', selectedTags);
     
     // First try URL parameters
     const urlTags = getTagsFromURL();
     if (urlTags.length > 0) {
-      console.log('CreateMedia: Using tags from URL:', urlTags);
       return urlTags;
     }
     
     // Fall back to props
     if (selectedTags && selectedTags.length > 0) {
-      console.log('CreateMedia: Using selectedTags prop:', selectedTags);
       return selectedTags;
     }
     
-    console.log('CreateMedia: No tags found, returning empty array');
     return [];
   });
-  
-  console.log('CreateMedia: effectiveSelectedTags state:', effectiveSelectedTags);
-  console.log('CreateMedia: Current URL:', location.pathname + location.search);
   
   // Define the state with useState hook
   const navigate = useNavigate();
@@ -83,21 +73,14 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
   // Watch for URL changes and update effectiveSelectedTags
   useEffect(() => {
     const urlTags = getTagsFromURL();
-    console.log('CreateMedia: URL changed, location.search:', location.search);
-    console.log('CreateMedia: getTagsFromURL result:', urlTags);
-    
     if (urlTags.length > 0) {
-      console.log('CreateMedia: URL changed, updating effectiveSelectedTags:', urlTags);
       setEffectiveSelectedTags(urlTags);
     }
   }, [location.search, getTagsFromURL]);
 
   // Ensure tags are captured on initial mount
   useEffect(() => {
-    console.log('CreateMedia: Component mounted, checking for tags in URL');
-    const urlParams = new URLSearchParams(location.search);
-    const tagsParam = urlParams.get('tags');
-    console.log('CreateMedia: Initial mount - tagsParam:', tagsParam);
+    // This effect ensures the component re-renders when URL search params change
   }, [location.search]); // Include location.search dependency
 
   // Redirect to login if user is not authenticated
@@ -248,7 +231,6 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
                 
                 console.log('=== Go Back Button Click ===');
                 console.log('CreateMedia: Media type:', mediaType);
-                console.log('CreateMedia: Current tags:', currentTags);
                 console.log('CreateMedia: From parameter:', fromParam);
                 console.log('CreateMedia: Going back to:', toDo ? 'to-do' : 'collection');
                 console.log('CreateMedia: Target URL:', targetURL);

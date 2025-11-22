@@ -28,9 +28,6 @@ const Stats = ({ user }) => {
       });
       
       if (response.data.success) {
-        console.log('Stats data received:', response.data.data);
-        console.log('Custom types:', response.data.data.customTypes);
-        console.log('Type distribution:', response.data.data.typeDistribution);
         setStatsData(response.data.data);
       } else {
         setError('Failed to fetch statistics');

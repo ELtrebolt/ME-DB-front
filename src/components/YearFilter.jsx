@@ -3,8 +3,6 @@ import React from 'react';
 const YearFilter = ({possible_years, firstYear, lastYear, setFirstYear, setLastYear, setSearchChanged}) => {
 	const current_year = new Date().getFullYear();
 
-	console.log('YearFilter rendering with:', { possible_years, firstYear, lastYear });
-
 	const onChangeFirstYear = (e) => {
 		setFirstYear(e.target.value);
 		setSearchChanged(true);

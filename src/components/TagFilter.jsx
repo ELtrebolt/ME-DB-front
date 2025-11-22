@@ -4,7 +4,6 @@ import { matchSorter } from 'match-sorter'
 import { useNavigate, useLocation } from 'react-router-dom'
 
 const Function = ({suggestedTags, selected, setSelected, setSearchChanged}) => {
-  console.log('TagFilter props:', { suggestedTags, selected, setSelected, setSearchChanged });
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,39 +32,32 @@ const Function = ({suggestedTags, selected, setSelected, setSearchChanged}) => {
         urlParams.set('from', group);
       }
       
-      console.log('TagFilter: Adding tags to URL:', tagLabels);
     } else {
       // Remove tags from URL
       urlParams.delete('tags');
       urlParams.delete('from');
-      console.log('TagFilter: Removing tags from URL');
     }
     
     // Update URL without triggering a page reload
     const newURL = `${location.pathname}?${urlParams.toString()}`;
-    console.log('TagFilter: Updating URL to:', newURL);
     navigate(newURL, { replace: true });
   }, [location.search, location.pathname, navigate]);
 
   const onAdd = useCallback(
     (newTag) => {
-      console.log('TagFilter onAdd called with:', newTag);
       const newSelected = [...selected, newTag];
-      console.log('TagFilter: Setting new selected tags:', newSelected);
       setSelected(newSelected);
       updateURLWithTags(newSelected);
-      console.log("Added Tag:", newTag)
       setSearchChanged(true);
+      console.log("Added filter tag:", newTag.label);
     },
     [selected, setSelected, setSearchChanged, updateURLWithTags]
   )
 
   const onDelete = useCallback(
     (tagIndex) => {
-      console.log('TagFilter onDelete called with index:', tagIndex);
-      console.log("Deleting Tag:", selected[tagIndex]);
+      console.log("Deleting filter tag:", selected[tagIndex].label);
       const newSelected = selected.filter((_, i) => i !== tagIndex);
-      console.log('TagFilter: Setting new selected tags after delete:', newSelected);
       setSelected(newSelected);
       updateURLWithTags(newSelected);
       setSearchChanged(true);

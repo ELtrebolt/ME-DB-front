@@ -37,12 +37,9 @@ const MediaCard = ({ media, listeners }) => {
     
     // If there are query parameters (like tags), preserve them
     if (currentSearch) {
-      const finalUrl = `${baseUrl}${currentSearch}`;
-      console.log('MediaCard: Building details URL with params:', finalUrl);
-      return finalUrl;
+      return `${baseUrl}${currentSearch}`;
     }
     
-    console.log('MediaCard: Building details URL without params:', baseUrl);
     return baseUrl;
   };
 
@@ -66,7 +63,6 @@ const MediaCard = ({ media, listeners }) => {
               pointerEvents: 'auto'
             }}
             onClick={(e) => {
-              console.log('MediaCard: Link clicked, navigating to:', buildDetailsUrl());
               // Allow navigation - @dnd-kit activationConstraint will handle drag vs click
             }}
           >
