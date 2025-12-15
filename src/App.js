@@ -92,7 +92,7 @@ const App = () => {
     }
   }, [user]);
   
-  if(!isLoading && !userChanged)
+  if(!isLoading)
   {
     return (
       <Router>

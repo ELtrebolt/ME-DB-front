@@ -1,7 +1,6 @@
 import React from 'react';
 
 const YearFilter = ({possible_years, firstYear, lastYear, setFirstYear, setLastYear, setSearchChanged}) => {
-	const current_year = new Date().getFullYear();
 
 	const onChangeFirstYear = (e) => {
 		setFirstYear(e.target.value);
@@ -35,7 +34,7 @@ const YearFilter = ({possible_years, firstYear, lastYear, setFirstYear, setLastY
 							fontSize: '0.875rem'
 						}}
 					>
-						<option value={possible_years[0]}>Select</option>
+						<option value="">All</option>
 						{possible_years.map((year) => (
 							<option key={year} value={year}>
 								{year}
@@ -62,7 +61,7 @@ const YearFilter = ({possible_years, firstYear, lastYear, setFirstYear, setLastY
 							fontSize: '0.875rem'
 						}}
 					>
-						<option value={current_year}>Select</option>
+						<option value="">All</option>
 						{possible_years.map((year) => (
 							<option key={year} value={year}>
 								{year}

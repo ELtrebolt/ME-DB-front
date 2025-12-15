@@ -58,6 +58,8 @@ function filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSug
       data[m.tier].push(m);
     } else if (!firstYear && lastYear && m.year <= lastYear) {
       data[m.tier].push(m);
+    } else {
+      data[m.tier].push(m);
     }
   });
 
@@ -216,9 +218,8 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
   }, [mediaType, location.search]); // This will run when mediaType changes
 
   // Filters = also includes selectedTags param
-  const [firstYear, setFirstYear] = useState();
-  const current_year = new Date().getFullYear();
-  const [lastYear, setLastYear] = useState(current_year);
+  const [firstYear, setFirstYear] = useState('');
+  const [lastYear, setLastYear] = useState('');
   const [possibleYears, setPossibleYears] = useState([]);
   const [allTags, setAllTags] = useState([]);
   const [suggestedTags, setSuggestedTags] = useState([]);
@@ -254,8 +255,8 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
       .get(constants['SERVER_URL'] + '/api/media/' + mediaType + '/' + toDoString)
       .then((res) => {
         // console.log("GET /api/media/type/" + toDoString, res)
-        setFirstYear();
-        setLastYear(current_year);
+        setFirstYear('');
+        setLastYear('');
         var tiers = {
           S: [],
           A: [],
@@ -350,19 +351,45 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     setShowDeleteModal(false);
   };
   function exportToCsv() {
-    const flatListData = filteredData ? Object.values(filteredData).reduce((acc, val) => acc.concat(val), []) : []
-    const csvContent = "data:text/csv;charset=utf-8," + 
-                       "Title,Year,Tier,Tags,Description,ToDo,Type\n" +
-                       flatListData.map(obj => {
-                        const tagsString = Array.isArray(obj.tags) ? obj.tags.join('|') : obj.tags;
-                        return `${obj.title},${obj.year},${obj.tier},${tagsString},${obj.description},${obj.toDo},${obj.mediaType}`;
-                      }).join('\n');
-    const encodedUri = encodeURI(csvContent);
+    const flatListData = filteredData ? Object.values(filteredData).reduce((acc, val) => acc.concat(val), []) : [];
+    
+    // Create CSV content with proper escaping
+    const csvHeader = "Title,Year,Tier,Tags,Description,ToDo,Type\n";
+    const csvRows = flatListData.map(obj => {
+      // Helper to escape CSV fields (wrap in quotes if contains comma, quote, or newline)
+      const escapeCsvField = (field) => {
+        if (field === null || field === undefined) return '';
+        const stringField = String(field);
+        if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
+          return `"${stringField.replace(/"/g, '""')}"`;
+        }
+        return stringField;
+      };
+
+      const tagsString = Array.isArray(obj.tags) ? obj.tags.join('|') : obj.tags;
+      
+      return [
+        obj.title,
+        obj.year,
+        obj.tier,
+        tagsString,
+        obj.description,
+        obj.toDo,
+        obj.mediaType
+      ].map(escapeCsvField).join(',');
+    }).join('\n');
+
+    const csvContent = csvHeader + csvRows;
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
+    link.setAttribute("href", url);
     link.setAttribute("download", `${mediaType}-${toDoString}.csv`);
-    document.body.appendChild(link); // Required for Firefox
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   }
   function onSwipeLeft() {
     if(toDo) {

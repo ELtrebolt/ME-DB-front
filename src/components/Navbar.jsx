@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import NewTypeModal from "../components/NewTypeModal";
+import ImportModal from "../components/ImportModal";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 const constants = require('../constants');
 
 const NavbarFunction = ({user, setUserChanged, newTypes}) => {
   const [showModal, setShowModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const navigate = useNavigate();
   const [navNewTypes, setNavNewTypes] = useState(newTypes);
   const [isMediaMenuOpen, setIsMediaMenuOpen] = useState(false);
@@ -16,7 +18,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
 
   // Calculate dynamic width for mobile profile dropdown
   const calculateProfileDropdownWidth = () => {
-    const labels = ['Export All Data', 'Switch Account', 'Logout'];
+    const labels = ['Export All Data', 'Import New List', 'Switch Account', 'Logout'];
     const longestLabel = labels.reduce((a, b) => a.length > b.length ? a : b);
     
     // More conservative estimate: character count * smaller character width + padding
@@ -58,7 +60,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
 
   // Calculate dynamic width for desktop profile dropdown
   const calculateDesktopProfileDropdownWidth = () => {
-    const labels = ['Export All Data', 'Switch Google Account', 'Logout'];
+    const labels = ['Export All Data', 'Import New List', 'Switch Google Account', 'Logout'];
     const longestLabel = labels.reduce((a, b) => a.length > b.length ? a : b);
     
     // Desktop uses 0.875rem font size, roughly 7px per character + 32px padding (1rem * 2)
@@ -395,6 +397,19 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer'
+                    }} className="navbar-dropdown-item" onClick={() => setShowImportModal(true)}>
+                      Import New List
+                    </button>
+                    <button style={{
+                      display: 'block',
+                      width: '100%',
+                      textAlign: 'left',
+                      padding: '0.375rem 0.75rem',
+                      fontSize: '0.75rem',
+                      color: '#374151',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer'
                     }} className="navbar-dropdown-item" onClick={switchGoogleAccount}>
                       Switch Account
                     </button>
@@ -635,6 +650,19 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                         background: 'none',
                         border: 'none',
                         cursor: 'pointer'
+                      }} className="navbar-dropdown-item" onClick={() => setShowImportModal(true)}>
+                Import New List
+                      </button>
+                      <button style={{
+                        display: 'block',
+                        width: '100%',
+                        textAlign: 'left',
+                        padding: '0.5rem 1rem',
+                        fontSize: '0.875rem',
+                        color: '#374151',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer'
                       }} className="navbar-dropdown-item" onClick={switchGoogleAccount}>
                 Switch Google Account
                       </button>
@@ -658,7 +686,15 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
       </div>
 
       {user ? (
-        <NewTypeModal show={showModal} setShow={setShowModal} onSaveClick={onCreateNewType} />
+        <>
+          <NewTypeModal show={showModal} setShow={setShowModal} onSaveClick={onCreateNewType} />
+          <ImportModal 
+            show={showImportModal} 
+            setShow={setShowImportModal} 
+            user={user}
+            onImportComplete={() => setUserChanged(true)} 
+          />
+        </>
       ) : null}
     </nav>
   );
