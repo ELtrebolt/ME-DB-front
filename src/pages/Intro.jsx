@@ -29,10 +29,10 @@ const IntroNavbar = () => {
          style={{ transition: 'all 0.3s ease', padding: isScrolled ? '0.5rem 1rem' : '1.5rem 1rem' }}>
       <div className="container">
         {/* Logo - Left */}
-        <button className={`navbar-brand fw-bold ${isScrolled ? 'text-dark' : 'text-white'} btn btn-link text-decoration-none`} onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}
-           style={{ fontSize: '1.5rem', padding: 0 }}>
+        <a className={`navbar-brand fw-bold ${isScrolled ? 'text-dark' : 'text-white'}`} href="#about" onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}
+           style={{ fontSize: '1.5rem' }}>
           ME-DB
-        </button>
+        </a>
 
         {/* Toggler for mobile */}
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#introNavbar">
@@ -44,13 +44,14 @@ const IntroNavbar = () => {
           <ul className="navbar-nav gap-4">
             {['About', 'Features', 'Use Cases', 'FAQ'].map((item) => (
               <li className="nav-item" key={item}>
-                <button 
-                  onClick={() => scrollToSection(item.toLowerCase().replace(' ', '-'))}
-                  className={`btn btn-link text-decoration-none fw-medium ${isScrolled ? 'text-secondary hover-primary' : 'text-white-50 hover-white'}`}
-                  style={{ fontSize: '0.95rem' }}
+                <a 
+                  href={`#${item.toLowerCase().replace(' ', '-')}`}
+                  onClick={(e) => { e.preventDefault(); scrollToSection(item.toLowerCase().replace(' ', '-')); }}
+                  className={`nav-link fw-medium transition-colors ${isScrolled ? 'text-dark hover-primary' : 'text-white hover-opacity'}`}
+                  style={{ fontSize: '0.95rem', cursor: 'pointer' }}
                 >
                   {item}
-                </button>
+                </a>
               </li>
             ))}
           </ul>
@@ -70,7 +71,8 @@ const IntroNavbar = () => {
       <style>
         {`
           .hover-primary:hover { color: #0d6efd !important; }
-          .hover-white:hover { color: #fff !important; }
+          .hover-opacity:hover { opacity: 0.8; }
+          .transition-colors { transition: color 0.2s ease; }
         `}
       </style>
     </nav>
@@ -98,17 +100,26 @@ const Intro = () => {
         <div className="container text-center text-white">
           <div className="row justify-content-center">
             <div className="col-lg-8">
-              <h1 className="display-2 fw-bold mb-4">ME-DB</h1>
-              <p className="lead fs-3 mb-5 opacity-90 fw-light" style={{ lineHeight: '1.6' }}>
-                A simple tier list app for tracking your collection and your to-do list, all in one.
+              <br></br>
+              <h1 className="mb-4">
+                <span className="fw-bold d-block mb-2 fs-3">Welcome to your</span>
+                <span className="fst-italic display-5 fw-bold text-nowrap">Media Entertainment DataBase</span>
+              </h1>
+              <p className="lead fs-6 mb-5 opacity-90 fw-light" style={{ lineHeight: '1.6' }}>
+                A simple <span className="fw-bold">tier list</span> app for tracking your <span className="fw-bold">collection</span> and your <span className="fw-bold">to-do list</span>, <span className="text-decoration-underline">all in one</span>.
                 <br />
-                <span className="opacity-75 fs-4">For anime, tv shows, movies, video games, and more!</span>
+                <span className="opacity-90 fs-6">
+                  Built for <span className="fw-bold" style={{ color: '#ff7675' }}>anime</span>, <span className="fw-bold" style={{ color: '#74b9ff' }}>tv shows</span>, <span className="fw-bold" style={{ color: '#ffeaa7' }}>movies</span>, <span className="fw-bold" style={{ color: '#55efc4' }}>video games</span>, and more!
+                </span>
               </p>
               
               <div className="d-flex justify-content-center gap-3">
-                <button onClick={google} className="btn btn-light btn-lg rounded-pill px-5 py-3 fw-bold shadow">
-                  Start Tracking Now
-                </button>
+                <div className="google-btn" onClick={google}>
+                  <div className="google-icon-wrapper">
+                    <img className="google-icon" alt='Google logo' src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"/>
+                  </div>
+                  <span className="btn-text">Sign in with Google</span>
+                </div>
               </div>
 
               <div className="mt-5 pt-5 opacity-50 small">

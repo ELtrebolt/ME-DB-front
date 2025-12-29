@@ -9,7 +9,7 @@ const Footer = () => {
           <a href="/terms" className="text-white-50 text-decoration-none small hover-white">Terms of Service</a>
         </div>
         <div className="text-white-50 small">
-          &copy; {new Date().getFullYear()} ME-DB. All rights reserved.
+          &copy; {new Date().getFullYear()} ME-DB
         </div>
       </div>
       <style>
