@@ -4,11 +4,20 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const constants = require('../constants');
 
 function EditableText({title, mediaType, group, tier, setUserChanged, newType}) {
-  const [text, setText] = useState(title);
+  // Initialize with title or tier as fallback to prevent undefined
+  const [text, setText] = useState(title || tier || '');
   const [editedText, setEditedText] = useState(text);
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Update text when title prop changes (e.g. when data loads)
+  React.useEffect(() => {
+    if (title) {
+      setText(title);
+      if (!isEditing) setEditedText(title);
+    }
+  }, [title, isEditing]);
 
   const handleDoubleClick = () => setIsEditing(true);
   const handleInputChange = (event) => setEditedText(event.target.value);
@@ -43,7 +52,7 @@ function EditableText({title, mediaType, group, tier, setUserChanged, newType}) 
   };
 
   const inputStyle = { 
-    width: `${Math.min(Math.max(editedText.length * 18, 120), Math.min(window.innerWidth * 0.6, 800))}px`,
+    width: `${Math.min(Math.max((editedText || '').length * 18, 120), Math.min(window.innerWidth * 0.6, 800))}px`,
     minWidth: '120px',
     maxWidth: `${Math.min(window.innerWidth * 0.6, 800)}px`
   };

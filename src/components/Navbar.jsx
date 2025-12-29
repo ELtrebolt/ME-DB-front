@@ -10,11 +10,23 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
   const [showImportModal, setShowImportModal] = useState(false);
   const navigate = useNavigate();
   const [navNewTypes, setNavNewTypes] = useState(newTypes);
+  const [pendingNewType, setPendingNewType] = useState(null);
   const [isMediaMenuOpen, setIsMediaMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   
   const mediaDropdownRef = useRef(null);
   const userDropdownRef = useRef(null);
+
+  // Sync local state with prop and handle pending navigation
+  useEffect(() => {
+    setNavNewTypes(newTypes);
+    
+    // If we were waiting for a new type to be created and it now exists in the list
+    if (pendingNewType && newTypes.includes(pendingNewType)) {
+      navigate(`/${pendingNewType}/collection`);
+      setPendingNewType(null);
+    }
+  }, [newTypes, pendingNewType, navigate]);
 
   // Calculate dynamic width for mobile profile dropdown
   const calculateProfileDropdownWidth = () => {
@@ -112,9 +124,9 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
       axios
         .put(constants['SERVER_URL'] + `/api/user/newTypes`, {newType: newName})
         .then((res) => {
-          setNavNewTypes(Object.keys(res.data.newTypes));
+          // Don't set state immediately or navigate. Wait for App.js to update newTypes prop.
+          setPendingNewType(newName);
           setUserChanged(true);
-          navigate(`/${newName}/collection`);
         })
         .catch(() => window.alert("Error on Create New Type"));
     }
@@ -169,7 +181,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
         }}>
           {/* Logo/Brand */}
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <a href={user ? "/anime/collection" : "/"} style={{
+            <a href={user ? (user.customizations?.homePage ? `/${user.customizations.homePage}` : "/anime/collection") : "/"} style={{
               fontSize: window.innerWidth < 768 ? '1rem' : '1.25rem',
               fontWeight: 'bold',
               color: '#1f2937',

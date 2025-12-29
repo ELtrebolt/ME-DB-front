@@ -132,7 +132,8 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
       { text: 'Bullets By Tier', hasIcon: false },
       { text: 'Bullets By Year', hasIcon: false },
       { text: 'Download CSV', hasIcon: true },
-      { text: 'Delete Type', hasIcon: false }
+      { text: 'Delete Type', hasIcon: false },
+      { text: 'Set As Home Page', hasIcon: true }
     ];
     
     // Find the option that would take the most space
@@ -157,7 +158,8 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
       { text: 'Bullets By Tier', hasIcon: false },
       { text: 'Bullets By Year', hasIcon: false },
       { text: 'Download CSV', hasIcon: true },
-      { text: 'Delete Type', hasIcon: false }
+      { text: 'Delete Type', hasIcon: false },
+      { text: 'Set As Home Page', hasIcon: true }
     ];
     
     // Find the option that would take the most space
@@ -290,7 +292,14 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
         }
       });
     }
-  })
+  }, [firstLoad, mediaType, toDoString, navigate]);
+
+  // Reset firstLoad when mediaType changes
+  useEffect(() => {
+    setFirstLoad(true);
+    setTierData(null); // Clear previous data
+    setFilteredData(null);
+  }, [mediaType, setFilteredData]);
 
   // Filtering - wrapped in useEffect to avoid setState during render
   useEffect(() => {
@@ -391,6 +400,23 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   }
+
+  const currentHomePage = user?.customizations?.homePage;
+  const isCurrentHomePage = currentHomePage === `${mediaType}/${toDoString}`;
+  
+  function setAsHomePage() {
+    if (isCurrentHomePage) return;
+    const newHomePage = `${mediaType}/${toDoString}`;
+    axios.put(constants['SERVER_URL'] + '/api/user/customizations', { homePage: newHomePage })
+      .then(res => {
+          setUserChanged(true); 
+      })
+      .catch(err => {
+          console.error(err);
+          window.alert('Error setting home page');
+      });
+  }
+
   function onSwipeLeft() {
     if(toDo) {
       switchToDo();
@@ -705,7 +731,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
                   maxWidth: '100%'
                 }}
                 >
-                <i className="fas fa-exchange-alt me-1"></i>My {toDoState ? toCapitalNotation('collection') : 'To-Do'}
+                <i className="fas fa-exchange-alt me-1"></i>{toDoState ? toCapitalNotation('collection') : 'To-Do'}
               </button>
             </div>
             <div className='col-6 text-center'>
@@ -733,6 +759,17 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
                   <li><button className="dropdown-item py-1" style={{fontSize: '0.75rem'}} onClick={() => setExportMode('By-Tier')}>Bullets By Tier</button></li>
                   <li><button className="dropdown-item py-1" style={{fontSize: '0.75rem'}} onClick={() => exportByYear()}>Bullets By Year</button></li>
                   <li><button className="dropdown-item py-1" style={{fontSize: '0.75rem'}} onClick={() => exportToCsv()}>Download CSV <i className="fa-solid fa-download"></i></button></li>
+                  <li>
+                    <button 
+                      className={`dropdown-item py-1 ${isCurrentHomePage ? 'text-success' : ''}`} 
+                      style={{fontSize: '0.75rem'}} 
+                      onClick={() => setAsHomePage()}
+                      disabled={isCurrentHomePage}
+                    >
+                      {isCurrentHomePage ? 'Current Home Page' : 'Set As Home Page'} 
+                      {isCurrentHomePage && <i className="fas fa-check ms-1"></i>}
+                    </button>
+                  </li>
                   {newType && (
                     <li><button className="dropdown-item py-1 text-danger" style={{fontSize: '0.75rem'}} onClick={() => setShowDeleteModal(true)}>
                       <i className="fas fa-trash me-1"></i>Delete Type
@@ -745,13 +782,13 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
 
           {/* Desktop layout - hidden on mobile */}
           <div className='row align-items-center mb-3 d-none d-md-flex'>
-            <div className='col-md-2'>
+            <div className='col-md-2 text-center'>
               <button 
                 className='btn btn-warning btn-lg'
                 onClick={switchToDo}
                 style={{ whiteSpace: 'nowrap' }}
                 >
-                <i className="fas fa-exchange-alt me-2"></i>My {toDoState ? toCapitalNotation('collection') : 'To-Do'}
+                <i className="fas fa-exchange-alt me-2"></i>{toDoState ? toCapitalNotation('collection') : 'To-Do'}
               </button>
             </div>
             <div className='col-md-8 text-center'>
@@ -772,6 +809,17 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
                   <li><button className="dropdown-item py-1" style={{fontSize: '1rem'}} onClick={() => setExportMode('By-Tier')}>Bullets By Tier</button></li>
                   <li><button className="dropdown-item py-1" style={{fontSize: '1rem'}} onClick={() => exportByYear()}>Bullets By Year</button></li>
                   <li><button className="dropdown-item py-1" style={{fontSize: '1rem'}} onClick={() => exportToCsv()}>Download CSV <i className="fa-solid fa-download"></i></button></li>
+                  <li>
+                    <button 
+                      className={`dropdown-item py-1 ${isCurrentHomePage ? 'text-success' : ''}`} 
+                      style={{fontSize: '1rem'}} 
+                      onClick={() => setAsHomePage()}
+                      disabled={isCurrentHomePage}
+                    >
+                      {isCurrentHomePage ? 'Current Home Page' : 'Set As Home Page'} 
+                      {isCurrentHomePage && <i className="fas fa-check ms-1"></i>}
+                    </button>
+                  </li>
                   {newType && (
                     <li><button className="dropdown-item py-1 text-danger" style={{fontSize: '1rem'}} onClick={() => setShowDeleteModal(true)}>
                       <i className="fas fa-trash me-1"></i>Delete Type

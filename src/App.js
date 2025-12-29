@@ -38,7 +38,8 @@ const App = () => {
         .get(constants['SERVER_URL'] + '/auth/login/success', {withCredentials: true})
         .then((res) => {
           setUser(res.data.user);
-          setNewTypes(res.data.user?.newTypes ? Object.keys(res.data.user.newTypes) : [])
+          const types = res.data.user?.newTypes;
+          setNewTypes(Array.isArray(types) ? types : (types ? Object.keys(types) : []));
           setUserChanged(false);
         })
         .catch((err) => {
@@ -101,10 +102,9 @@ const App = () => {
             <Navbar user={user} setUserChanged={setUserChanged} newTypes={newTypes}/>
           ) : null}
           <Routes>
-            <Route path='/' element={user ? <Navigate to="/anime/collection"/> : <Intro />} />
+            <Route path='/' element={user ? <Navigate to={user.customizations?.homePage ? `/${user.customizations.homePage}` : "/anime/collection"}/> : <Intro />} />
             <Route path='/about' element={<About/>} />
             <Route path='/stats' element={user ? <Stats user={user}/> : <Navigate to="/"/>} />
-            <Route path='/home' element={user ? <Navigate to="/anime/collection"/> : <Navigate to="/"/>} />
             <Route path='/logout' element={<Logout/>} />
 
             <Route path='/:mediaType/collection/create' element={<RestrictMediaType user={user} n={3} setUserChanged={setUserChanged} newTypes={newTypes} selectedTags={selectedTags} setSelectedTags={setSelectedTags}/>} />
