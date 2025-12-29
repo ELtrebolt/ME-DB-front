@@ -1,4 +1,5 @@
 import React from 'react';
+import Footer from '../components/Footer';
 const constants = require('../constants');
 
 const google = () => {
@@ -8,15 +9,16 @@ const google = () => {
 const Intro = (props) => {
 
   return (
-    <div className="container-fluid min-vh-100 d-flex align-items-center intro-container" style={{background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)'}}>
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-lg-8 col-md-10 col-12 text-center text-white">
-            <div className="mb-4">
-              <h1 className="display-3 fw-bold mb-3 intro-title text-white">Welcome to ME-DB</h1>
-              <h2 className="h4 opacity-75 intro-subtitle">Your Media Entertainment Database</h2>
-              <div className="border-bottom border-3 border-white w-25 mx-auto mt-3"></div>
-            </div>
+    <div className="container-fluid min-vh-100 d-flex flex-column intro-container" style={{background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)'}}>
+      <div className="flex-grow-1 d-flex align-items-center">
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-lg-8 col-md-10 col-12 text-center text-white">
+              <div className="mb-4">
+                <h1 className="display-3 fw-bold mb-3 intro-title text-white">Welcome to ME-DB</h1>
+                <h2 className="h4 opacity-75 intro-subtitle">Your Media Entertainment Database</h2>
+                <div className="border-bottom border-3 border-white w-25 mx-auto mt-3"></div>
+              </div>
             
             <div className="mb-4 d-flex justify-content-center">
               <div className="google-btn" onClick={google}>
@@ -43,9 +45,11 @@ const Intro = (props) => {
                 Anime | Movies | TV Shows | Games
               </div>
             </div>
+            </div>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

@@ -8,6 +8,8 @@ import ShowMediaList from './pages/ShowMediaList';
 import ShowMediaDetails from './pages/ShowMediaDetails';
 import About from "./pages/About";
 import Intro from "./pages/Intro";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import Logout from "./pages/Logout";
 import Stats from './pages/Stats';
@@ -104,6 +106,8 @@ const App = () => {
           <Routes>
             <Route path='/' element={user ? <Navigate to={user.customizations?.homePage ? `/${user.customizations.homePage}` : "/anime/collection"}/> : <Intro />} />
             <Route path='/about' element={<About/>} />
+            <Route path='/privacy' element={<Privacy/>} />
+            <Route path='/terms' element={<Terms/>} />
             <Route path='/stats' element={user ? <Stats user={user}/> : <Navigate to="/"/>} />
             <Route path='/logout' element={<Logout/>} />
 

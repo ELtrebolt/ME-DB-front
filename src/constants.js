@@ -61,6 +61,11 @@ const json = {
         'tags' : 'e.g. fiction, mythology, romance',
         'description' : '[How You Feel About Reading This]'
     },
+    'artists' : {
+        'title' : 'e.g. All Time Low',
+        'tags' : 'e.g. pop-punk, rock, alternative-rock, 2000s, 2010s',
+        'description' : '[How You Feel About Listening To Them]'
+    },
     // Less Common Types
     'trends' : {
         'title' : 'e.g. Dabbing',         
