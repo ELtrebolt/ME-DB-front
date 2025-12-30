@@ -3,22 +3,25 @@ import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { useDroppable } from '@dnd-kit/core';
 import SortableCard from './SortableCard';
 
-function CardsContainer({ items, tier, onEdgeDrop }) {
+function CardsContainer({ items, tier, onEdgeDrop, readOnly, onCardClick }) {
   const idList = Array.isArray(items) ? items.map(i => i.ID) : [];
   const [edgeDragOver, setEdgeDragOver] = useState({ top: false, bottom: false });
   
   // Make the entire tier container a droppable zone
   const { setNodeRef, isOver } = useDroppable({
     id: `tier:${tier}`,
+    disabled: readOnly
   });
 
   // Create separate droppable zones for top and bottom edges
   const { setNodeRef: setTopRef, isOver: isTopOver } = useDroppable({
     id: `tier-${tier}-top`,
+    disabled: readOnly
   });
 
   const { setNodeRef: setBottomRef, isOver: isBottomOver } = useDroppable({
     id: `tier-${tier}-bottom`,
+    disabled: readOnly
   });
 
   // Update edge drag over state based on droppable zones
@@ -78,7 +81,7 @@ function CardsContainer({ items, tier, onEdgeDrop }) {
           }}
         >
           {items && items.map((item) => (
-            <SortableCard key={item.ID} media={item} className="sortable-card" />
+            <SortableCard key={item.ID} media={item} className="sortable-card" onCardClick={onCardClick} />
           ))}
         </div>
       </SortableContext>

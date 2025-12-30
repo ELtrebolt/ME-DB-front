@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 const constants = require('../constants');
 
-function EditableText({title, mediaType, group, tier, setUserChanged, newType}) {
+function EditableText({title, mediaType, group, tier, setUserChanged, newType, readOnly}) {
   // Initialize with title or tier as fallback to prevent undefined
   const [text, setText] = useState(title || tier || '');
   const [editedText, setEditedText] = useState(text);
@@ -59,7 +59,7 @@ function EditableText({title, mediaType, group, tier, setUserChanged, newType}) 
 
   return (
     <div className='px-4'>
-      {isEditing ? (
+      {(isEditing && !readOnly) ? (
         <div className="d-flex align-items-center justify-content-center gap-3" style={{ position: 'relative' }}>
           <input
             type="text"
@@ -109,43 +109,46 @@ function EditableText({title, mediaType, group, tier, setUserChanged, newType}) 
         </div>
       ) : (
         <div className='d-flex align-items-center justify-content-center gap-3' style={{ position: 'relative' }}>
-          <h2 className='text-center fs-2 fw-normal text-white' onDoubleClick={handleDoubleClick} style={{ 
+          <h2 className='text-center fs-2 fw-normal text-white' onDoubleClick={readOnly ? undefined : handleDoubleClick} style={{ 
             fontFamily: 'Roboto, sans-serif', 
-            fontSize: 'clamp(18px, 5vw, 28px)'
+            fontSize: 'clamp(18px, 5vw, 28px)',
+            cursor: readOnly ? 'default' : 'pointer'
           }}>{text}</h2>
-          {/* Add button next to title in center */}
-          <a
-            href={`/${mediaType}/${group}/create?tier=${tier}`}
-            aria-label='Add new in this tier'
-            title='Add New'
-            className='tier-add-btn animate-scale-in btn btn-outline-warning rounded-circle d-flex align-items-center justify-content-center'
-            style={{ 
-              width: '32px',
-              height: '32px',
-              fontSize: '14px',
-              padding: '0'
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              
-              // Get current tags from URL
-              const urlParams = new URLSearchParams(location.search);
-              const currentTags = urlParams.get('tags');
-              
-              // Build the create URL with tier and tags
-              let createURL = `/${mediaType}/${group}/create?tier=${tier}`;
-              if (currentTags) {
-                createURL += `&tags=${currentTags}`;
-              }
-              
-              console.log('TierTitle: Create URL:', createURL);
-              
-              // Navigate using React Router
-              navigate(createURL);
-            }}
-          >
-            <span className='fs-5 fw-bold'>+</span>
-          </a>
+          {/* Add button next to title in center - hide in readOnly mode */}
+          {!readOnly && (
+            <a
+              href={`/${mediaType}/${group}/create?tier=${tier}`}
+              aria-label='Add new in this tier'
+              title='Add New'
+              className='tier-add-btn animate-scale-in btn btn-outline-warning rounded-circle d-flex align-items-center justify-content-center'
+              style={{ 
+                width: '32px',
+                height: '32px',
+                fontSize: '14px',
+                padding: '0'
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                
+                // Get current tags from URL
+                const urlParams = new URLSearchParams(location.search);
+                const currentTags = urlParams.get('tags');
+                
+                // Build the create URL with tier and tags
+                let createURL = `/${mediaType}/${group}/create?tier=${tier}`;
+                if (currentTags) {
+                  createURL += `&tags=${currentTags}`;
+                }
+                
+                console.log('TierTitle: Create URL:', createURL);
+                
+                // Navigate using React Router
+                navigate(createURL);
+              }}
+            >
+              <span className='fs-5 fw-bold'>+</span>
+            </a>
+          )}
         </div>
       )}
     </div>

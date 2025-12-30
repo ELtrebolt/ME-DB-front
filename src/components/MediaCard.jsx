@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-const MediaCard = ({ media, listeners }) => {
+const MediaCard = ({ media, listeners, onCardClick }) => {
   const location = useLocation();
   
   // Calculate dynamic width based on screen size and title length
@@ -49,25 +49,32 @@ const MediaCard = ({ media, listeners }) => {
       style={{ 
         minWidth: 0, 
         width: `${cardWidth}px`,
-        cursor: 'grab'
+        cursor: onCardClick ? 'pointer' : 'grab'
       }}
-      {...listeners}
+      {...(onCardClick ? {} : listeners)}
+      onClick={onCardClick ? () => onCardClick(media) : undefined}
     >
       <div className='card-body p-0' style={{ padding: '0px 1px' }}>
         <h6 className='card-title title-clamp mb-0' style={{ fontSize: '0.75rem', fontWeight: 'bold', lineHeight: '1.0' }}>
-          <Link 
-            className='text-decoration-underline text-primary' 
-            to={buildDetailsUrl()}
-            style={{ 
-              cursor: 'pointer',
-              pointerEvents: 'auto'
-            }}
-            onClick={(e) => {
-              // Allow navigation - @dnd-kit activationConstraint will handle drag vs click
-            }}
-          >
-            {media.title}
-          </Link>
+          {onCardClick ? (
+            <span className='text-decoration-underline text-primary' style={{ cursor: 'pointer' }}>
+              {media.title}
+            </span>
+          ) : (
+            <Link 
+              className='text-decoration-underline text-primary' 
+              to={buildDetailsUrl()}
+              style={{ 
+                cursor: 'pointer',
+                pointerEvents: 'auto'
+              }}
+              onClick={(e) => {
+                // Allow navigation - @dnd-kit activationConstraint will handle drag vs click
+              }}
+            >
+              {media.title}
+            </Link>
+          )}
         </h6>
         <p className='card-text text-white mb-0' style={{ fontSize: '0.65rem', lineHeight: '1.0' }}>
           {media.year}

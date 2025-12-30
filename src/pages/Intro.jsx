@@ -219,8 +219,8 @@ const Intro = () => {
                 {[
                   { q: 'Is ME-DB free?', a: 'Yes, ME-DB is completely free to use for all standard features.' },
                   { q: 'Can I import my data?', a: 'We are working on import tools for popular platforms. Currently you can add items manually.' },
-                  { q: 'Is there a mobile app?', a: 'ME-DB is a Progressive Web App (PWA). You can add it to your home screen on iOS and Android for an app-like experience.' },
-                  { q: 'Is my data private?', a: 'Your list is private by default. You can choose to share your profile if you wish.' }
+                  { q: 'Is there a mobile app?', a: 'No, ME-DB is a web-only app. You can add it to your home screen on iOS and Android for an app-like experience.' },
+                  { q: 'Is my data private?', a: 'Your data is private by default. You can choose to make individual lists public if you wish.' }
                 ].map((item, i) => (
                   <div className="accordion-item" key={i}>
                     <h2 className="accordion-header">

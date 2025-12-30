@@ -3,7 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import MediaCard from './MediaCard';
 
-function SortableCard({ media, className }) {
+function SortableCard({ media, className, onCardClick }) {
   const { 
     attributes, 
     listeners, 
@@ -31,7 +31,7 @@ function SortableCard({ media, className }) {
       {...attributes} 
       className={className}
     >
-      <MediaCard media={media} listeners={listeners} />
+      <MediaCard media={media} listeners={listeners} onCardClick={onCardClick} />
     </div>
   );
 }

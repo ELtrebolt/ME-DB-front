@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import CreateMedia from './pages/CreateMedia';
 import ShowMediaList from './pages/ShowMediaList';
 import ShowMediaDetails from './pages/ShowMediaDetails';
+import SharedView from './pages/SharedView';
 import About from "./pages/About";
 import Intro from "./pages/Intro";
 import Privacy from "./pages/Privacy";
@@ -110,6 +111,7 @@ const App = () => {
             <Route path='/terms' element={<Terms/>} />
             <Route path='/stats' element={user ? <Stats user={user}/> : <Navigate to="/"/>} />
             <Route path='/logout' element={<Logout/>} />
+            <Route path='/shared/:token' element={<SharedView/>} />
 
             <Route path='/:mediaType/collection/create' element={<RestrictMediaType user={user} n={3} setUserChanged={setUserChanged} newTypes={newTypes} selectedTags={selectedTags} setSelectedTags={setSelectedTags}/>} />
             <Route path='/:mediaType/to-do/create' element={<RestrictMediaType user={user} n={4} setUserChanged={setUserChanged} newTypes={newTypes} selectedTags={selectedTags} setSelectedTags={setSelectedTags}/>} />
