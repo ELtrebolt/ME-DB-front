@@ -1,9 +1,10 @@
 import React from 'react';
+const theme = require('../theme');
 
 const About = (props) => {
 
   return (
-    <div className="container-fluid min-vh-100" style={{background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)'}}>
+    <div className="container-fluid min-vh-100" style={{backgroundColor: theme.colors.background.primary}}>
       <div className="container py-5 about-container">
         <div className="row justify-content-center">
           <div className="col-lg-8 col-md-10 text-white">

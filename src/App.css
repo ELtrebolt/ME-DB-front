@@ -1,20 +1,20 @@
 /* CreateMedia.jsx */
 .CreateMedia {
-  background-color: #2c3e50;
+  /* background-color now set inline via theme.colors.background.primary */
   min-height: 100vh;
   color: white;
 }
 
 /* ShowMediaDetails.jsx */
 .ShowMediaDetails {
-  background-color: #2c3e50;
+  /* background-color now set inline via theme.colors.background.primary */
   min-height: 100vh;
   color: white;
 }
 
 /* ShowMediaList.jsx */
 .ShowMediaList {
-  background-color: #2c3e50;
+  /* background-color now set inline via theme.colors.background.primary */
   height: 100%;
   width: 100%;
   min-height: 100vh;
@@ -981,7 +981,7 @@
   }
   
   
-  /* Desktop media card overrides - using CSS variables from constants.js */
+  /* Desktop media card overrides - using CSS variables from theme.js */
   .media-card-outline {
     min-height: var(--desktop-card-height) !important;
     padding: var(--desktop-card-padding) !important;
@@ -1436,4 +1436,58 @@
 .ShowMediaDetails .display-4 {
   font-size: 3rem !important;
   line-height: 1.2 !important;
+}
+
+/* SharedView Modal Dark Theme */
+.shared-view-modal {
+  background-color: #1e293b;
+  border: 1px solid #475569;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5);
+}
+
+.shared-view-modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #334155;
+}
+
+.shared-view-modal-body {
+  background-color: #1e293b;
+}
+
+.shared-view-label {
+  color: #94a3b8;
+  width: 30%;
+}
+
+.shared-view-value {
+  color: #ffffff;
+}
+
+.shared-view-close {
+  background-color: #dc3545;
+  opacity: 1;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  background-image: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0;
+}
+
+.shared-view-close:after {
+  content: '×';
+  color: #ffffff;
+  font-size: 2rem;
+  line-height: 1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.shared-view-close:hover {
+  background-color: #bb2d3b;
 }

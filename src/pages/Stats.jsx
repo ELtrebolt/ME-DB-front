@@ -5,6 +5,7 @@ import YearDistributionChart from '../components/stats/YearDistributionChart';
 import TierDistributionChart from '../components/stats/TierDistributionChart';
 import TierByTypeChart from '../components/stats/TierByTypeChart';
 const constants = require('../constants');
+const theme = require('../theme');
 
 const Stats = ({ user }) => {
   const [statsData, setStatsData] = useState(null);
@@ -42,7 +43,7 @@ const Stats = ({ user }) => {
 
   if (loading) {
     return (
-      <div className="container-fluid min-vh-100 d-flex align-items-center" style={{background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)'}}>
+      <div className="container-fluid min-vh-100 d-flex align-items-center" style={{backgroundColor: theme.colors.background.primary}}>
         <div className="container text-center">
           <div className="spinner-border text-primary" role="status" style={{width: '3rem', height: '3rem'}}>
             <span className="visually-hidden">Loading...</span>
@@ -55,7 +56,7 @@ const Stats = ({ user }) => {
 
   if (error) {
     return (
-      <div className="container-fluid min-vh-100 d-flex align-items-center" style={{background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)'}}>
+      <div className="container-fluid min-vh-100 d-flex align-items-center" style={{backgroundColor: theme.colors.background.primary}}>
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-lg-6 col-md-8">
@@ -80,7 +81,7 @@ const Stats = ({ user }) => {
 
   if (!statsData) {
     return (
-      <div className="container-fluid min-vh-100 d-flex align-items-center" style={{background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)'}}>
+      <div className="container-fluid min-vh-100 d-flex align-items-center" style={{backgroundColor: theme.colors.background.primary}}>
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-lg-6 col-md-8">
@@ -96,7 +97,7 @@ const Stats = ({ user }) => {
   }
 
   return (
-    <div className="container-fluid min-vh-100" style={{background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)'}}>
+    <div className="container-fluid min-vh-100" style={{backgroundColor: theme.colors.background.primary}}>
       <div className="container py-5">
         <div className="text-center mb-5">
           <h1 className="display-4 fw-bold mb-3 text-white">{constants.statsPage.title}</h1>

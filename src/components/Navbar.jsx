@@ -4,6 +4,7 @@ import ImportModal from "../components/ImportModal";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 const constants = require('../constants');
+const theme = require('../theme');
 
 const NavbarFunction = ({user, setUserChanged, newTypes}) => {
   const [showModal, setShowModal] = useState(false);
@@ -297,7 +298,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                     }} className="navbar-dropdown-item">
                       Games
                     </a>
-                    {navNewTypes.length > 0 && <hr style={{ margin: '0.25rem 0', border: 'none', borderTop: `${constants.components.navbar.hr.thickness} solid ${constants.components.navbar.hr.color}` }} />}
+                    {navNewTypes.length > 0 && <hr style={{ margin: '0.25rem 0', border: 'none', borderTop: `${theme.components.navbar.hr.thickness} solid ${theme.components.navbar.hr.color}` }} />}
                     {navNewTypes.length > 0 && navNewTypes.map((item, index) => (
                       <a key={index} href={`/${item}/collection`} style={{
                         display: 'block',
@@ -309,7 +310,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                         {item.charAt(0).toUpperCase() + item.slice(1)}
                       </a>
                     ))}
-                    <hr style={{ margin: '0.125rem 0', border: 'none', borderTop: `${constants.components.navbar.hr.thickness} solid ${constants.components.navbar.hr.color}` }} />
+                    <hr style={{ margin: '0.125rem 0', border: 'none', borderTop: `${theme.components.navbar.hr.thickness} solid ${theme.components.navbar.hr.color}` }} />
                     <button style={{
                       display: 'block',
                       width: '100%',
@@ -425,7 +426,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                     }} className="navbar-dropdown-item" onClick={switchGoogleAccount}>
                       Switch Account
                     </button>
-                    <hr style={{ margin: '0.125rem 0', border: 'none', borderTop: `${constants.components.navbar.hr.thickness} solid ${constants.components.navbar.hr.color}` }} />
+                    <hr style={{ margin: '0.125rem 0', border: 'none', borderTop: `${theme.components.navbar.hr.thickness} solid ${theme.components.navbar.hr.color}` }} />
                     <a href="/logout" style={{
                       display: 'block',
                       padding: '0.375rem 0.75rem',
@@ -544,7 +545,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                       }} className="navbar-dropdown-item">
                         Games
                       </a>
-                      {navNewTypes.length > 0 && <hr style={{ margin: '0.25rem 0', border: 'none', borderTop: `${constants.components.navbar.hr.thickness} solid ${constants.components.navbar.hr.color}` }} />}
+                      {navNewTypes.length > 0 && <hr style={{ margin: '0.25rem 0', border: 'none', borderTop: `${theme.components.navbar.hr.thickness} solid ${theme.components.navbar.hr.color}` }} />}
                       {navNewTypes.length > 0 && navNewTypes.map((item, index) => (
                         <a key={index} href={`/${item}/collection`} style={{
                           display: 'block',
@@ -556,7 +557,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                           {item.charAt(0).toUpperCase() + item.slice(1)}
                         </a>
                       ))}
-                      <hr style={{ margin: '0.125rem 0', border: 'none', borderTop: `${constants.components.navbar.hr.thickness} solid ${constants.components.navbar.hr.color}` }} />
+                      <hr style={{ margin: '0.125rem 0', border: 'none', borderTop: `${theme.components.navbar.hr.thickness} solid ${theme.components.navbar.hr.color}` }} />
                       <button style={{
                         display: 'block',
                         width: '100%',
@@ -678,7 +679,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                       }} className="navbar-dropdown-item" onClick={switchGoogleAccount}>
                 Switch Google Account
                       </button>
-                      <hr style={{ margin: '0.125rem 0', border: 'none', borderTop: `${constants.components.navbar.hr.thickness} solid ${constants.components.navbar.hr.color}` }} />
+                      <hr style={{ margin: '0.125rem 0', border: 'none', borderTop: `${theme.components.navbar.hr.thickness} solid ${theme.components.navbar.hr.color}` }} />
                       <a href="/logout" style={{
                         display: 'block',
                         padding: '0.5rem 1rem',

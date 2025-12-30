@@ -12,6 +12,7 @@ import SearchBar from "../components/SearchBar";
 import useSwipe from "../useSwipe.tsx";
 
 const constants = require('../constants');
+const theme = require('../theme');
 
 function filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSuggestedTags, setSearchChanged, searchQuery) {
   var array = [];
@@ -54,10 +55,14 @@ function filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSug
       if(m.year >= firstYear && m.year <= lastYear) {
         data[m.tier].push(m);
       }
-    } else if (firstYear && !lastYear && m.year >= firstYear) {
-      data[m.tier].push(m);
-    } else if (!firstYear && lastYear && m.year <= lastYear) {
-      data[m.tier].push(m);
+    } else if (firstYear && !lastYear) {
+      if(m.year >= firstYear) {
+        data[m.tier].push(m);
+      }
+    } else if (!firstYear && lastYear) {
+      if(m.year <= lastYear) {
+        data[m.tier].push(m);
+      }
     } else {
       data[m.tier].push(m);
     }
@@ -773,7 +778,8 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
   return (
     <>
     <div 
-      className='ShowMediaList' 
+      className='ShowMediaList'
+      style={{backgroundColor: theme.colors.background.primary}}
       {...swipeHandlers}
         onTouchStart={(e) => {
           if (swipeHandlers.onTouchStart) {

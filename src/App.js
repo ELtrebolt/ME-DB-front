@@ -18,6 +18,7 @@ import Stats from './pages/Stats';
 import { useEffect, useState } from "react";
 import axios from 'axios';
 const constants = require('./constants');
+const theme = require('./theme');
 
 const App = () => {
   axios.defaults.withCredentials = true;
@@ -61,9 +62,9 @@ const App = () => {
     getUser();
   });
 
-  // Set CSS variables from constants for desktop card styling
+  // Set CSS variables from theme for desktop card styling
   useEffect(() => {
-    const cardConstants = constants.components?.cards?.desktop;
+    const cardConstants = theme.components?.cards?.desktop;
     if (cardConstants) {
       const root = document.documentElement;
       root.style.setProperty('--desktop-card-height', cardConstants.height);

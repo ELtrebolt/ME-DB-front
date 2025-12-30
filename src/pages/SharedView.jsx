@@ -64,10 +64,14 @@ function filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSug
       if(m.year >= firstYear && m.year <= lastYear) {
         data[m.tier].push(m);
       }
-    } else if (firstYear && !lastYear && m.year >= firstYear) {
-      data[m.tier].push(m);
-    } else if (!firstYear && lastYear && m.year <= lastYear) {
-      data[m.tier].push(m);
+    } else if (firstYear && !lastYear) {
+      if(m.year >= firstYear) {
+        data[m.tier].push(m);
+      }
+    } else if (!firstYear && lastYear) {
+      if(m.year <= lastYear) {
+        data[m.tier].push(m);
+      }
     } else {
       data[m.tier].push(m);
     }
@@ -367,39 +371,35 @@ function SharedView() {
       {/* Details Modal */}
       {showDetailsModal && selectedMedia && (
         <div className="modal fade show d-block" style={{backgroundColor: 'rgba(0,0,0,0.7)'}} tabIndex="-1" onClick={() => setShowDetailsModal(false)}>
-          <div className="modal-dialog modal-dialog-centered modal-lg" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-content shadow-strong" style={{backgroundColor: '#1e293b', border: '1px solid #475569'}}>
-              <div className="modal-header" style={{backgroundColor: '#1e293b', borderBottom: '1px solid #475569'}}>
-                <h5 className="modal-title fw-semibold text-white">{selectedMedia.title}</h5>
-                <button type="button" className="btn-close btn-close-white" onClick={() => setShowDetailsModal(false)} aria-label="Close"></button>
+          <div className="modal-dialog modal-dialog-centered modal-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-content shared-view-modal">
+              <div className="modal-header shared-view-modal-header">
+                <h5 className="modal-title fw-semibold text-dark">{selectedMedia.title}</h5>
+                <button type="button" className="btn-close shared-view-close" onClick={() => setShowDetailsModal(false)} aria-label="Close"></button>
               </div>
-              <div className="modal-body p-4" style={{backgroundColor: '#1e293b'}}>
+              <div className="modal-body shared-view-modal-body p-4">
                 <div className="table-responsive">
                   <table className='table table-borderless mb-0'>
                     <tbody>
                       <tr>
-                        <td className='fw-semibold py-2' style={{width: '30%', color: '#fbbf24'}}>Title</td>
-                        <td className='py-2' style={{color: '#ffffff'}}>{selectedMedia.title}</td>
+                        <td className='fw-semibold py-2 shared-view-label'>Year</td>
+                        <td className='py-2 fw-medium shared-view-value'>{selectedMedia.year || '-'}</td>
                       </tr>
                       <tr>
-                        <td className='fw-semibold py-2' style={{color: '#fbbf24'}}>Year</td>
-                        <td className='py-2' style={{color: '#ffffff'}}>{selectedMedia.year || '-'}</td>
+                        <td className='fw-semibold py-2 shared-view-label'>Tier</td>
+                        <td className='py-2 fw-medium shared-view-value'>{tierTitles[selectedMedia.tier] || selectedMedia.tier}</td>
                       </tr>
                       <tr>
-                        <td className='fw-semibold py-2' style={{color: '#fbbf24'}}>Tier</td>
-                        <td className='py-2' style={{color: '#ffffff'}}>{tierTitles[selectedMedia.tier] || selectedMedia.tier}</td>
+                        <td className='fw-semibold py-2 shared-view-label'>Tags</td>
+                        <td className='py-2 fw-medium shared-view-value'>{selectedMedia.tags && selectedMedia.tags.length > 0 ? selectedMedia.tags.join(', ') : '-'}</td>
                       </tr>
                       <tr>
-                        <td className='fw-semibold py-2' style={{color: '#fbbf24'}}>Tags</td>
-                        <td className='py-2' style={{color: '#ffffff'}}>{selectedMedia.tags && selectedMedia.tags.length > 0 ? selectedMedia.tags.join(', ') : '-'}</td>
+                        <td className='fw-semibold py-2 shared-view-label'>Description</td>
+                        <td className='py-2 fw-medium shared-view-value'>{selectedMedia.description || '-'}</td>
                       </tr>
                       <tr>
-                        <td className='fw-semibold py-2' style={{color: '#fbbf24'}}>Description</td>
-                        <td className='py-2' style={{color: '#ffffff'}}>{selectedMedia.description || '-'}</td>
-                      </tr>
-                      <tr>
-                        <td className='fw-semibold py-2' style={{color: '#fbbf24'}}>List Type</td>
-                        <td className='py-2' style={{color: '#ffffff'}}>{selectedMedia.toDo ? 'To-Do List' : 'Collection'}</td>
+                        <td className='fw-semibold py-2 shared-view-label'>List Type</td>
+                        <td className='py-2 fw-medium shared-view-value'>{selectedMedia.toDo ? 'To-Do List' : 'Collection'}</td>
                       </tr>
                     </tbody>
                   </table>

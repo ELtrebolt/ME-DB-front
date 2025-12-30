@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Footer from '../components/Footer';
 const constants = require('../constants');
+const theme = require('../theme');
 
 const google = () => {
   window.open(constants['SERVER_URL'] + "/auth/google", "_self");
@@ -25,8 +26,12 @@ const IntroNavbar = () => {
   };
 
   return (
-    <nav className={`navbar navbar-expand-md fixed-top transition-all duration-300 ${isScrolled ? 'bg-white shadow-sm' : 'bg-transparent'}`} 
-         style={{ transition: 'all 0.3s ease', padding: isScrolled ? '0.5rem 1rem' : '1.5rem 1rem' }}>
+    <nav className={`navbar navbar-expand-md fixed-top transition-all duration-300 ${isScrolled ? 'bg-white shadow-sm' : ''}`} 
+         style={{ 
+           transition: 'all 0.3s ease', 
+           padding: isScrolled ? '0.5rem 1rem' : '1.5rem 1rem',
+           backgroundColor: isScrolled ? '' : '#34495e'
+         }}>
       <div className="container">
         {/* Logo - Left */}
         <a className={`navbar-brand fw-bold ${isScrolled ? 'text-dark' : 'text-white'}`} href="#about" onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}
@@ -87,14 +92,14 @@ const Section = ({ id, className, children, style }) => (
 
 const Intro = () => {
   return (
-    <div className="bg-white">
+    <div style={{ backgroundColor: theme.colors.background.primary }}>
       <IntroNavbar />
       
       {/* 1. Hero / About Section */}
       <section id="about" className="d-flex align-items-center position-relative" 
                style={{ 
                  minHeight: '100vh', 
-                 background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
+                 backgroundColor: theme.colors.background.primary,
                  paddingTop: '80px'
                }}>
         <div className="container text-center text-white">
@@ -132,11 +137,11 @@ const Intro = () => {
       </section>
 
       {/* 2. Features Section */}
-      <Section id="features" className="bg-light">
+      <Section id="features" style={{ backgroundColor: '#34495e' }}>
         <div className="container py-5">
           <div className="text-center mb-5">
-            <h2 className="display-5 fw-bold mb-3">Everything you need</h2>
-            <p className="text-muted fs-5">Simple, powerful tools to manage your entertainment life.</p>
+            <h2 className="display-5 fw-bold mb-3 text-white">Everything you need</h2>
+            <p className="text-white-50 fs-5">Simple, powerful tools to manage your entertainment life.</p>
           </div>
           
           <div className="row g-4 pt-4">
@@ -149,11 +154,11 @@ const Intro = () => {
               { title: 'Statistics', icon: '📈', desc: 'Get insights into your habits and ratings distribution.' }
             ].map((feature, i) => (
               <div className="col-md-4" key={i}>
-                <div className="card h-100 border-0 shadow-sm hover-lift transition-all">
+                <div className="card h-100 border-0 shadow-sm hover-lift transition-all" style={{backgroundColor: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)'}}>
                   <div className="card-body p-4 text-center">
                     <div className="display-4 mb-3">{feature.icon}</div>
-                    <h3 className="h5 fw-bold mb-3">{feature.title}</h3>
-                    <p className="text-muted mb-0">{feature.desc}</p>
+                    <h3 className="h5 fw-bold mb-3 text-white">{feature.title}</h3>
+                    <p className="text-white-50 mb-0">{feature.desc}</p>
                   </div>
                 </div>
               </div>
@@ -163,17 +168,17 @@ const Intro = () => {
       </Section>
 
       {/* 3. Use Cases Section */}
-      <Section id="use-cases" className="bg-white">
+      <Section id="use-cases" style={{ backgroundColor: theme.colors.background.primary }}>
         <div className="container py-5">
           <div className="row align-items-center mb-5 pb-5">
             <div className="col-lg-6 order-lg-2">
-              <div className="p-5 bg-light rounded-3 text-center text-muted">
+              <div className="p-5 rounded-3 text-center" style={{backgroundColor: 'rgba(255, 255, 255, 0.1)', color: '#cbd5e1'}}>
                 [Placeholder for Screenshot: Tier List View]
               </div>
             </div>
             <div className="col-lg-6 order-lg-1">
-              <h2 className="display-6 fw-bold mb-4">For the Completionist</h2>
-              <p className="lead text-muted mb-4">
+              <h2 className="display-6 fw-bold mb-4 text-white">For the Completionist</h2>
+              <p className="lead text-white-50 mb-4">
                 You finish a game or a series, and you want to record it. Not just that you did it, but how good it was. ME-DB gives you a permanent record of your entertainment journey.
               </p>
               <ul className="list-unstyled">
@@ -192,13 +197,13 @@ const Intro = () => {
 
           <div className="row align-items-center">
             <div className="col-lg-6">
-              <div className="p-5 bg-light rounded-3 text-center text-muted">
+              <div className="p-5 rounded-3 text-center" style={{backgroundColor: 'rgba(255, 255, 255, 0.1)', color: '#cbd5e1'}}>
                 [Placeholder for Screenshot: To-Do List]
               </div>
             </div>
             <div className="col-lg-6">
-              <h2 className="display-6 fw-bold mb-4">For the Planner</h2>
-              <p className="lead text-muted mb-4">
+              <h2 className="display-6 fw-bold mb-4 text-white">For the Planner</h2>
+              <p className="lead text-white-50 mb-4">
                 "We should watch that!" ...and then you forget. Add it to your ME-DB To-Do list immediately. Filter by genre, priority, or platform when you are ready to start something new.
               </p>
             </div>
@@ -207,29 +212,29 @@ const Intro = () => {
       </Section>
 
       {/* 4. FAQ Section */}
-      <Section id="faq" className="bg-light">
+      <Section id="faq" style={{ backgroundColor: '#34495e' }}>
         <div className="container py-5">
           <div className="text-center mb-5">
-            <h2 className="fw-bold">Frequently Asked Questions</h2>
+            <h2 className="fw-bold text-white">Frequently Asked Questions</h2>
           </div>
           
           <div className="row justify-content-center">
             <div className="col-lg-8">
-              <div className="accordion accordion-flush bg-white rounded shadow-sm" id="faqAccordion">
+              <div className="accordion accordion-flush rounded shadow-sm" id="faqAccordion" style={{backgroundColor: 'rgba(255, 255, 255, 0.1)'}}>
                 {[
                   { q: 'Is ME-DB free?', a: 'Yes, ME-DB is completely free to use for all standard features.' },
                   { q: 'Can I import my data?', a: 'We are working on import tools for popular platforms. Currently you can add items manually.' },
                   { q: 'Is there a mobile app?', a: 'No, ME-DB is a web-only app. You can add it to your home screen on iOS and Android for an app-like experience.' },
                   { q: 'Is my data private?', a: 'Your data is private by default. You can choose to make individual lists public if you wish.' }
                 ].map((item, i) => (
-                  <div className="accordion-item" key={i}>
+                  <div className="accordion-item" key={i} style={{backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)'}}>
                     <h2 className="accordion-header">
-                      <button className="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target={`#faq${i}`}>
+                      <button className="accordion-button collapsed fw-bold text-white" type="button" data-bs-toggle="collapse" data-bs-target={`#faq${i}`} style={{backgroundColor: 'rgba(255, 255, 255, 0.05)'}}>
                         {item.q}
                       </button>
                     </h2>
                     <div id={`faq${i}`} className="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                      <div className="accordion-body text-muted">
+                      <div className="accordion-body text-white-50">
                         {item.a}
                       </div>
                     </div>
@@ -241,8 +246,8 @@ const Intro = () => {
         </div>
       </Section>
       
-      {/* Footer Section - ensure bg-white to contrast with light FAQ section if needed, or keep seamless */}
-      <div className="bg-dark">
+      {/* Footer Section */}
+      <div style={{ backgroundColor: theme.colors.background.dark }}>
         <Footer />
       </div>
       

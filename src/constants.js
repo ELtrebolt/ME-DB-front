@@ -175,33 +175,7 @@ const json = {
         '#795548', // Brown
         '#9E9E9E', // Blue Grey
         '#607D8B'  // Blue Grey
-    ],
-    // Main Colors for UI Components
-    'mainColors': {
-        'background': '#2c3e50', // Dark blue-gray background used in ShowMediaList and CreateMedia
-        'buttons': '#ffc107',     // Warning/Orange color used for primary buttons
-        'table': '#1a252f'        // Darker version of background for table fills
-    },
-    // Component Styling
-    'components': {
-        'navbar': {
-            'hr': {
-                'thickness': '2px',
-                'color': '#9ca3af'
-            }
-        },
-        'cards': {
-            'desktop': {
-                'height': '70px',
-                'fontSize': '1rem',
-                'titleFontSize': '1rem',
-                'yearFontSize': '0.875rem',
-                'padding': '8px',
-                'minWidth': '140px',
-                'maxWidth': '150px'
-            }
-        }
-    }
+    ]
 };
 
 if(process.env.REACT_APP_STATUS === 'local')

@@ -5,6 +5,7 @@ import DeleteModal from "../components/DeleteModal";
 import TagMaker from "../components/TagMaker";
 import useSwipe from "../useSwipe.tsx";
 const constants = require('../constants');
+const theme = require('../theme');
 
 function toCapitalNotation(inputString) {
   return inputString
@@ -352,7 +353,7 @@ function ShowMediaDetails({user, newType, filteredData}) {
   };
   
   return (
-    <div className='ShowMediaDetails min-vh-100' style={{backgroundColor: '#2c3e50', color: 'white'}} {...swipeHandlers}>
+    <div className='ShowMediaDetails min-vh-100' style={{backgroundColor: theme.colors.background.primary, color: 'white'}} {...swipeHandlers}>
       <div className='container-fluid px-2 py-3'>
         {/* Mobile layout - single row */}
         <div className='row mb-4 d-md-none align-items-center'>
@@ -400,50 +401,50 @@ function ShowMediaDetails({user, newType, filteredData}) {
         
         <div className='row justify-content-center'>
           <div className='col-lg-10 col-md-12'>
-            <div className="card shadow-soft border-0" style={{backgroundColor: constants.mainColors.table}}>
-              <div className="card-body p-0" style={{backgroundColor: constants.mainColors.table}}>
+            <div className="card shadow-soft border-0" style={{backgroundColor: theme.colors.background.dark}}>
+              <div className="card-body p-0" style={{backgroundColor: theme.colors.background.dark}}>
                 <div className="table-responsive">
-                  <table className='table table-hover mb-0 text-white' style={{backgroundColor: constants.mainColors.table}}>
-                    <tbody style={{backgroundColor: constants.mainColors.table}}>
-                      <tr style={{backgroundColor: constants.mainColors.table}}>
-                        <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>1</th>
-                        <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Title</td>
-                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table}}>
+                  <table className='table table-hover mb-0 text-white' style={{backgroundColor: theme.colors.background.dark}}>
+                    <tbody style={{backgroundColor: theme.colors.background.dark}}>
+                      <tr style={{backgroundColor: theme.colors.background.dark}}>
+                        <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>1</th>
+                        <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>Title</td>
+                        <td className='px-4 py-3 text-white' style={{backgroundColor: theme.colors.background.dark}}>
                           {renderEditableField('title', media.title)}
                         </td>
                       </tr>
-                      <tr style={{backgroundColor: constants.mainColors.table}}>
-                        <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>2</th>
-                        <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Year</td>
-                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table}}>
+                      <tr style={{backgroundColor: theme.colors.background.dark}}>
+                        <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>2</th>
+                        <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>Year</td>
+                        <td className='px-4 py-3 text-white' style={{backgroundColor: theme.colors.background.dark}}>
                           {renderEditableField('year', media.year, 'select')}
                         </td>
                       </tr>
-                      <tr style={{backgroundColor: constants.mainColors.table}}>
-                        <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>3</th>
-                        <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Tier</td>
-                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table}}>
+                      <tr style={{backgroundColor: theme.colors.background.dark}}>
+                        <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>3</th>
+                        <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>Tier</td>
+                        <td className='px-4 py-3 text-white' style={{backgroundColor: theme.colors.background.dark}}>
                           {renderEditableField('tier', mediaTypeLoc && mediaTypeLoc[tiersVariable] ? mediaTypeLoc[tiersVariable][media.tier] : media.tier, 'select')}
                         </td>
                       </tr>
-                      <tr style={{backgroundColor: constants.mainColors.table}}>
-                        <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>4</th>
-                        <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Tags</td>
-                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table, overflow: 'visible', position: 'relative', zIndex: 999}}>
+                      <tr style={{backgroundColor: theme.colors.background.dark}}>
+                        <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>4</th>
+                        <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>Tags</td>
+                        <td className='px-4 py-3 text-white' style={{backgroundColor: theme.colors.background.dark, overflow: 'visible', position: 'relative', zIndex: 999}}>
                           {renderEditableField('tags', media.tags && media.tags[0] ? media.tags.join(', ') : '-', 'tags')}
                         </td>
                       </tr>
-                      <tr style={{backgroundColor: constants.mainColors.table}}>
-                        <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>5</th>
-                        <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Description</td>
-                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table}}>
+                      <tr style={{backgroundColor: theme.colors.background.dark}}>
+                        <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>5</th>
+                        <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>Description</td>
+                        <td className='px-4 py-3 text-white' style={{backgroundColor: theme.colors.background.dark}}>
                           {renderEditableField('description', media.description ? media.description : '-')}
                         </td>
                       </tr>
-                      <tr style={{backgroundColor: constants.mainColors.table}}>
-                        <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>6</th>
-                        <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>List Type</td>
-                        <td className='px-4 py-3 text-white' style={{backgroundColor: constants.mainColors.table}}>
+                      <tr style={{backgroundColor: theme.colors.background.dark}}>
+                        <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>6</th>
+                        <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>List Type</td>
+                        <td className='px-4 py-3 text-white' style={{backgroundColor: theme.colors.background.dark}}>
                           {renderEditableField('toDo', media.toDo, 'select')}
                         </td>
                       </tr>

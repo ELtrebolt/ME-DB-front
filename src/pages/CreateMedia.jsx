@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import TagMaker from "../components/TagMaker";
 const constants = require('../constants');
+const theme = require('../theme');
 
 function toCapitalNotation(inputString) {
   return inputString
@@ -161,7 +162,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
   const tiersName = toDo ? "todoTiers" : "collectionTiers"
   const yearString = toDo ? "Year You First Wanted To Do" : "Year You First Experienced"
   return (
-    <div className='CreateMedia' style={{backgroundColor: '#2c3e50', minHeight: '100vh', color: 'white'}}>
+    <div className='CreateMedia' style={{backgroundColor: theme.colors.background.primary, minHeight: '100vh', color: 'white'}}>
       <div className='container py-2 py-md-3'>
         {/* Mobile layout - only visible on mobile */}
         <div className='row mb-2 d-md-none align-items-center'>
@@ -253,16 +254,16 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
         
         <div className='row justify-content-center'>
           <div className='col-lg-10 col-md-12'>
-            <div className="card shadow-soft border-0" style={{backgroundColor: constants.mainColors.table}}>
-              <div className="card-body p-0" style={{backgroundColor: constants.mainColors.table}}>
+            <div className="card shadow-soft border-0" style={{backgroundColor: theme.colors.background.dark}}>
+              <div className="card-body p-0" style={{backgroundColor: theme.colors.background.dark}}>
                 <form noValidate onSubmit={onSubmit}>
                   <div className="table-responsive d-none d-md-block" style={{overflow: 'visible'}}>
-                    <table className='table table-hover mb-0 text-white' style={{backgroundColor: constants.mainColors.table, overflow: 'visible'}}>
-                      <tbody style={{backgroundColor: constants.mainColors.table}}>
-                        <tr style={{backgroundColor: constants.mainColors.table}}>
-                          <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>1</th>
-                          <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Title</td>
-                          <td className='px-4 py-3' style={{backgroundColor: constants.mainColors.table}}>
+                    <table className='table table-hover mb-0 text-white' style={{backgroundColor: theme.colors.background.dark, overflow: 'visible'}}>
+                      <tbody style={{backgroundColor: theme.colors.background.dark}}>
+                        <tr style={{backgroundColor: theme.colors.background.dark}}>
+                          <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>1</th>
+                          <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>Title</td>
+                          <td className='px-4 py-3' style={{backgroundColor: theme.colors.background.dark}}>
                             <input
                               type='text'
                               placeholder={constants[mediaType] && constants[mediaType]?.title ? constants[mediaType].title : constants['other'].title}
@@ -284,10 +285,10 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
                             )}
                           </td>
                         </tr>
-                        <tr style={{backgroundColor: constants.mainColors.table}}>
-                          <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>2</th>
-                          <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>{yearString}</td>
-                          <td className='px-4 py-3' style={{backgroundColor: constants.mainColors.table}}>
+                        <tr style={{backgroundColor: theme.colors.background.dark}}>
+                          <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>2</th>
+                          <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>{yearString}</td>
+                          <td className='px-4 py-3' style={{backgroundColor: theme.colors.background.dark}}>
                             <select className='form-select form-select-sm' id='year' value={media.year} onChange={onChange}>
                               {years.map((year) => (
                                 <option key={year} value={year}>
@@ -297,10 +298,10 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
                             </select>
                           </td>
                         </tr>
-                        <tr style={{backgroundColor: constants.mainColors.table}}>
-                          <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>3</th>
-                          <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Tier</td>
-                          <td className='px-4 py-3' style={{backgroundColor: constants.mainColors.table}}>
+                        <tr style={{backgroundColor: theme.colors.background.dark}}>
+                          <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>3</th>
+                          <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>Tier</td>
+                          <td className='px-4 py-3' style={{backgroundColor: theme.colors.background.dark}}>
                             <select
                               id='tier'
                               className='form-select form-select-sm'
@@ -313,17 +314,17 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
                             </select>
                           </td>
                         </tr>
-                        <tr style={{backgroundColor: constants.mainColors.table}}>
-                          <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>4</th>
-                          <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Tags (Optional)</td>
-                          <td className='px-4 py-3' style={{backgroundColor: constants.mainColors.table, overflow: 'visible', position: 'relative', zIndex: 999}}>
+                        <tr style={{backgroundColor: theme.colors.background.dark}}>
+                          <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>4</th>
+                          <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>Tags (Optional)</td>
+                          <td className='px-4 py-3' style={{backgroundColor: theme.colors.background.dark, overflow: 'visible', position: 'relative', zIndex: 999}}>
                             <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={effectiveSelectedTags} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags} hideLabel={true}></TagMaker>
                           </td>
                         </tr>
-                        <tr style={{backgroundColor: constants.mainColors.table}}>
-                          <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: constants.mainColors.table}}>5</th>
-                          <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: constants.mainColors.table}}>Description (Optional)</td>
-                          <td className='px-4 py-3' style={{backgroundColor: constants.mainColors.table}}>
+                        <tr style={{backgroundColor: theme.colors.background.dark}}>
+                          <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>5</th>
+                          <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>Description (Optional)</td>
+                          <td className='px-4 py-3' style={{backgroundColor: theme.colors.background.dark}}>
                             <input
                               type='text'
                               placeholder={constants[mediaType] && constants[mediaType]?.description ? constants[mediaType].description : constants['other'].description}
