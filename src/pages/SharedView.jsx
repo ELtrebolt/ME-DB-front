@@ -11,6 +11,7 @@ import useSwipe from "../useSwipe.tsx";
 import TierTitle from "../components/TierTitle";
 
 const constants = require('../constants');
+const theme = require('../theme');
 
 function toCapitalNotation(inputString) {
   if (!inputString) return '';
@@ -158,9 +159,8 @@ function SharedView() {
           setAllMedia(res.data.media);
           setShareConfig(res.data.shareConfig);
           setMediaType(res.data.mediaType);
-          // Set only first name to be more privacy friendly
-          const fullName = res.data.ownerName || 'User';
-          setOwnerName(fullName.split(' ')[0]);
+          // Set username (no need to split, backend returns username)
+          setOwnerName(res.data.ownerName || 'User');
           
           // Set tier titles
           console.log('Tier titles from API:', res.data.tierTitles);
@@ -282,11 +282,11 @@ function SharedView() {
   if (error) return <div className="text-danger text-center pt-5"><h3>{error}</h3></div>;
 
   const showSwitch = shareConfig.collection && shareConfig.todo;
-  const listTitle = `${ownerName}'s ${toCapitalNotation(mediaType)} ${toDoState ? 'To-Do' : 'Collection'}`;
 
   return (
     <div 
       className='ShowMediaList' 
+      style={{backgroundColor: theme.colors.background.primary, minHeight: '100vh'}}
       {...swipeHandlers}
         onTouchStart={(e) => {
           if (swipeHandlers.onTouchStart) {
@@ -320,7 +320,7 @@ function SharedView() {
                         fontFamily: 'Roboto, sans-serif', 
                         fontSize: 'clamp(18px, 5vw, 36px)',
                     }}>
-                        {listTitle}
+                        <span style={{color: theme.colors.primary}}>{ownerName}</span>'s {toCapitalNotation(mediaType)} {toDoState ? 'To-Do' : 'Collection'}
                     </h1>
                 </div>
                 <div className='col-3 d-flex justify-content-end'>

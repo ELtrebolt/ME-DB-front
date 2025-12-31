@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const constants = require('../constants');
 
-const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hideLabel = false, size = 'normal'}) => {
+const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hideLabel = false, size = 'normal', zIndex = 1000}) => {
   const [suggestions, setSuggestions] = useState();
   // list of {value, label}
   const [selected, setSelected] = useState([]);
@@ -89,21 +89,19 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hid
   )
 
   if(selected !== null) {
-    const containerStyle = size === 'small' ? { 
-      fontSize: '0.75rem',
+    const baseContainerStyle = {
       position: 'relative',
-      zIndex: 1000,
-      overflow: 'visible'
-    } : size === 'extra-small' ? { 
-      fontSize: '0.7rem',
-      position: 'relative',
-      zIndex: 1000,
-      overflow: 'visible'
-    } : {
-      position: 'relative',
-      zIndex: 1000,
+      zIndex: zIndex,
       overflow: 'visible'
     };
+    
+    const containerStyle = size === 'small' ? { 
+      ...baseContainerStyle,
+      fontSize: '0.75rem'
+    } : size === 'extra-small' ? { 
+      ...baseContainerStyle,
+      fontSize: '0.7rem'
+    } : baseContainerStyle;
     const reactTagsStyle = size === 'small' ? { 
       fontSize: '0.75rem',
       minHeight: '28px'

@@ -1409,6 +1409,11 @@
   max-height: 12rem;
 }
 
+/* Ensure TagMaker dropdown listbox appears above other form elements but below navbar (2000) */
+.CreateMedia .react-tags__listbox {
+  z-index: 100 !important;
+}
+
 /* Hide numbered column on mobile for ShowMediaDetails table */
 @media (max-width: 767.98px) {
   .ShowMediaDetails th[scope="row"] {

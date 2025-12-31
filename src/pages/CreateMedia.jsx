@@ -317,8 +317,8 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
                         <tr style={{backgroundColor: theme.colors.background.dark}}>
                           <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>4</th>
                           <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>Tags (Optional)</td>
-                          <td className='px-4 py-3' style={{backgroundColor: theme.colors.background.dark, overflow: 'visible', position: 'relative', zIndex: 999}}>
-                            <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={effectiveSelectedTags} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags} hideLabel={true}></TagMaker>
+                          <td className='px-4 py-3' style={{backgroundColor: theme.colors.background.dark, overflow: 'visible'}}>
+                            <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={effectiveSelectedTags} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags} hideLabel={true} zIndex={10}></TagMaker>
                           </td>
                         </tr>
                         <tr style={{backgroundColor: theme.colors.background.dark}}>
@@ -415,7 +415,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
                     <div className="form-group mb-1">
                       <label className="form-label text-white fw-semibold mb-1" style={{fontSize: '0.75rem'}}><span className="text-warning">4.</span> Tags (Optional)</label>
                       <div style={{fontSize: '0.75rem'}}>
-                        <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={effectiveSelectedTags} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags} hideLabel={true}></TagMaker>
+                        <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={effectiveSelectedTags} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags} hideLabel={true} zIndex={10}></TagMaker>
                       </div>
                     </div>
                     

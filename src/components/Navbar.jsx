@@ -31,7 +31,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
 
   // Calculate dynamic width for mobile profile dropdown
   const calculateProfileDropdownWidth = () => {
-    const labels = ['Export All Data', 'Import New List', 'Switch Account', 'Logout'];
+    const labels = ['Export All Data', 'Import New List', 'View Profile', 'Switch Account', 'Logout'];
     const longestLabel = labels.reduce((a, b) => a.length > b.length ? a : b);
     
     // More conservative estimate: character count * smaller character width + padding
@@ -73,7 +73,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
 
   // Calculate dynamic width for desktop profile dropdown
   const calculateDesktopProfileDropdownWidth = () => {
-    const labels = ['Export All Data', 'Import New List', 'Switch Google Account', 'Logout'];
+    const labels = ['Export All Data', 'Import New List', 'View Profile', 'Switch Google Account', 'Logout'];
     const longestLabel = labels.reduce((a, b) => a.length > b.length ? a : b);
     
     // Desktop uses 0.875rem font size, roughly 7px per character + 32px padding (1rem * 2)
@@ -160,14 +160,18 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
     window.location.href = `${constants.SERVER_URL}/auth/google?prompt=select_account`;
   };
 
+  const isMobile = window.innerWidth < 768;
+  const navbarHeight = isMobile ? theme.components.navbar.mobile.height : theme.components.navbar.height;
+  const logoFontSize = isMobile ? theme.components.navbar.mobile.logoFontSize : theme.components.navbar.logoFontSize;
+
   return (
     <nav style={{
-      backgroundColor: '#ffffff',
-      boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+      backgroundColor: theme.components.navbar.colors.background,
+      boxShadow: theme.components.navbar.shadow,
       position: 'sticky',
       top: 0,
       zIndex: 50,
-      borderBottom: '1px solid #e5e7eb'
+      borderBottom: `1px solid ${theme.components.navbar.colors.border}`
     }}>
       <div style={{
         maxWidth: '1280px',
@@ -178,14 +182,14 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          height: window.innerWidth < 768 ? '48px' : '64px'
+          height: navbarHeight
         }}>
           {/* Logo/Brand */}
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <a href={user ? (user.customizations?.homePage ? `/${user.customizations.homePage}` : "/anime/collection") : "/"} style={{
-              fontSize: window.innerWidth < 768 ? '1rem' : '1.25rem',
+              fontSize: logoFontSize,
               fontWeight: 'bold',
-              color: '#1f2937',
+              color: theme.components.navbar.colors.text.dark,
               textDecoration: 'none'
             }}>
               ME-DB
@@ -193,31 +197,31 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
           </div>
 
           {/* Mobile Navigation */}
-          {user && window.innerWidth < 768 && (
+          {user && isMobile && (
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem'
+              gap: theme.spacing.sm
             }}>
               {/* Mobile About and Stats Links */}
               <a href="/about" style={{
-                color: '#6b7280',
+                color: theme.components.navbar.colors.text.default,
                 textDecoration: 'none',
-                fontSize: '0.875rem',
-                transition: 'color 0.2s ease',
-                padding: '0.5rem 0.5rem',
+                fontSize: theme.components.navbar.mobile.linkFontSize,
+                transition: theme.components.navbar.linkTransition,
+                padding: `${theme.spacing.sm} ${theme.spacing.sm}`,
                 whiteSpace: 'nowrap'
-              }} onMouseEnter={(e) => e.target.style.color = '#374151'} onMouseLeave={(e) => e.target.style.color = '#6b7280'}>
+              }} onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover} onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}>
                 About
               </a>
               <a href="/stats" style={{
-                color: '#6b7280',
+                color: theme.components.navbar.colors.text.default,
                 textDecoration: 'none',
-                fontSize: '0.875rem',
-                transition: 'color 0.2s ease',
-                padding: '0.5rem 0.5rem',
+                fontSize: theme.components.navbar.mobile.linkFontSize,
+                transition: theme.components.navbar.linkTransition,
+                padding: `${theme.spacing.sm} ${theme.spacing.sm}`,
                 whiteSpace: 'nowrap'
-              }} onMouseEnter={(e) => e.target.style.color = '#374151'} onMouseLeave={(e) => e.target.style.color = '#6b7280'}>
+              }} onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover} onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}>
                 Stats
               </a>
               
@@ -225,20 +229,20 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
               <div style={{ position: 'relative' }} ref={mediaDropdownRef}>
                 <button
                   style={{
-                    color: '#6b7280',
+                    color: theme.components.navbar.colors.text.default,
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.25rem',
-                    fontSize: '0.875rem',
-                    transition: 'color 0.2s ease',
-                    padding: '0.5rem 0.5rem',
+                    gap: theme.spacing.xs,
+                    fontSize: theme.components.navbar.mobile.linkFontSize,
+                    transition: theme.components.navbar.linkTransition,
+                    padding: `${theme.spacing.sm} ${theme.spacing.sm}`,
                     whiteSpace: 'nowrap'
                   }}
-                  onMouseEnter={(e) => e.target.style.color = '#374151'}
-                  onMouseLeave={(e) => e.target.style.color = '#6b7280'}
+                  onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover}
+                  onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}
                   onClick={() => setIsMediaMenuOpen(!isMediaMenuOpen)}
                 >
                   Media
@@ -252,48 +256,48 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                     position: 'absolute',
                     left: 0,
                     top: '100%',
-                    marginTop: '0.5rem',
+                    marginTop: theme.spacing.sm,
                     width: `${calculateMediaDropdownWidth()}px`,
                     minWidth: `${calculateMediaDropdownWidth()}px`,
-                    backgroundColor: '#ffffff',
-                    borderRadius: '0.375rem',
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-                    border: '1px solid #e5e7eb',
-                    zIndex: 50,
+                    backgroundColor: theme.components.navbar.colors.dropdownBackground,
+                    borderRadius: theme.components.navbar.borderRadius,
+                    boxShadow: theme.components.navbar.dropdownShadow,
+                    border: `1px solid ${theme.components.navbar.colors.border}`,
+                    zIndex: 2000,
                     padding: '0.125rem 0'
                   }}>
                       <a href="/anime/collection" className="navbar-dropdown-item" style={{
                         display: 'block',
-                        padding: '0.25rem 0.75rem',
-                        fontSize: '0.75rem',
-                        color: '#374151',
+                        padding: theme.components.navbar.mobile.dropdownPadding,
+                        fontSize: theme.components.navbar.mobile.dropdownItemFontSize,
+                        color: theme.components.navbar.colors.dropdownItemText,
                         textDecoration: 'none'
                       }}>
                         Anime
                       </a>
                     <a href="/tv/collection" style={{
                       display: 'block',
-                      padding: '0.25rem 0.75rem',
-                      fontSize: '0.75rem',
-                      color: '#374151',
+                      padding: theme.components.navbar.mobile.dropdownPadding,
+                      fontSize: theme.components.navbar.mobile.dropdownItemFontSize,
+                      color: theme.components.navbar.colors.dropdownItemText,
                       textDecoration: 'none'
                     }} className="navbar-dropdown-item">
                       TV Shows
                     </a>
                     <a href="/movies/collection" style={{
                       display: 'block',
-                      padding: '0.25rem 0.75rem',
-                      fontSize: '0.75rem',
-                      color: '#374151',
+                      padding: theme.components.navbar.mobile.dropdownPadding,
+                      fontSize: theme.components.navbar.mobile.dropdownItemFontSize,
+                      color: theme.components.navbar.colors.dropdownItemText,
                       textDecoration: 'none'
                     }} className="navbar-dropdown-item">
                       Movies
                     </a>
                     <a href="/games/collection" style={{
                       display: 'block',
-                      padding: '0.25rem 0.75rem',
-                      fontSize: '0.75rem',
-                      color: '#374151',
+                      padding: theme.components.navbar.mobile.dropdownPadding,
+                      fontSize: theme.components.navbar.mobile.dropdownItemFontSize,
+                      color: theme.components.navbar.colors.dropdownItemText,
                       textDecoration: 'none'
                     }} className="navbar-dropdown-item">
                       Games
@@ -302,9 +306,9 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                     {navNewTypes.length > 0 && navNewTypes.map((item, index) => (
                       <a key={index} href={`/${item}/collection`} style={{
                         display: 'block',
-                        padding: '0.25rem 0.75rem',
-                        fontSize: '0.75rem',
-                        color: '#374151',
+                        padding: theme.components.navbar.mobile.dropdownPadding,
+                        fontSize: theme.components.navbar.mobile.dropdownItemFontSize,
+                        color: theme.components.navbar.colors.dropdownItemText,
                         textDecoration: 'none'
                       }} className="navbar-dropdown-item">
                         {item.charAt(0).toUpperCase() + item.slice(1)}
@@ -315,9 +319,9 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                       display: 'block',
                       width: '100%',
                       textAlign: 'left',
-                      padding: '0.25rem 0.75rem',
-                      fontSize: '0.75rem',
-                      color: '#374151',
+                      padding: theme.components.navbar.mobile.dropdownPadding,
+                      fontSize: theme.components.navbar.mobile.dropdownItemFontSize,
+                      color: theme.components.navbar.colors.dropdownItemText,
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer'
@@ -334,34 +338,47 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.25rem',
-                    color: '#6b7280',
+                    gap: theme.spacing.xs,
+                    color: theme.components.navbar.colors.text.default,
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
-                    transition: 'color 0.2s ease',
-                    padding: '0.5rem 0.5rem',
+                    transition: theme.components.navbar.linkTransition,
+                    padding: `${theme.spacing.sm} ${theme.spacing.sm}`,
                     whiteSpace: 'nowrap'
                   }}
-                  onMouseEnter={(e) => e.target.style.color = '#374151'}
-                  onMouseLeave={(e) => e.target.style.color = '#6b7280'}
+                  onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover}
+                  onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                 >
                   <img
                     src={user.profilePic}
                     alt="Profile"
                     style={{
-                      width: '24px',
-                      height: '24px',
+                      width: theme.components.navbar.mobile.profileImageSize,
+                      height: theme.components.navbar.mobile.profileImageSize,
                       borderRadius: '50%',
                       objectFit: 'cover',
-                      backgroundColor: '#e5e7eb',
+                      backgroundColor: theme.components.navbar.colors.avatarBackground,
                       display: 'block'
                     }}
                     onError={(e) => {
                       console.log('Profile picture failed to load:', user.profilePic);
-                      // Show a fallback instead of hiding
-                      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTIiIGZpbGw9IiNlNWU3ZWIiLz4KPHBhdGggZD0iTTEyIDEyQzE0LjIwOTEgMTIgMTYgMTAuMjA5MSAxNiA4QzE2IDUuNzkwODYgMTQuMjA5MSA0IDEyIDRDOS43OTA4NiA0IDggNS43OTA4NiA4IDhDOCAxMC4yMDkxIDkuNzkwODYgMTIgMTIgMTJaIiBmaWxsPSIjOWNhM2FmIi8+CjxwYXRoIGQ9Ik0xMiAxNEM5LjMzIDE0IDcgMTYuMzMgNyAxOUgxN0MxNyAxNi4zMyAxNC42NyAxNCAxMiAxNFoiIGZpbGw9IiM5Y2EzYWYiLz4KPC9zdmc+';
+                      // Replace image with username text
+                      const parent = e.target.parentElement;
+                      if (parent && !parent.querySelector('.username-fallback')) {
+                        e.target.style.display = 'none';
+                        const span = document.createElement('span');
+                        span.className = 'username-fallback';
+                        span.textContent = user.username || user.displayName;
+                        span.style.fontSize = theme.components.navbar.mobile.dropdownItemFontSize;
+                        span.style.fontWeight = '500';
+                        span.style.maxWidth = '128px';
+                        span.style.overflow = 'hidden';
+                        span.style.textOverflow = 'ellipsis';
+                        span.style.whiteSpace = 'nowrap';
+                        parent.insertBefore(span, parent.lastChild);
+                      }
                     }}
                     onLoad={() => {
                       console.log('Profile picture loaded successfully:', user.profilePic);
@@ -377,23 +394,23 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                     position: 'absolute',
                     right: 0,
                     top: '100%',
-                    marginTop: '0.5rem',
+                    marginTop: theme.spacing.sm,
                     width: `${calculateProfileDropdownWidth()}px`,
                     minWidth: `${calculateProfileDropdownWidth()}px`,
-                    backgroundColor: '#ffffff',
-                    borderRadius: '0.375rem',
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-                    border: '1px solid #e5e7eb',
-                    zIndex: 50,
-                    padding: '0.25rem 0'
+                    backgroundColor: theme.components.navbar.colors.dropdownBackground,
+                    borderRadius: theme.components.navbar.borderRadius,
+                    boxShadow: theme.components.navbar.dropdownShadow,
+                    border: `1px solid ${theme.components.navbar.colors.border}`,
+                    zIndex: 2000,
+                    padding: `${theme.spacing.xs} 0`
                   }}>
                     <button style={{
                       display: 'block',
                       width: '100%',
                       textAlign: 'left',
                       padding: '0.375rem 0.75rem',
-                      fontSize: '0.75rem',
-                      color: '#374151',
+                      fontSize: theme.components.navbar.mobile.dropdownItemFontSize,
+                      color: theme.components.navbar.colors.dropdownItemText,
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer'
@@ -405,8 +422,8 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                       width: '100%',
                       textAlign: 'left',
                       padding: '0.375rem 0.75rem',
-                      fontSize: '0.75rem',
-                      color: '#374151',
+                      fontSize: theme.components.navbar.mobile.dropdownItemFontSize,
+                      color: theme.components.navbar.colors.dropdownItemText,
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer'
@@ -418,8 +435,24 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                       width: '100%',
                       textAlign: 'left',
                       padding: '0.375rem 0.75rem',
-                      fontSize: '0.75rem',
-                      color: '#374151',
+                      fontSize: theme.components.navbar.mobile.dropdownItemFontSize,
+                      color: theme.components.navbar.colors.dropdownItemText,
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer'
+                    }} className="navbar-dropdown-item" onClick={() => {
+                      setIsUserMenuOpen(false);
+                      navigate('/profile');
+                    }}>
+                      View Profile
+                    </button>
+                    <button style={{
+                      display: 'block',
+                      width: '100%',
+                      textAlign: 'left',
+                      padding: '0.375rem 0.75rem',
+                      fontSize: theme.components.navbar.mobile.dropdownItemFontSize,
+                      color: theme.components.navbar.colors.dropdownItemText,
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer'
@@ -430,8 +463,8 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                     <a href="/logout" style={{
                       display: 'block',
                       padding: '0.375rem 0.75rem',
-                      fontSize: '0.75rem',
-                      color: '#374151',
+                      fontSize: theme.components.navbar.mobile.dropdownItemFontSize,
+                      color: theme.components.navbar.colors.dropdownItemText,
                       textDecoration: 'none'
                     }} className="navbar-dropdown-item">
                       Logout
@@ -443,7 +476,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
           )}
 
           {/* Desktop Navigation */}
-          {user && window.innerWidth >= 768 && (
+          {user && !isMobile && (
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -456,17 +489,17 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                 gap: '1.5rem'
               }}>
                 <a href="/about" style={{
-                  color: '#6b7280',
+                  color: theme.components.navbar.colors.text.default,
                   textDecoration: 'none',
-                  transition: 'color 0.2s ease'
-                }} onMouseEnter={(e) => e.target.style.color = '#374151'} onMouseLeave={(e) => e.target.style.color = '#6b7280'}>
+                  transition: theme.components.navbar.linkTransition
+                }} onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover} onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}>
                   About
                 </a>
                 <a href="/stats" style={{
-                  color: '#6b7280',
+                  color: theme.components.navbar.colors.text.default,
                   textDecoration: 'none',
-                  transition: 'color 0.2s ease'
-                }} onMouseEnter={(e) => e.target.style.color = '#374151'} onMouseLeave={(e) => e.target.style.color = '#6b7280'}>
+                  transition: theme.components.navbar.linkTransition
+                }} onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover} onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}>
                   Stats
                 </a>
                 
@@ -474,18 +507,18 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                 <div style={{ position: 'relative' }} ref={mediaDropdownRef}>
                   <button
                     style={{
-                      color: '#6b7280',
+                      color: theme.components.navbar.colors.text.default,
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.25rem',
-                      fontSize: '1rem',
-                      transition: 'color 0.2s ease'
+                      gap: theme.spacing.xs,
+                      fontSize: theme.components.navbar.linkFontSize,
+                      transition: theme.components.navbar.linkTransition
                     }}
-                    onMouseEnter={(e) => e.target.style.color = '#374151'}
-                    onMouseLeave={(e) => e.target.style.color = '#6b7280'}
+                    onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover}
+                    onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}
                     onClick={() => setIsMediaMenuOpen(!isMediaMenuOpen)}
                   >
                     Media
@@ -499,48 +532,48 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                       position: 'absolute',
                       left: 0,
                       top: '100%',
-                      marginTop: '0.5rem',
+                      marginTop: theme.spacing.sm,
                       width: `${calculateDesktopMediaDropdownWidth()}px`,
                       minWidth: `${calculateDesktopMediaDropdownWidth()}px`,
-                      backgroundColor: '#ffffff',
-                      borderRadius: '0.375rem',
-                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-                      border: '1px solid #e5e7eb',
-                      zIndex: 50,
+                      backgroundColor: theme.components.navbar.colors.dropdownBackground,
+                      borderRadius: theme.components.navbar.borderRadius,
+                      boxShadow: theme.components.navbar.dropdownShadow,
+                      border: `1px solid ${theme.components.navbar.colors.border}`,
+                      zIndex: 2000,
                       padding: '0.125rem 0'
                     }}>
                       <a href="/anime/collection" style={{
                         display: 'block',
-                        padding: '0.25rem 1rem',
-                        fontSize: '0.875rem',
-                        color: '#374151',
+                        padding: theme.components.navbar.desktop.dropdownPadding,
+                        fontSize: theme.components.navbar.desktop.dropdownItemFontSize,
+                        color: theme.components.navbar.colors.dropdownItemText,
                         textDecoration: 'none'
                       }} className="navbar-dropdown-item">
                         Anime
                       </a>
                       <a href="/tv/collection" style={{
                         display: 'block',
-                        padding: '0.25rem 1rem',
-                        fontSize: '0.875rem',
-                        color: '#374151',
+                        padding: theme.components.navbar.desktop.dropdownPadding,
+                        fontSize: theme.components.navbar.desktop.dropdownItemFontSize,
+                        color: theme.components.navbar.colors.dropdownItemText,
                         textDecoration: 'none'
                       }} className="navbar-dropdown-item">
                         TV Shows
                       </a>
                       <a href="/movies/collection" style={{
                         display: 'block',
-                        padding: '0.25rem 1rem',
-                        fontSize: '0.875rem',
-                        color: '#374151',
+                        padding: theme.components.navbar.desktop.dropdownPadding,
+                        fontSize: theme.components.navbar.desktop.dropdownItemFontSize,
+                        color: theme.components.navbar.colors.dropdownItemText,
                         textDecoration: 'none'
                       }} className="navbar-dropdown-item">
                         Movies
                       </a>
                       <a href="/games/collection" style={{
                         display: 'block',
-                        padding: '0.25rem 1rem',
-                        fontSize: '0.875rem',
-                        color: '#374151',
+                        padding: theme.components.navbar.desktop.dropdownPadding,
+                        fontSize: theme.components.navbar.desktop.dropdownItemFontSize,
+                        color: theme.components.navbar.colors.dropdownItemText,
                         textDecoration: 'none'
                       }} className="navbar-dropdown-item">
                         Games
@@ -549,9 +582,9 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                       {navNewTypes.length > 0 && navNewTypes.map((item, index) => (
                         <a key={index} href={`/${item}/collection`} style={{
                           display: 'block',
-                          padding: '0.25rem 1rem',
-                          fontSize: '0.875rem',
-                          color: '#374151',
+                          padding: theme.components.navbar.desktop.dropdownPadding,
+                          fontSize: theme.components.navbar.desktop.dropdownItemFontSize,
+                          color: theme.components.navbar.colors.dropdownItemText,
                           textDecoration: 'none'
                         }} className="navbar-dropdown-item">
                           {item.charAt(0).toUpperCase() + item.slice(1)}
@@ -562,9 +595,9 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                         display: 'block',
                         width: '100%',
                         textAlign: 'left',
-                        padding: '0.25rem 1rem',
-                        fontSize: '0.875rem',
-                        color: '#374151',
+                        padding: theme.components.navbar.desktop.dropdownPadding,
+                        fontSize: theme.components.navbar.desktop.dropdownItemFontSize,
+                        color: theme.components.navbar.colors.dropdownItemText,
                         background: 'none',
                         border: 'none',
                         cursor: 'pointer'
@@ -588,38 +621,45 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.5rem',
-                      color: '#6b7280',
+                      gap: theme.spacing.sm,
+                      color: theme.components.navbar.colors.text.default,
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
-                      transition: 'color 0.2s ease'
+                      transition: theme.components.navbar.linkTransition
                     }}
-                    onMouseEnter={(e) => e.target.style.color = '#374151'}
-                    onMouseLeave={(e) => e.target.style.color = '#6b7280'}
+                    onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover}
+                    onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   >
                     <img
                       src={user.profilePic}
                       alt="Profile"
                       style={{
-                        width: '32px',
-                        height: '32px',
+                        width: theme.components.navbar.desktop.profileImageSize,
+                        height: theme.components.navbar.desktop.profileImageSize,
                         borderRadius: '50%',
                         objectFit: 'cover'
                       }}
                       onError={(e) => {
-                        e.target.style.display = 'none';
+                        console.log('Profile picture failed to load:', user.profilePic);
+                        // Replace image with username text
+                        const parent = e.target.parentElement;
+                        if (parent && !parent.querySelector('.username-fallback')) {
+                          e.target.style.display = 'none';
+                          const span = document.createElement('span');
+                          span.className = 'username-fallback';
+                          span.textContent = user.username || user.displayName;
+                          span.style.fontSize = theme.components.navbar.desktop.dropdownItemFontSize;
+                          span.style.fontWeight = '500';
+                          span.style.maxWidth = '128px';
+                          span.style.overflow = 'hidden';
+                          span.style.textOverflow = 'ellipsis';
+                          span.style.whiteSpace = 'nowrap';
+                          parent.insertBefore(span, parent.lastChild);
+                        }
                       }}
                     />
-                    <span style={{
-                      fontSize: '0.875rem',
-                      fontWeight: '500',
-                      maxWidth: '128px',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap'
-                    }}>{user.displayName}</span>
                     <svg style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
@@ -630,23 +670,23 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                       position: 'absolute',
                       right: 0,
                       top: '100%',
-                      marginTop: '0.5rem',
+                      marginTop: theme.spacing.sm,
                       width: `${calculateDesktopProfileDropdownWidth()}px`,
                       minWidth: `${calculateDesktopProfileDropdownWidth()}px`,
-                      backgroundColor: '#ffffff',
-                      borderRadius: '0.375rem',
-                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-                      border: '1px solid #e5e7eb',
-                      zIndex: 50,
-                      padding: '0.25rem 0'
+                      backgroundColor: theme.components.navbar.colors.dropdownBackground,
+                      borderRadius: theme.components.navbar.borderRadius,
+                      boxShadow: theme.components.navbar.dropdownShadow,
+                      border: `1px solid ${theme.components.navbar.colors.border}`,
+                      zIndex: 2000,
+                      padding: `${theme.spacing.xs} 0`
                     }}>
                       <button style={{
                         display: 'block',
                         width: '100%',
                         textAlign: 'left',
-                        padding: '0.5rem 1rem',
-                        fontSize: '0.875rem',
-                        color: '#374151',
+                        padding: theme.components.navbar.desktop.dropdownPaddingLarge,
+                        fontSize: theme.components.navbar.desktop.dropdownItemFontSize,
+                        color: theme.components.navbar.colors.dropdownItemText,
                         background: 'none',
                         border: 'none',
                         cursor: 'pointer'
@@ -657,9 +697,9 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                         display: 'block',
                         width: '100%',
                         textAlign: 'left',
-                        padding: '0.5rem 1rem',
-                        fontSize: '0.875rem',
-                        color: '#374151',
+                        padding: theme.components.navbar.desktop.dropdownPaddingLarge,
+                        fontSize: theme.components.navbar.desktop.dropdownItemFontSize,
+                        color: theme.components.navbar.colors.dropdownItemText,
                         background: 'none',
                         border: 'none',
                         cursor: 'pointer'
@@ -670,9 +710,25 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                         display: 'block',
                         width: '100%',
                         textAlign: 'left',
-                        padding: '0.5rem 1rem',
-                        fontSize: '0.875rem',
-                        color: '#374151',
+                        padding: theme.components.navbar.desktop.dropdownPaddingLarge,
+                        fontSize: theme.components.navbar.desktop.dropdownItemFontSize,
+                        color: theme.components.navbar.colors.dropdownItemText,
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }} className="navbar-dropdown-item" onClick={() => {
+                        setIsUserMenuOpen(false);
+                        navigate('/profile');
+                      }}>
+                View Profile
+                      </button>
+                      <button style={{
+                        display: 'block',
+                        width: '100%',
+                        textAlign: 'left',
+                        padding: theme.components.navbar.desktop.dropdownPaddingLarge,
+                        fontSize: theme.components.navbar.desktop.dropdownItemFontSize,
+                        color: theme.components.navbar.colors.dropdownItemText,
                         background: 'none',
                         border: 'none',
                         cursor: 'pointer'
@@ -682,9 +738,9 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                       <hr style={{ margin: '0.125rem 0', border: 'none', borderTop: `${theme.components.navbar.hr.thickness} solid ${theme.components.navbar.hr.color}` }} />
                       <a href="/logout" style={{
                         display: 'block',
-                        padding: '0.5rem 1rem',
-                        fontSize: '0.875rem',
-                        color: '#374151',
+                        padding: theme.components.navbar.desktop.dropdownPaddingLarge,
+                        fontSize: theme.components.navbar.desktop.dropdownItemFontSize,
+                        color: theme.components.navbar.colors.dropdownItemText,
                         textDecoration: 'none'
                       }} className="navbar-dropdown-item">
                 Logout

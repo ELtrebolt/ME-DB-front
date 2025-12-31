@@ -14,6 +14,7 @@ import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import Logout from "./pages/Logout";
 import Stats from './pages/Stats';
+import Profile from './pages/Profile';
 // Other
 import { useEffect, useState } from "react";
 import axios from 'axios';
@@ -111,6 +112,7 @@ const App = () => {
             <Route path='/privacy' element={<Privacy/>} />
             <Route path='/terms' element={<Terms/>} />
             <Route path='/stats' element={user ? <Stats user={user}/> : <Navigate to="/"/>} />
+            <Route path='/profile' element={user ? <Profile user={user} setUserChanged={setUserChanged}/> : <Navigate to="/"/>} />
             <Route path='/logout' element={<Logout/>} />
             <Route path='/shared/:token' element={<SharedView/>} />
 

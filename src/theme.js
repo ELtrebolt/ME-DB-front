@@ -164,15 +164,56 @@ const theme = {
   components: {
     // Navbar
     navbar: {
-      height: '70px',
+      // Desktop values
+      height: '64px',
       heightScrolled: '60px',
       padding: '1.5rem 1rem',
       paddingScrolled: '0.5rem 1rem',
-      backgroundColor: '#34495e',
+      backgroundColor: '#ffffff',
       backgroundColorScrolled: '#ffffff',
-      logoFontSize: '1.5rem',
-      linkFontSize: '0.95rem',
+      logoFontSize: '1.25rem',
+      linkFontSize: '1rem',
       buttonFontSize: '0.9rem',
+      
+      // Mobile values
+      mobile: {
+        height: '48px',
+        logoFontSize: '1rem',
+        linkFontSize: '0.875rem',
+        buttonFontSize: '0.875rem',
+        dropdownItemFontSize: '0.75rem',
+        dropdownPadding: '0.25rem 0.75rem',
+        profileImageSize: '24px',
+      },
+      
+      // Desktop dropdown values
+      desktop: {
+        dropdownItemFontSize: '0.875rem',
+        dropdownPadding: '0.25rem 1rem',
+        profileImageSize: '32px',
+        dropdownPaddingLarge: '0.5rem 1rem',
+      },
+      
+      // Colors
+      colors: {
+        background: '#ffffff',
+        text: {
+          default: '#6b7280',
+          hover: '#374151',
+          dark: '#1f2937',
+        },
+        border: '#e5e7eb',
+        dropdownBackground: '#ffffff',
+        dropdownItemText: '#374151',
+        avatarBackground: '#e5e7eb',
+      },
+      
+      // Shadows
+      shadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+      dropdownShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+      
+      // Border radius
+      borderRadius: '0.375rem',
       
       hr: {
         thickness: '2px',
@@ -181,6 +222,7 @@ const theme = {
       },
       
       transition: 'all 0.3s ease',
+      linkTransition: 'color 0.2s ease',
     },
 
     // Cards (Media Items)
@@ -320,6 +362,39 @@ const theme = {
       iconSize: '48px',
       titleFontSize: '1.25rem',
       descriptionFontSize: '1rem',
+    },
+
+    // Intro Page (Landing Page)
+    introPage: {
+      // Background colors - professional medium scheme (between dark and light)
+      bg1: '#475569',        // Main hero/primary sections - medium slate blue-gray
+      bg2: '#64748b',        // Alternate sections (Features, FAQ) - lighter slate blue-gray
+      
+      // Text colors
+      text: {
+        primary: '#ffffff',           // Main headings and important text
+        secondary: '#f1f5f9',         // Body text and descriptions - light gray
+        muted: 'rgba(241, 245, 249, 0.8)',  // Muted/secondary text
+        accent: '#e2e8f0',            // Accent text (like "SCROLL TO EXPLORE")
+      },
+      
+      // Navbar colors (for intro page navbar)
+      navbar: {
+        backgroundColor: '#64748b',  // Navbar background when not scrolled
+        backgroundColorScrolled: '#ffffff',  // Navbar background when scrolled
+        textColor: '#ffffff',         // Navbar text when not scrolled
+        textColorScrolled: '#1f2937', // Navbar text when scrolled
+      },
+      
+      // Card/Glass effect colors
+      cardGlass: 'rgba(255, 255, 255, 0.15)',      // Glass-morphism background - more visible on medium bg
+      cardGlassHover: 'rgba(255, 255, 255, 0.2)', // Glass-morphism hover
+      cardBorder: 'rgba(255, 255, 255, 0.2)',     // Card border - more visible
+      
+      // Accordion colors
+      accordionBackground: 'rgba(255, 255, 255, 0.15)',
+      accordionItemBackground: 'rgba(255, 255, 255, 0.1)',
+      accordionBorder: 'rgba(255, 255, 255, 0.2)',
     },
 
     // Tier Titles

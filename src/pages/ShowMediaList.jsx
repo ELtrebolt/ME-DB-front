@@ -10,6 +10,7 @@ import TierTitle from "../components/TierTitle";
 import TagFilter from "../components/TagFilter";
 import SearchBar from "../components/SearchBar";
 import useSwipe from "../useSwipe.tsx";
+import ShareLinkModal from "../components/ShareLinkModal";
 
 const constants = require('../constants');
 const theme = require('../theme');
@@ -247,9 +248,6 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
   
   // Share Modal State
   const [showShareModal, setShowShareModal] = useState(false);
-  const [shareConfig, setShareConfig] = useState({ collection: true, todo: false });
-  const [shareToken, setShareToken] = useState(null);
-  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const [existingShareData, setExistingShareData] = useState(null);
 
   const sensors = useSensors(
@@ -637,63 +635,13 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
         .then(res => {
           if (res.data.exists) {
             setExistingShareData(res.data);
-            setShareToken(res.data.token);
-            setShareConfig(res.data.shareConfig);
           } else {
             setExistingShareData(null);
-            setShareToken(null);
-            // Default config
-            setShareConfig({ collection: true, todo: false });
           }
         })
         .catch(err => console.error('Error checking share status:', err));
     }
-  }, [user, mediaType, showShareModal]);
-
-  function generateShareLink() {
-    setIsGeneratingLink(true);
-    axios.post(constants['SERVER_URL'] + '/api/share', {
-      mediaType,
-      shareConfig
-    })
-    .then(res => {
-      setShareToken(res.data.token);
-      setExistingShareData({
-          exists: true,
-          token: res.data.token,
-          shareConfig: shareConfig
-      });
-      setIsGeneratingLink(false);
-    })
-    .catch(err => {
-      console.error(err);
-      setIsGeneratingLink(false);
-      window.alert('Error generating link');
-    });
-  }
-
-  function revokeShareLink() {
-      if(!window.confirm("Are you sure? This will disable the current link immediately.")) return;
-      
-      axios.delete(constants['SERVER_URL'] + `/api/share/${mediaType}`)
-      .then(res => {
-          setShareToken(null);
-          setExistingShareData(null);
-          setShareConfig({ collection: true, todo: false });
-      })
-      .catch(err => {
-          console.error(err);
-          window.alert('Error revoking link');
-      });
-  }
-
-  function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-      // Optional: show copied feedback
-    }, (err) => {
-      console.error('Could not copy text: ', err);
-    });
-  }
+  }, [user, mediaType, showShareModal, toDoState]);
 
   // Redirect to login if user is not authenticated
   if (!user) {
@@ -1029,123 +977,26 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
       )}
 
       {/* Share Modal */}
-      {showShareModal && (
-        <div className="modal fade show d-block" style={{backgroundColor: 'rgba(0,0,0,0.5)'}} tabIndex="-1">
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content shadow-strong">
-              <div className="modal-header border-bottom">
-                <h5 className="modal-title fw-semibold text-dark">Share {toCapitalNotation(mediaType)} List</h5>
-                <button type="button" className="btn-close" onClick={() => setShowShareModal(false)} aria-label="Close"></button>
-              </div>
-              <div className="modal-body">
-                {!shareToken ? (
-                  <>
-                    <p className="text-dark">Select what you want to share via a public link:</p>
-                    <div className="form-check mb-2">
-                      <input 
-                        className="form-check-input" 
-                        type="checkbox" 
-                        id="shareCollection" 
-                        checked={shareConfig.collection} 
-                        onChange={(e) => setShareConfig({...shareConfig, collection: e.target.checked})}
-                      />
-                      <label className="form-check-label text-dark" htmlFor="shareCollection">
-                        Collection
-                      </label>
-                    </div>
-                    <div className="form-check mb-4">
-                      <input 
-                        className="form-check-input" 
-                        type="checkbox" 
-                        id="shareTodo" 
-                        checked={shareConfig.todo} 
-                        onChange={(e) => setShareConfig({...shareConfig, todo: e.target.checked})}
-                      />
-                      <label className="form-check-label text-dark" htmlFor="shareTodo">
-                        To-Do List
-                      </label>
-                    </div>
-                    
-                    <div className="d-grid">
-                      <button 
-                        className="btn btn-primary" 
-                        onClick={generateShareLink}
-                        disabled={((!shareConfig.collection && !shareConfig.todo)) || isGeneratingLink}
-                      >
-                        {isGeneratingLink ? 'Generating...' : 'Generate Public Link'}
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center">
-                    <p className="text-success mb-2"><i className="fas fa-check-circle fa-2x"></i></p>
-                    <p className="fw-bold text-dark mb-3">Link Active</p>
-                    
-                    <div className="input-group mb-3">
-                      <input 
-                        type="text" 
-                        className="form-control" 
-                        value={`${window.location.origin}/shared/${shareToken}`} 
-                        readOnly 
-                      />
-                      <button 
-                        className="btn btn-outline-secondary" 
-                        type="button"
-                        onClick={() => copyToClipboard(`${window.location.origin}/shared/${shareToken}`)}
-                      >
-                        <i className="fas fa-copy"></i>
-                      </button>
-                    </div>
-                    <p className="small text-muted mb-3">
-                      Anyone with this link can view the selected lists.
-                    </p>
-
-                    <hr />
-                    
-                    <div className="text-start mb-3">
-                        <p className="text-dark fw-semibold mb-2">Update Settings:</p>
-                        <div className="form-check mb-2">
-                            <input 
-                                className="form-check-input" 
-                                type="checkbox" 
-                                id="shareCollectionEdit" 
-                                checked={shareConfig.collection} 
-                                onChange={(e) => setShareConfig({...shareConfig, collection: e.target.checked})}
-                            />
-                            <label className="form-check-label text-dark" htmlFor="shareCollectionEdit">Collection</label>
-                        </div>
-                        <div className="form-check mb-3">
-                            <input 
-                                className="form-check-input" 
-                                type="checkbox" 
-                                id="shareTodoEdit" 
-                                checked={shareConfig.todo} 
-                                onChange={(e) => setShareConfig({...shareConfig, todo: e.target.checked})}
-                            />
-                            <label className="form-check-label text-dark" htmlFor="shareTodoEdit">To-Do List</label>
-                        </div>
-                        <button 
-                            className="btn btn-sm btn-outline-primary w-100 mb-3"
-                            onClick={generateShareLink}
-                            disabled={((!shareConfig.collection && !shareConfig.todo)) || isGeneratingLink}
-                        >
-                            Update Permissions
-                        </button>
-                    </div>
-
-                    <button 
-                        className="btn btn-outline-danger w-100"
-                        onClick={revokeShareLink}
-                    >
-                        Unshare / Revoke Link
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <ShareLinkModal
+        show={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        mediaType={mediaType}
+        toDoState={toDoState}
+        onUpdate={() => {
+          // Refresh existing share data when modal updates
+          if (user && mediaType) {
+            axios.get(constants['SERVER_URL'] + `/api/share/status/${mediaType}`)
+              .then(res => {
+                if (res.data.exists) {
+                  setExistingShareData(res.data);
+                } else {
+                  setExistingShareData(null);
+                }
+              })
+              .catch(err => console.error('Error checking share status:', err));
+          }
+        }}
+      />
     </>
 
   );
