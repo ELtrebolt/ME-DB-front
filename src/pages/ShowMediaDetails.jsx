@@ -4,6 +4,7 @@ import axios from 'axios';
 import DeleteModal from "../components/DeleteModal";
 import TagMaker from "../components/TagMaker";
 import useSwipe from "../useSwipe.tsx";
+import DuplicateModal from "../components/DuplicateModal";
 const constants = require('../constants');
 const theme = require('../theme');
 
@@ -158,6 +159,70 @@ function ShowMediaDetails({user, newType, filteredData}) {
       });
   };
 
+  function onDuplicateClick() {
+    if (!media.title) {
+      console.log('Media not loaded yet');
+      return;
+    }
+    // Show confirmation modal first
+    setShowDuplicateConfirmation(true);
+  }
+
+  function handleConfirmDuplicate() {
+    if (!media.title) {
+      console.log('Media not loaded yet');
+      return;
+    }
+
+    setShowDuplicateConfirmation(false);
+
+    const duplicateData = {
+      media: {
+        mediaType: media.mediaType,
+        title: media.title,
+        tier: media.tier,
+        toDo: media.toDo,
+        year: media.year,
+        tags: media.tags || [],
+        description: media.description || ''
+      },
+      newType: newType
+    };
+
+    axios
+      .post(constants['SERVER_URL'] + '/api/media', duplicateData)
+      .then((res) => {
+        console.log('Media duplicated successfully:', res.data);
+        // Store the new ID and show the success modal
+        setDuplicateId(res.data.ID);
+        setShowDuplicateModal(true);
+      })
+      .catch((err) => {
+        console.log('Error from ShowMediaDetails_duplicateClick:', err);
+        window.alert('Failed to duplicate media');
+      });
+  }
+
+  function handleCancelDuplicate() {
+    setShowDuplicateConfirmation(false);
+  }
+
+  function handleGoToCopy() {
+    if (!duplicateId) return;
+    const newUrl = `/${mediaType}/${duplicateId}`;
+    const currentSearch = location.search;
+    const finalUrl = currentSearch ? `${newUrl}${currentSearch}` : newUrl;
+    // Reset loaded state so the new media loads
+    setLoaded(false);
+    setShowDuplicateModal(false);
+    navigate(finalUrl);
+  }
+
+  function handleDone() {
+    setShowDuplicateModal(false);
+    setDuplicateId(null);
+  }
+
   function onSwipeLeft() {
     if (mediaList.length === 0) {
       return;
@@ -215,6 +280,9 @@ function ShowMediaDetails({user, newType, filteredData}) {
   }
   
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showDuplicateConfirmation, setShowDuplicateConfirmation] = useState(false);
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [duplicateId, setDuplicateId] = useState(null);
   
   const swipeHandlers = useSwipe({ 
     onSwipedLeft: onSwipeLeft, 
@@ -316,6 +384,23 @@ function ShowMediaDetails({user, newType, filteredData}) {
           );
         default:
           const isDescription = field === 'description';
+          if (isDescription) {
+            return (
+              <textarea
+                className='form-control form-control-sm'
+                value={tempMedia[field] || ''}
+                onChange={(e) => handleFieldChange(field, e.target.value)}
+                rows={3}
+                style={{ 
+                  width: '100%',
+                  maxWidth: '100%',
+                  resize: 'vertical',
+                  wordWrap: 'break-word',
+                  overflowWrap: 'break-word'
+                }}
+              />
+            );
+          }
           return (
             <input
               type='text'
@@ -325,10 +410,10 @@ function ShowMediaDetails({user, newType, filteredData}) {
               style={{ 
                 width: 'auto', 
                 minWidth: '100px',
-                maxWidth: isDescription ? '500px' : '300px',
+                maxWidth: '300px',
                 resize: 'horizontal'
               }}
-              size={Math.max(tempMedia[field]?.length || 0, isDescription ? 20 : 10)}
+              size={Math.max(tempMedia[field]?.length || 0, 10)}
             />
           );
       }
@@ -367,7 +452,14 @@ function ShowMediaDetails({user, newType, filteredData}) {
             <div className="border-bottom border-2 border-warning mx-auto" style={{width: '60%'}}></div>
           </div>
           <div className='col-3'>
-            <div className='d-flex justify-content-end'>
+            <div className='d-flex justify-content-end gap-2'>
+              <button
+                onClick={onDuplicateClick}
+                className='btn btn-success btn-sm'
+                title="Duplicate"
+              >
+                <i className="fas fa-copy"></i>
+              </button>
               <DeleteModal 
                 onDeleteClick={onDeleteClick} 
                 type='media'
@@ -389,7 +481,14 @@ function ShowMediaDetails({user, newType, filteredData}) {
             <h1 className='display-4 fw-bold text-white mb-0'>{toCapitalNotation(mediaType)} Record</h1>
             <div className="border-bottom border-3 border-warning w-25 mx-auto"></div>
           </div>
-          <div className='col-md-2 d-flex justify-content-end'>
+          <div className='col-md-2 d-flex justify-content-end gap-2'>
+            <button
+              onClick={onDuplicateClick}
+              className='btn btn-success btn-lg'
+              title="Duplicate"
+            >
+              <i className="fas fa-copy me-2"></i>Duplicate
+            </button>
             <DeleteModal 
               onDeleteClick={onDeleteClick} 
               type='media'
@@ -483,6 +582,65 @@ function ShowMediaDetails({user, newType, filteredData}) {
           <div className='col-md-4'></div>
         </div>
       </div>
+      
+      {/* Duplicate Confirmation Modal */}
+      {showDuplicateConfirmation && (
+        <div className="modal fade show d-block" style={{backgroundColor: 'rgba(0,0,0,0.5)'}} tabIndex="-1" onClick={handleCancelDuplicate}>
+          <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-content shadow-strong">
+              <div className="modal-header border-bottom">
+                <h5 className="modal-title fw-semibold text-dark">Duplicate Confirmation</h5>
+                <button 
+                  type="button" 
+                  className="btn-close" 
+                  onClick={handleCancelDuplicate}
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p className="text-dark mb-3">Are you sure you want to duplicate this record?</p>
+              </div>
+              <div className="modal-footer border-top">
+                <button 
+                  type="button" 
+                  className="btn btn-secondary btn-sm d-md-none"
+                  onClick={handleCancelDuplicate}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="button" 
+                  className="btn btn-success btn-sm d-md-none"
+                  onClick={handleConfirmDuplicate}
+                >
+                  Duplicate
+                </button>
+                <button 
+                  type="button" 
+                  className="btn btn-secondary btn-lg d-none d-md-inline-block"
+                  onClick={handleCancelDuplicate}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="button" 
+                  className="btn btn-success btn-lg d-none d-md-inline-block"
+                  onClick={handleConfirmDuplicate}
+                >
+                  Duplicate
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Duplicate Success Modal */}
+      <DuplicateModal
+        show={showDuplicateModal}
+        onDone={handleDone}
+        onGoToCopy={handleGoToCopy}
+      />
     </div>
   );
 }
