@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, KeyboardSensor } from '@dnd-kit/core';
+import { arrayMove, SortableContext, rectSortingStrategy, useSortable, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import ShareLinkModal from '../components/ShareLinkModal';
 const constants = require('../constants');
 const theme = require('../theme');
@@ -182,6 +185,188 @@ function Profile({ user: currentUser, setUserChanged }) {
     return '';
   };
 
+  // Drag and drop handlers
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 15, // Require 15px movement before drag starts
+      },
+    }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+    if (!active || !over || active.id === over.id) return;
+
+    const oldIndex = sharedLists.findIndex(list => list.mediaType === active.id);
+    const newIndex = sharedLists.findIndex(list => list.mediaType === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    // Store previous state for potential revert
+    const previousOrder = [...sharedLists];
+    const newOrder = arrayMove(sharedLists, oldIndex, newIndex);
+    setSharedLists(newOrder);
+
+    // Save order to backend
+    try {
+      await axios.put(
+        `${constants.SERVER_URL}/api/user/shared-lists-order`,
+        { order: newOrder.map(list => list.mediaType) },
+        { withCredentials: true }
+      );
+    } catch (err) {
+      console.error('Error updating shared lists order:', err);
+      // Revert on error
+      setSharedLists(previousOrder);
+    }
+  };
+
+  // Sortable Shared List Component
+  function SortableSharedList({ list }) {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging
+    } = useSortable({ id: list.mediaType, disabled: isPublicView });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isDragging ? 0.5 : 1,
+      cursor: isPublicView ? 'default' : 'grab'
+    };
+
+    return (
+      <div
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        {...(!isPublicView ? listeners : {})}
+      >
+        <div
+          style={{
+            padding: '1rem',
+            borderRadius: '8px',
+            backgroundColor: theme.colors?.background?.tertiary || '#0f1419',
+            border: '1px solid #333',
+            transition: 'border-color 0.2s',
+            height: '100%'
+          }}
+        >
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '0.5rem'
+          }}>
+            <div>
+              <h3 style={{
+                fontSize: '1.125rem',
+                fontWeight: '500',
+                marginBottom: '0.25rem',
+                color: theme.colors?.text?.primary || '#ffffff'
+              }}>
+                {formatMediaType(list.mediaType)}
+              </h3>
+              <p style={{
+                fontSize: '0.875rem',
+                color: theme.colors?.text?.secondary || '#a0a0a0',
+                margin: 0
+              }}>
+                {getShareDescription(list.shareConfig)}
+              </p>
+            </div>
+            <div style={{
+              display: 'flex',
+              gap: '0.5rem',
+              alignItems: 'center'
+            }}>
+              {!isPublicView && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedMediaType(list.mediaType);
+                    setSelectedShareData({
+                      exists: true,
+                      token: list.token,
+                      shareConfig: list.shareConfig
+                    });
+                    setShowShareModal(true);
+                  }}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  className="btn btn-primary btn-sm"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.5rem 1rem'
+                  }}
+                  title="Edit share settings"
+                >
+                  <i className="fas fa-edit"></i>
+                  <span className="d-none d-md-inline">Edit</span>
+                </button>
+              )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  copyToClipboard(list.mediaType);
+                }}
+                onPointerDown={(e) => e.stopPropagation()}
+                className="btn btn-warning btn-sm"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.5rem 1rem'
+                }}
+              >
+                <i className={`fas fa-${copyFeedback === list.mediaType ? 'check' : 'copy'}`}></i>
+                {copyFeedback === list.mediaType ? 'Copied!' : 'Copy URL'}
+              </button>
+            </div>
+          </div>
+          <a
+            href={`${window.location.origin}/user/${username}/${list.mediaType}`}
+            rel="noopener noreferrer"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              fontSize: '0.875rem',
+              color: theme.colors?.primary || '#ffc107',
+              fontFamily: 'monospace',
+              backgroundColor: theme.colors?.background?.primary || '#1a1a2e',
+              padding: '0.5rem',
+              borderRadius: '4px',
+              display: 'block',
+              textDecoration: 'none',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              border: `1px solid ${theme.colors?.primary || '#ffc107'}`,
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = theme.colors?.primary || '#ffc107';
+              e.target.style.color = theme.colors?.background?.primary || '#1a1a2e';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = theme.colors?.background?.primary || '#1a1a2e';
+              e.target.style.color = theme.colors?.primary || '#ffc107';
+            }}
+          >
+            {`${window.location.origin}/user/${username}/${list.mediaType}`}
+          </a>
+        </div>
+      </div>
+    );
+  }
+
   if (error && isPublicView) {
     return (
       <div style={{
@@ -244,22 +429,22 @@ function Profile({ user: currentUser, setUserChanged }) {
                   color: theme.colors?.text?.primary || '#ffffff'
                 }}>{username}</span>
                 {!isPublicView && (
-                  <button
-                    onClick={() => setIsEditingUsername(true)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      color: theme.colors?.accent?.primary || '#ffc107',
-                      padding: '0.25rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}
-                    title="Edit username"
-                  >
-                    <i className="fas fa-edit" style={{ fontSize: '1rem' }}></i>
-                  </button>
+                <button
+                  onClick={() => setIsEditingUsername(true)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: theme.colors?.accent?.primary || '#ffc107',
+                    padding: '0.25rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                  title="Edit username"
+                >
+                  <i className="fas fa-edit" style={{ fontSize: '1rem' }}></i>
+                </button>
                 )}
               </div>
             ) : (
@@ -439,123 +624,32 @@ function Profile({ user: currentUser, setUserChanged }) {
             }}>
               <p>No public lists yet.</p>
               {!isPublicView && (
-                <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
-                  Share a list from any media page to see it here.
-                </p>
+              <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
+                Share a list from any media page to see it here.
+              </p>
               )}
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {sharedLists.map((list) => (
-                <div
-                  key={list.token}
-                  style={{
-                    padding: '1rem',
-                    borderRadius: '8px',
-                    backgroundColor: theme.colors?.background?.tertiary || '#0f1419',
-                    border: '1px solid #333',
-                    transition: 'border-color 0.2s'
-                  }}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={sharedLists.map(list => list.mediaType)}
+                strategy={rectSortingStrategy}
                 >
                   <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '0.5rem'
-                  }}>
-                    <div>
-                      <h3 style={{
-                        fontSize: '1.125rem',
-                        fontWeight: '500',
-                        marginBottom: '0.25rem',
-                        color: theme.colors?.text?.primary || '#ffffff'
-                      }}>
-                        {formatMediaType(list.mediaType)}
-                      </h3>
-                      <p style={{
-                        fontSize: '0.875rem',
-                        color: theme.colors?.text?.secondary || '#a0a0a0',
-                        margin: 0
-                      }}>
-                        {getShareDescription(list.shareConfig)}
-                      </p>
-                    </div>
-                    <div style={{
-                      display: 'flex',
-                      gap: '0.5rem',
-                      alignItems: 'center'
-                    }}>
-                      {!isPublicView && (
-                        <button
-                          onClick={() => {
-                            setSelectedMediaType(list.mediaType);
-                            setSelectedShareData({
-                              exists: true,
-                              token: list.token,
-                              shareConfig: list.shareConfig
-                            });
-                            setShowShareModal(true);
-                          }}
-                          className="btn btn-primary btn-sm"
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.5rem',
-                            padding: '0.5rem 1rem'
-                          }}
-                          title="Edit share settings"
-                        >
-                          <i className="fas fa-edit"></i>
-                          <span className="d-none d-md-inline">Edit</span>
-                        </button>
-                      )}
-                      <button
-                        onClick={() => copyToClipboard(list.mediaType)}
-                        className="btn btn-warning btn-sm"
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                          padding: '0.5rem 1rem'
-                        }}
-                      >
-                        <i className={`fas fa-${copyFeedback === list.mediaType ? 'check' : 'copy'}`}></i>
-                        {copyFeedback === list.mediaType ? 'Copied!' : 'Copy URL'}
-                      </button>
-                    </div>
-                  </div>
-                  <a
-                    href={`${window.location.origin}/user/${username}/${list.mediaType}`}
-                    rel="noopener noreferrer"
-                    style={{
-                      fontSize: '0.875rem',
-                      color: theme.colors?.primary || '#ffc107',
-                      fontFamily: 'monospace',
-                      backgroundColor: theme.colors?.background?.primary || '#1a1a2e',
-                      padding: '0.5rem',
-                      borderRadius: '4px',
-                      display: 'block',
-                      textDecoration: 'none',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      border: `1px solid ${theme.colors?.primary || '#ffc107'}`,
-                      transition: 'all 0.2s'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = theme.colors?.primary || '#ffc107';
-                      e.target.style.color = theme.colors?.background?.primary || '#1a1a2e';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = theme.colors?.background?.primary || '#1a1a2e';
-                      e.target.style.color = theme.colors?.primary || '#ffc107';
-                    }}
-                  >
-                    {`${window.location.origin}/user/${username}/${list.mediaType}`}
-                  </a>
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: '1rem'
+                }}>
+                  {sharedLists.map((list) => (
+                    <SortableSharedList key={list.mediaType} list={list} />
+                  ))}
                 </div>
-              ))}
-            </div>
+              </SortableContext>
+            </DndContext>
           )}
         </div>
       </div>
