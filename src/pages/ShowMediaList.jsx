@@ -982,6 +982,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
         onClose={() => setShowShareModal(false)}
         mediaType={mediaType}
         toDoState={toDoState}
+        username={user?.username}
         onUpdate={() => {
           // Refresh existing share data when modal updates
           if (user && mediaType) {

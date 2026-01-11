@@ -16,7 +16,8 @@ function ShareLinkModal({
   mediaType, 
   toDoState = false,
   onUpdate,
-  initialShareData = null
+  initialShareData = null,
+  username = ''
 }) {
   // Initialize state based on initialShareData if provided, otherwise use defaults
   const [shareConfig, setShareConfig] = useState(() => {
@@ -166,13 +167,13 @@ function ShareLinkModal({
                   <input 
                     type="text" 
                     className="form-control" 
-                    value={`${window.location.origin}/shared/${shareToken}`} 
+                    value={`${window.location.origin}/user/${username}/${mediaType}`} 
                     readOnly 
                   />
                   <button 
                     className={`btn ${copied ? 'btn-success' : 'btn-outline-secondary'}`}
                     type="button"
-                    onClick={() => copyToClipboard(`${window.location.origin}/shared/${shareToken}`)}
+                    onClick={() => copyToClipboard(`${window.location.origin}/user/${username}/${mediaType}`)}
                   >
                     <i className={`fas ${copied ? 'fa-check' : 'fa-copy'}`}></i>
                   </button>

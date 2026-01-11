@@ -113,6 +113,8 @@ const App = () => {
             <Route path='/terms' element={<Terms/>} />
             <Route path='/stats' element={user ? <Stats user={user}/> : <Navigate to="/"/>} />
             <Route path='/profile' element={user ? <Profile user={user} setUserChanged={setUserChanged}/> : <Navigate to="/"/>} />
+            <Route path='/user/:username' element={<Profile />} />
+            <Route path='/user/:username/:mediaType' element={<SharedView />} />
             <Route path='/logout' element={<Logout/>} />
             <Route path='/shared/:token' element={<SharedView/>} />
 

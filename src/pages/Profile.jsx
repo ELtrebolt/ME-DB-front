@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import ShareLinkModal from '../components/ShareLinkModal';
 const constants = require('../constants');
 const theme = require('../theme');
 
-function Profile({ user, setUserChanged }) {
+function Profile({ user: currentUser, setUserChanged }) {
   const navigate = useNavigate();
+  const { username: urlUsername } = useParams();
+  
+  const [user, setUser] = useState(currentUser || null);
   const [username, setUsername] = useState('');
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [editedUsername, setEditedUsername] = useState('');
@@ -17,19 +20,72 @@ function Profile({ user, setUserChanged }) {
   const [showShareModal, setShowShareModal] = useState(false);
   const [selectedMediaType, setSelectedMediaType] = useState(null);
   const [selectedShareData, setSelectedShareData] = useState(null);
+  const [isPublicView, setIsPublicView] = useState(!!urlUsername);
+  const [isUpdatingVisibility, setIsUpdatingVisibility] = useState(false);
+  const [profileCopyFeedback, setProfileCopyFeedback] = useState(false);
 
   useEffect(() => {
-    if (!user) {
+    if (urlUsername) {
+      setIsPublicView(true);
+      fetchPublicProfile(urlUsername);
+    } else if (currentUser) {
+      setIsPublicView(false);
+      setUser(currentUser);
+      setUsername(currentUser.username || currentUser.displayName);
+      setEditedUsername(currentUser.username || currentUser.displayName);
+      fetchSharedLists();
+    } else {
       navigate('/');
-      return;
     }
-    
-    setUsername(user.username || user.displayName);
-    setEditedUsername(user.username || user.displayName);
-    
-    // Fetch shared lists
-    fetchSharedLists();
-  }, [user, navigate]);
+  }, [currentUser, urlUsername, navigate]);
+
+  const fetchPublicProfile = async (uname) => {
+    setIsLoadingLists(true);
+    try {
+      const response = await axios.get(`${constants.SERVER_URL}/api/user/public/${uname}`);
+      if (response.data.success) {
+        setUser(response.data.user);
+        setUsername(response.data.user.username);
+        setSharedLists(response.data.sharedLists);
+        setError('');
+      }
+    } catch (err) {
+      console.error('Error fetching public profile:', err);
+      setError(err.response?.data?.message || 'Profile not found or private');
+    } finally {
+      setIsLoadingLists(false);
+    }
+  };
+
+  const toggleVisibility = async (e) => {
+    const newVal = e.target.checked;
+    setIsUpdatingVisibility(true);
+    try {
+      const response = await axios.put(`${constants.SERVER_URL}/api/user/visibility`, {
+        isPublicProfile: newVal
+      });
+      if (response.data.success) {
+        setUser({ ...user, isPublicProfile: response.data.isPublicProfile });
+        if (setUserChanged) setUserChanged(true);
+      }
+    } catch (err) {
+      console.error('Error updating visibility:', err);
+      window.alert('Failed to update visibility');
+    } finally {
+      setIsUpdatingVisibility(false);
+    }
+  };
+
+  const copyProfileLink = async () => {
+    const url = `${window.location.origin}/user/${username}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setProfileCopyFeedback(true);
+      setTimeout(() => setProfileCopyFeedback(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy profile link:', err);
+    }
+  };
 
   const fetchSharedLists = async () => {
     try {
@@ -47,12 +103,26 @@ function Profile({ user, setUserChanged }) {
   };
 
   const handleUsernameUpdate = async () => {
-    if (!editedUsername || editedUsername.trim() === '') {
+    const trimmedUsername = editedUsername.trim();
+    
+    if (!trimmedUsername) {
       setError('Username cannot be empty');
       return;
     }
 
-    if (editedUsername.trim() === username) {
+    if (trimmedUsername.length > 30) {
+      setError('Username must be 30 characters or less');
+      return;
+    }
+
+    // Standard username validation: alphanumeric and underscores only, must start with letter or number
+    const usernameRegex = /^[a-zA-Z0-9][a-zA-Z0-9_]*$/;
+    if (!usernameRegex.test(trimmedUsername)) {
+      setError('Username can only contain letters, numbers, and underscores, and must start with a letter or number');
+      return;
+    }
+
+    if (trimmedUsername === username) {
       setIsEditingUsername(false);
       setError('');
       return;
@@ -61,12 +131,12 @@ function Profile({ user, setUserChanged }) {
     try {
       const response = await axios.put(
         `${constants.SERVER_URL}/api/user/username`,
-        { username: editedUsername.trim() },
+        { username: trimmedUsername },
         { withCredentials: true }
       );
 
       if (response.data.msg) {
-        setUsername(editedUsername.trim());
+        setUsername(trimmedUsername);
         setIsEditingUsername(false);
         setError('');
         setUserChanged(true); // Trigger user data refresh
@@ -77,8 +147,8 @@ function Profile({ user, setUserChanged }) {
     }
   };
 
-  const copyToClipboard = async (token, mediaType) => {
-    const url = `${window.location.origin}/shared/${token}`;
+  const copyToClipboard = async (mediaType) => {
+    const url = `${window.location.origin}/user/${username}/${mediaType}`;
     try {
       await navigator.clipboard.writeText(url);
       setCopyFeedback(mediaType);
@@ -112,7 +182,26 @@ function Profile({ user, setUserChanged }) {
     return '';
   };
 
-  if (!user) return null;
+  if (error && isPublicView) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: theme.colors?.background?.primary || '#1a1a2e',
+        color: theme.colors?.text?.primary || '#ffffff',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2rem'
+      }}>
+        <div className="text-center">
+          <h2 className="text-danger mb-3">{error}</h2>
+          <button className="btn btn-primary" onClick={() => navigate('/')}>Go Home</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user && !isLoadingLists) return null;
 
   return (
     <div style={{
@@ -131,15 +220,10 @@ function Profile({ user, setUserChanged }) {
           marginBottom: '2rem',
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
         }}>
-          <h1 style={{
-            fontSize: '1.75rem',
-            fontWeight: '600',
-            marginBottom: '1.5rem',
-            color: theme.colors?.text?.primary || '#ffffff'
-          }}>Profile</h1>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: '600', marginBottom: '1.5rem' }}>Profile</h1>
 
           {/* Username Section */}
-          <div style={{ marginBottom: '1rem' }}>
+          <div style={{ marginBottom: '1.5rem' }}>
             <label style={{
               display: 'block',
               fontSize: '0.875rem',
@@ -159,22 +243,24 @@ function Profile({ user, setUserChanged }) {
                   fontWeight: '500',
                   color: theme.colors?.text?.primary || '#ffffff'
                 }}>{username}</span>
-                <button
-                  onClick={() => setIsEditingUsername(true)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: theme.colors?.accent?.primary || '#ffc107',
-                    padding: '0.25rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                  title="Edit username"
-                >
-                  <i className="fas fa-edit" style={{ fontSize: '1rem' }}></i>
-                </button>
+                {!isPublicView && (
+                  <button
+                    onClick={() => setIsEditingUsername(true)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: theme.colors?.accent?.primary || '#ffc107',
+                      padding: '0.25rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                    title="Edit username"
+                  >
+                    <i className="fas fa-edit" style={{ fontSize: '1rem' }}></i>
+                  </button>
+                )}
               </div>
             ) : (
               <div>
@@ -187,16 +273,17 @@ function Profile({ user, setUserChanged }) {
                     type="text"
                     value={editedUsername}
                     onChange={(e) => setEditedUsername(e.target.value)}
+                    size={Math.max(editedUsername.length, 10)}
                     style={{
-                      flex: 1,
                       padding: '0.5rem',
                       borderRadius: '6px',
                       border: '1px solid #444',
                       backgroundColor: theme.colors?.background?.tertiary || '#0f1419',
                       color: theme.colors?.text?.primary || '#ffffff',
-                      fontSize: '1rem'
+                      fontSize: '1rem',
+                      width: 'auto'
                     }}
-                    maxLength={50}
+                    maxLength={30}
                     autoFocus
                   />
                   <button
@@ -228,6 +315,100 @@ function Profile({ user, setUserChanged }) {
               </div>
             )}
           </div>
+
+          {/* Visibility Toggle */}
+          {!isPublicView && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                marginBottom: '0.5rem',
+                color: theme.colors?.text?.secondary || '#a0a0a0'
+              }}>Profile Visibility</label>
+              
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                flexWrap: 'wrap'
+              }}>
+                <input 
+                  className="form-check-input" 
+                  type="checkbox" 
+                  id="visibilityToggle" 
+                  checked={user?.isPublicProfile || false}
+                  onChange={toggleVisibility}
+                  disabled={isUpdatingVisibility}
+                  style={{ 
+                    cursor: 'pointer',
+                    width: '3rem',
+                    height: '1.5rem',
+                    fontSize: '1.5rem',
+                    margin: 0
+                  }}
+                />
+                <label htmlFor="visibilityToggle" style={{ 
+                  fontSize: '1rem', 
+                  fontWeight: '500',
+                  color: theme.colors?.text?.primary || '#ffffff',
+                  margin: 0,
+                  cursor: 'pointer'
+                }}>
+                  {user?.isPublicProfile ? 'Public' : 'Private'}
+                </label>
+                
+                {/* Public Link Section (only if public) */}
+                {user?.isPublicProfile && (
+                  <div style={{ 
+                    padding: '0.5rem 1rem',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                    border: `1px solid ${theme.colors?.primary || '#ffc107'}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    width: 'fit-content'
+                  }}>
+                    <span style={{ fontSize: '0.875rem', color: theme.colors?.primary, whiteSpace: 'nowrap' }}>Your profile is public at:</span>
+                    <a 
+                      href={`${window.location.origin}/user/${username}`}
+                      style={{
+                        backgroundColor: 'rgba(0,0,0,0.2)',
+                        border: `1px solid ${theme.colors?.primary || '#ffc107'}`,
+                        color: theme.colors?.primary || '#ffc107',
+                        padding: '0.25rem 0.5rem',
+                        borderRadius: '4px',
+                        fontSize: '0.875rem',
+                        textDecoration: 'none',
+                        whiteSpace: 'nowrap',
+                        fontFamily: 'monospace',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = theme.colors?.primary || '#ffc107';
+                        e.target.style.color = theme.colors?.background?.primary || '#1a1a2e';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = 'rgba(0,0,0,0.2)';
+                        e.target.style.color = theme.colors?.primary || '#ffc107';
+                      }}
+                    >
+                      {`${window.location.origin}/user/${username}`}
+                    </a>
+                    <button 
+                      className="btn btn-warning btn-sm"
+                      onClick={copyProfileLink}
+                      title="Copy profile link"
+                      style={{ flexShrink: 0 }}
+                    >
+                      <i className={`fas fa-${profileCopyFeedback ? 'check' : 'copy'}`}></i>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Public Lists Section */}
@@ -235,7 +416,9 @@ function Profile({ user, setUserChanged }) {
           backgroundColor: theme.colors?.background?.secondary || '#16213e',
           borderRadius: '12px',
           padding: '2rem',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          opacity: (!isPublicView && !user?.isPublicProfile) ? 0.5 : 1,
+          transition: 'opacity 0.3s ease'
         }}>
           <h2 style={{
             fontSize: '1.5rem',
@@ -255,9 +438,11 @@ function Profile({ user, setUserChanged }) {
               color: theme.colors?.text?.secondary || '#a0a0a0'
             }}>
               <p>No public lists yet.</p>
-              <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
-                Share a list from any media page to see it here.
-              </p>
+              {!isPublicView && (
+                <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
+                  Share a list from any media page to see it here.
+                </p>
+              )}
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -300,30 +485,32 @@ function Profile({ user, setUserChanged }) {
                       gap: '0.5rem',
                       alignItems: 'center'
                     }}>
+                      {!isPublicView && (
+                        <button
+                          onClick={() => {
+                            setSelectedMediaType(list.mediaType);
+                            setSelectedShareData({
+                              exists: true,
+                              token: list.token,
+                              shareConfig: list.shareConfig
+                            });
+                            setShowShareModal(true);
+                          }}
+                          className="btn btn-primary btn-sm"
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            padding: '0.5rem 1rem'
+                          }}
+                          title="Edit share settings"
+                        >
+                          <i className="fas fa-edit"></i>
+                          <span className="d-none d-md-inline">Edit</span>
+                        </button>
+                      )}
                       <button
-                        onClick={() => {
-                          setSelectedMediaType(list.mediaType);
-                          setSelectedShareData({
-                            exists: true,
-                            token: list.token,
-                            shareConfig: list.shareConfig
-                          });
-                          setShowShareModal(true);
-                        }}
-                        className="btn btn-primary btn-sm"
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.5rem',
-                          padding: '0.5rem 1rem'
-                        }}
-                        title="Edit share settings"
-                      >
-                        <i className="fas fa-edit"></i>
-                        <span className="d-none d-md-inline">Edit</span>
-                      </button>
-                      <button
-                        onClick={() => copyToClipboard(list.token, list.mediaType)}
+                        onClick={() => copyToClipboard(list.mediaType)}
                         className="btn btn-warning btn-sm"
                         style={{
                           display: 'flex',
@@ -338,8 +525,7 @@ function Profile({ user, setUserChanged }) {
                     </div>
                   </div>
                   <a
-                    href={`${window.location.origin}/shared/${list.token}`}
-                    target="_blank"
+                    href={`${window.location.origin}/user/${username}/${list.mediaType}`}
                     rel="noopener noreferrer"
                     style={{
                       fontSize: '0.875rem',
@@ -365,7 +551,7 @@ function Profile({ user, setUserChanged }) {
                       e.target.style.color = theme.colors?.primary || '#ffc107';
                     }}
                   >
-                    {`${window.location.origin}/shared/${list.token}`}
+                    {`${window.location.origin}/user/${username}/${list.mediaType}`}
                   </a>
                 </div>
               ))}
@@ -375,7 +561,7 @@ function Profile({ user, setUserChanged }) {
       </div>
       
       {/* Share Link Modal */}
-      {showShareModal && selectedMediaType && (
+      {!isPublicView && showShareModal && selectedMediaType && (
         <ShareLinkModal
           show={showShareModal}
           onClose={() => {
@@ -386,6 +572,7 @@ function Profile({ user, setUserChanged }) {
           mediaType={selectedMediaType}
           toDoState={false}
           initialShareData={selectedShareData}
+          username={username}
           onUpdate={() => {
             fetchSharedLists();
           }}

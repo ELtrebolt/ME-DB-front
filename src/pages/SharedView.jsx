@@ -117,7 +117,7 @@ function filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSug
 }
 
 function SharedView() {
-  const { token } = useParams();
+  const { token, username, mediaType: urlMediaType } = useParams();
   
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -152,7 +152,11 @@ function SharedView() {
 
   // Fetch Data
   useEffect(() => {
-    axios.get(constants['SERVER_URL'] + `/api/share/${token}`)
+    const fetchUrl = (username && urlMediaType) 
+      ? `${constants['SERVER_URL']}/api/share/user/${username}/${urlMediaType}`
+      : `${constants['SERVER_URL']}/api/share/${token}`;
+
+    axios.get(fetchUrl)
       .then(res => {
         if (res.data.success) {
           console.log('Share data received:', res.data);
@@ -195,14 +199,15 @@ function SharedView() {
           
           setIsLoading(false);
           setSearchChanged(true); // Trigger filter
+          setError(null); // Clear any previous error
         }
       })
       .catch(err => {
         console.error(err);
-        setError('Link invalid or expired');
+        setError(err.response?.data?.error || 'Link invalid or expired');
         setIsLoading(false);
       });
-  }, [token]);
+  }, [token, username, urlMediaType]);
 
   // Process Data into Tiers
   useEffect(() => {
