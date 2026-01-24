@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Footer from '../components/Footer';
-const constants = require('../constants');
-const theme = require('../theme');
+import Footer from '../Footer';
+const constants = require('../../app/constants');
+const theme = require('../../styling/theme');
 
 const google = () => {
   window.open(constants['SERVER_URL'] + "/auth/google", "_self");

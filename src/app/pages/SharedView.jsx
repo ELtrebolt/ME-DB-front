@@ -3,15 +3,16 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
 import CardsContainer from "../components/CardsContainer";
-import YearFilter from "../components/YearFilter";
+import TimeFilter from "../components/TimeFilter";
+import ExtraFilters from "../components/ExtraFilters";
 import SearchBar from "../components/SearchBar";
 import TagFilter from "../components/TagFilter";
-import useSwipe from "../useSwipe.tsx";
+import useSwipe from "../hooks/useSwipe.tsx";
 
 import TierTitle from "../components/TierTitle";
 
 const constants = require('../constants');
-const theme = require('../theme');
+const theme = require('../../styling/theme');
 
 function toCapitalNotation(inputString) {
   if (!inputString) return '';
@@ -21,7 +22,7 @@ function toCapitalNotation(inputString) {
     .join(' ');
 }
 
-function filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSuggestedTags, setSearchChanged, searchQuery) {
+function filterData(tierData, timePeriod, startDate, endDate, allTags, selectedTags, tagLogic, setSuggestedTags, setSearchChanged, searchQuery, searchScope, selectedTiers, sortOrder) {
   var array = [];
   var data = {
     S: [],
@@ -34,84 +35,130 @@ function filterData(tierData, firstYear, lastYear, allTags, selectedTags, setSug
   
   if (!tierData) return data;
 
+  // Helper to check if a date is within range
+  const isInDateRange = (dateStr) => {
+    if (!dateStr) return timePeriod === 'all';
+    const date = new Date(dateStr);
+    const now = new Date();
+    let start = null;
+    let end = null;
+
+    if (timePeriod === 'all') return true;
+
+    if (timePeriod === 'ytd') {
+      start = new Date(now.getFullYear(), 0, 1);
+      end = now;
+    } else if (timePeriod === 'lastMonth') {
+      start = new Date();
+      start.setMonth(now.getMonth() - 1);
+      end = now;
+    } else if (timePeriod === 'last3Months') {
+      start = new Date();
+      start.setMonth(now.getMonth() - 3);
+      end = now;
+    } else if (timePeriod === 'last6Months') {
+      start = new Date();
+      start.setMonth(now.getMonth() - 6);
+      end = now;
+    } else if (timePeriod === 'last12Months') {
+      start = new Date();
+      start.setMonth(now.getMonth() - 12);
+      end = now;
+    } else if (timePeriod === 'custom') {
+      if (startDate) start = new Date(startDate);
+      if (endDate) {
+        end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+      }
+    }
+
+    if (start && date < start) return false;
+    if (end && date > end) return false;
+    return true;
+  };
+
   for(const tier of Object.keys(tierData)) {
+    // Filter by Tiers
+    if (selectedTiers && !selectedTiers.includes(tier)) continue;
+
     for(const m of tierData[tier]) {
-      // Filter by SearchQuery
+      // 1. Filter by SearchQuery and SearchScope
       if(searchQuery !== '') {
-        if(!m.title.toLowerCase().includes(searchQuery)) {
-          continue;
+        const query = searchQuery.toLowerCase();
+        let match = false;
+        if (searchScope.includes('title') && m.title.toLowerCase().includes(query)) match = true;
+        if (!match && searchScope.includes('description') && m.description && m.description.toLowerCase().includes(query)) match = true;
+        if (!match && searchScope.includes('tags') && m.tags && m.tags.some(t => t.toLowerCase().includes(query))) match = true;
+        
+        if(!match) continue;
+      }
+
+      // 2. Filter by Tags and TagLogic
+      if(selectedTags && selectedTags.length > 0) {
+        if(!m.tags || m.tags.length === 0) continue;
+        const tagLabels = selectedTags.map(t => t.label);
+        if (tagLogic === 'AND') {
+          if (!tagLabels.every(label => m.tags.includes(label))) continue;
+        } else {
+          if (!tagLabels.some(label => m.tags.includes(label))) continue;
         }
       }
-      // Filter by Tags
-      if(selectedTags && selectedTags[0]) {
-        if(m.tags) {
-          for(const t of selectedTags) {
-            if(!m.tags.includes(t['label'])) {
-              break;
-            }
-            if(selectedTags[selectedTags.length-1] === t) {
-              array.push(m);
-            }
-          }
-        }
-      } else {
-        array.push(m);
-      }
+
+      // 3. Filter by Time Period
+      if (!isInDateRange(m.year)) continue;
+
+      array.push(m);
     }
   }
-  // Filter by Years
+
+  // Group back into tiers
   array.forEach(m => {
-    if(firstYear && lastYear) {
-      if(m.year >= firstYear && m.year <= lastYear) {
-        data[m.tier].push(m);
-      }
-    } else if (firstYear && !lastYear) {
-      if(m.year >= firstYear) {
-        data[m.tier].push(m);
-      }
-    } else if (!firstYear && lastYear) {
-      if(m.year <= lastYear) {
-        data[m.tier].push(m);
-      }
-    } else {
-      data[m.tier].push(m);
-    }
+    data[m.tier].push(m);
   });
 
-  // Sort each tier
+  // 4. Sort each tier
   Object.keys(data).forEach(tier => {
     data[tier].sort((a, b) => {
-      // Sort by orderIndex first, then title
-      const ai = (typeof a.orderIndex === 'number') ? a.orderIndex : Number.MAX_SAFE_INTEGER;
-      const bi = (typeof b.orderIndex === 'number') ? b.orderIndex : Number.MAX_SAFE_INTEGER;
-      if (ai !== bi) return ai - bi;
-      const at = a.title || '';
-      const bt = b.title || '';
-      return at.localeCompare(bt);
+      if (sortOrder === 'dateNewest') {
+        return new Date(b.year) - new Date(a.year);
+      } else if (sortOrder === 'dateOldest') {
+        return new Date(a.year) - new Date(b.year);
+      } else if (sortOrder === 'titleAZ') {
+        return a.title.localeCompare(b.title);
+      } else {
+        // Default: orderIndex then title
+        const ai = (typeof a.orderIndex === 'number') ? a.orderIndex : Number.MAX_SAFE_INTEGER;
+        const bi = (typeof b.orderIndex === 'number') ? b.orderIndex : Number.MAX_SAFE_INTEGER;
+        if (ai !== bi) return ai - bi;
+        const at = a.title || '';
+        const bt = b.title || '';
+        return at.localeCompare(bt);
+      }
     });
   });
 
   // Change TagsList Dynamically
-  var tags_list = []
-  if (allTags) {
-      const allTagsList = allTags.map((item) => item['label']);
-      var added_tags = new Set()
-      Object.keys(data).forEach(tier => {
-        data[tier].forEach(item => {
-          if(item.tags) {
-            item.tags.forEach(tag => {
-              const foundIndex = allTagsList.indexOf(tag);
-              const tagDict = { value: foundIndex, label: tag };
-              if(foundIndex >= -1 && !added_tags.has(tag)) {
-                tags_list.push(tagDict);
-                added_tags.add(tag);
-              }
-            })
-          }
-        })
-      })
-      setSuggestedTags(tags_list);
+  let tags_list = [];
+  if (tagLogic === 'OR') {
+    tags_list = allTags;
+  } else {
+    const allTagsList = allTags.map((item) => item['label']);
+    const added_tags = new Set();
+    Object.keys(data).forEach(tier => {
+      data[tier].forEach(item => {
+        if(item.tags) {
+          item.tags.forEach(tag => {
+            const foundIndex = allTagsList.indexOf(tag);
+            if(foundIndex >= 0 && !added_tags.has(tag)) {
+              tags_list.push({ value: foundIndex, label: tag });
+              added_tags.add(tag);
+            }
+          });
+        }
+      });
+    });
   }
+  setSuggestedTags(tags_list);
   setSearchChanged(false);
   return data;
 }
@@ -136,13 +183,44 @@ function SharedView() {
   const [filteredData, setFilteredData] = useState({});
   
   // Filters
-  const [firstYear, setFirstYear] = useState('');
-  const [lastYear, setLastYear] = useState('');
-  const [possibleYears, setPossibleYears] = useState([]);
+  const [timePeriod, setTimePeriod] = useState('all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [tagLogic, setTagLogic] = useState('AND');
+  const [searchScope, setSearchScope] = useState(['title']);
+  const [selectedTiers, setSelectedTiers] = useState(["S", "A", "B", "C", "D", "F"]);
+  const [sortOrder, setSortOrder] = useState('default');
   const [suggestedTags, setSuggestedTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchChanged, setSearchChanged] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showExtraFilters, setShowExtraFilters] = useState(false);
+
+  // Automatically show extra filters when Custom Range is selected
+  useEffect(() => {
+    if (timePeriod === 'custom') {
+      setShowExtraFilters(true);
+    }
+  }, [timePeriod]);
+
+  const clearFilters = () => {
+    setTimePeriod('all');
+    setStartDate('');
+    setEndDate('');
+    setSelectedTags([]);
+    setTagLogic('AND');
+    setSearchQuery('');
+    setSearchScope(['title']);
+    setSelectedTiers(["S", "A", "B", "C", "D", "F"]);
+    setSortOrder('default');
+    setSearchChanged(true);
+  };
+
+  const toggleLogic = () => {
+    const newLogic = tagLogic === 'AND' ? 'OR' : 'AND';
+    setTagLogic(newLogic);
+    setSearchChanged(true);
+  };
   
   // Modal for card details
   const [selectedMedia, setSelectedMedia] = useState(null);
@@ -216,16 +294,12 @@ function SharedView() {
     // 1. Filter by Collection vs Todo based on current view
     const currentList = allMedia.filter(m => m.toDo === toDoState);
     
-    // 2. Extract filterable metadata (years, tags)
-    var possible_years = new Set();
+    // 2. Extract filterable metadata (tags)
     var all_tags = new Set();
     
     currentList.forEach(m => {
-      if (m.year) possible_years.add(m.year);
       if (m.tags) m.tags.forEach(t => all_tags.add(t));
     });
-
-    setPossibleYears(Array.from(possible_years).sort((a, b) => a - b));
 
     // 3. Group by Tier
     var tierData = {
@@ -237,11 +311,11 @@ function SharedView() {
 
     // 4. Apply Filters (Year, Tag, Search)
     if (searchChanged === undefined || searchChanged === true) {
-        const data = filterData(tierData, firstYear, lastYear, Array.from(all_tags).map((t, i) => ({ value: i, label: t })), selectedTags, setSuggestedTags, setSearchChanged, searchQuery);
+        const data = filterData(tierData, timePeriod, startDate, endDate, Array.from(all_tags).map((t, i) => ({ value: i, label: t })), selectedTags, tagLogic, setSuggestedTags, setSearchChanged, searchQuery, searchScope, selectedTiers, sortOrder);
         setFilteredData(data);
     }
     
-  }, [allMedia, toDoState, isLoading, shareConfig, searchChanged, firstYear, lastYear, selectedTags, searchQuery]);
+  }, [allMedia, toDoState, isLoading, shareConfig, searchChanged, timePeriod, startDate, endDate, selectedTags, tagLogic, searchQuery, searchScope, selectedTiers, sortOrder]);
 
 
   function switchToDo() {
@@ -336,15 +410,44 @@ function SharedView() {
             {/* Filters */}
             <div className='row g-1 g-md-2 mb-2 mb-md-3' style={{overflow: 'visible', position: 'relative', display: 'flex', flexWrap: 'nowrap'}}>
                 <div className='col-lg-4 col-md-4 col-sm-4' style={{flex: '0 0 33.333333%', maxWidth: '33.333333%', overflow: 'visible', position: 'relative', paddingLeft: '0.25rem', paddingRight: '0.25rem'}}>
-                    <YearFilter possible_years={possibleYears} firstYear={firstYear} lastYear={lastYear} setFirstYear={setFirstYear} setLastYear={setLastYear} setSearchChanged={setSearchChanged}/>
+                    <TimeFilter timePeriod={timePeriod} setTimePeriod={setTimePeriod} setSearchChanged={setSearchChanged}/>
                 </div>
                 <div className='col-lg-4 col-md-4 col-sm-4' style={{flex: '0 0 33.333333%', maxWidth: '33.333333%', overflow: 'visible', position: 'relative', paddingLeft: '0.25rem', paddingRight: '0.25rem'}}>
                     <SearchBar mediaType={mediaType} allMedia={filteredData} searchQuery={searchQuery} setSearchQuery={setSearchQuery} setSearchChanged={setSearchChanged}></SearchBar>
+                    <div className="text-center mt-1">
+                      <button 
+                        className="btn btn-link btn-sm text-warning p-0" 
+                        onClick={() => setShowExtraFilters(!showExtraFilters)}
+                        style={{ fontSize: '0.7rem', textDecoration: 'none' }}
+                      >
+                        {showExtraFilters ? 'Hide Advanced' : 'More Filters...'}
+                      </button>
+                    </div>
                 </div>
                 <div className='col-lg-4 col-md-4 col-sm-4' style={{overflow: 'visible', position: 'relative', flex: '0 0 33.333333%', maxWidth: '33.333333%', paddingLeft: '0.25rem', paddingRight: '0.25rem'}}>
-                    <TagFilter suggestedTags={suggestedTags} selected={selectedTags} setSelected={setSelectedTags} setSearchChanged={setSearchChanged}></TagFilter>
+                    <TagFilter suggestedTags={suggestedTags} selected={selectedTags} setSelected={setSelectedTags} setSearchChanged={setSearchChanged} tagLogic={tagLogic} setTagLogic={setTagLogic}></TagFilter>
                 </div>
             </div>
+
+            {showExtraFilters && (
+              <ExtraFilters 
+                sortOrder={sortOrder} 
+                setSortOrder={setSortOrder} 
+                searchScope={searchScope} 
+                setSearchScope={setSearchScope} 
+                onClearFilters={clearFilters}
+                setSearchChanged={setSearchChanged}
+                timePeriod={timePeriod}
+                setTimePeriod={setTimePeriod}
+                startDate={startDate}
+                setStartDate={setStartDate}
+                endDate={endDate}
+                setEndDate={setEndDate}
+                tagLogic={tagLogic}
+                setTagLogic={setTagLogic}
+                onLogicToggle={toggleLogic}
+              />
+            )}
         </div>
       </div>
 
@@ -387,8 +490,8 @@ function SharedView() {
                   <table className='table table-borderless mb-0'>
                     <tbody>
                       <tr>
-                        <td className='fw-semibold py-2 shared-view-label'>Year</td>
-                        <td className='py-2 fw-medium shared-view-value'>{selectedMedia.year || '-'}</td>
+                        <td className='fw-semibold py-2 shared-view-label'>Date</td>
+                        <td className='py-2 fw-medium shared-view-value'>{selectedMedia.year ? new Date(selectedMedia.year).toISOString().split('T')[0] : '-'}</td>
                       </tr>
                       <tr>
                         <td className='fw-semibold py-2 shared-view-label'>Tier</td>

@@ -3,7 +3,7 @@ import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import TagMaker from "../components/TagMaker";
 const constants = require('../constants');
-const theme = require('../theme');
+const theme = require('../../styling/theme');
 
 function toCapitalNotation(inputString) {
   return inputString
@@ -56,7 +56,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
     title: '',
     tier: preselectedTier ? preselectedTier : 'S',
     toDo: toDo.toString(),
-    year: constants.currentYear,
+    year: new Date().toISOString().split('T')[0],
     tags: effectiveSelectedTags.map(item => item.label),
     description: ''
   });
@@ -160,7 +160,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
   const years = Array.from({ length: constants.currentYear - 1969 }, (_, index) => constants.currentYear - index);
   const tiers = ['S', 'A', 'B', 'C', 'D', 'F']
   const tiersName = toDo ? "todoTiers" : "collectionTiers"
-  const yearString = toDo ? "Year You First Wanted To Do" : "Year You First Experienced"
+  const yearString = toDo ? "Date You First Wanted To Do" : "Date You First Experienced"
   return (
     <div className='CreateMedia' style={{backgroundColor: theme.colors.background.primary, minHeight: '100vh', color: 'white'}}>
       <div className='container py-2 py-md-3'>
@@ -289,13 +289,13 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
                           <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>2</th>
                           <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>{yearString}</td>
                           <td className='px-4 py-3' style={{backgroundColor: theme.colors.background.dark}}>
-                            <select className='form-select form-select-sm' id='year' value={media.year} onChange={onChange}>
-                              {years.map((year) => (
-                                <option key={year} value={year}>
-                                  {year}
-                                </option>
-                              ))}
-                            </select>
+                            <input 
+                              type='date'
+                              className='form-control form-control-sm' 
+                              id='year' 
+                              value={media.year} 
+                              onChange={onChange}
+                            />
                           </td>
                         </tr>
                         <tr style={{backgroundColor: theme.colors.background.dark}}>

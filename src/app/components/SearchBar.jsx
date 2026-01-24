@@ -43,8 +43,8 @@ const Function = ({mediaType, allMedia, searchQuery, setSearchQuery, setSearchCh
   
   const noOptionsText = `No matching ${mediaType}`;
   return (
-    <div>
-      <label htmlFor='searchBar-input' className='form-label fw-semibold text-white mb-2'>Search by Title</label>
+    <div className="text-start">
+      <label htmlFor='searchBar-input' className='form-label fw-semibold text-white mb-2 text-start d-block'>Search by Title</label>
       <ReactTags
         id='searchBar'
         placeholderText={constants[mediaType] && constants[mediaType].title ? constants[mediaType].title : constants['other'].title}

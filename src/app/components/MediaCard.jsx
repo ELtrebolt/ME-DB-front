@@ -77,7 +77,7 @@ const MediaCard = ({ media, listeners, onCardClick }) => {
           )}
         </h6>
         <p className='card-text text-white mb-0' style={{ fontSize: '0.65rem', lineHeight: '1.0' }}>
-          {media.year}
+          {media.year ? new Date(media.year).getFullYear() : '-'}
         </p>
       </div>
     </div>

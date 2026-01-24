@@ -6,7 +6,7 @@ import { arrayMove, SortableContext, rectSortingStrategy, useSortable, sortableK
 import { CSS } from '@dnd-kit/utilities';
 import ShareLinkModal from '../components/ShareLinkModal';
 const constants = require('../constants');
-const theme = require('../theme');
+const theme = require('../../styling/theme');
 
 function Profile({ user: currentUser, setUserChanged }) {
   const navigate = useNavigate();
@@ -26,6 +26,8 @@ function Profile({ user: currentUser, setUserChanged }) {
   const [isPublicView, setIsPublicView] = useState(!!urlUsername);
   const [isUpdatingVisibility, setIsUpdatingVisibility] = useState(false);
   const [profileCopyFeedback, setProfileCopyFeedback] = useState(false);
+  const [friendshipStatus, setFriendshipStatus] = useState('none');
+  const [isUpdatingFriendship, setIsUpdatingFriendship] = useState(false);
 
   useEffect(() => {
     if (urlUsername) {
@@ -45,11 +47,14 @@ function Profile({ user: currentUser, setUserChanged }) {
   const fetchPublicProfile = async (uname) => {
     setIsLoadingLists(true);
     try {
-      const response = await axios.get(`${constants.SERVER_URL}/api/user/public/${uname}`);
+      const response = await axios.get(`${constants.SERVER_URL}/api/user/public/${uname}`, {
+        withCredentials: true
+      });
       if (response.data.success) {
         setUser(response.data.user);
         setUsername(response.data.user.username);
         setSharedLists(response.data.sharedLists);
+        setFriendshipStatus(response.data.friendshipStatus || 'none');
         setError('');
       }
     } catch (err) {
@@ -88,6 +93,138 @@ function Profile({ user: currentUser, setUserChanged }) {
     } catch (err) {
       console.error('Failed to copy profile link:', err);
     }
+  };
+
+  const handleFriendAction = async (action) => {
+    if (!username) return;
+    
+    setIsUpdatingFriendship(true);
+    try {
+      let response;
+      if (action === 'send') {
+        response = await axios.post(
+          `${constants.SERVER_URL}/api/friends/request/${username}`,
+          {},
+          { withCredentials: true }
+        );
+        if (response.data.success) {
+          setFriendshipStatus('request_sent');
+        }
+      } else if (action === 'accept') {
+        response = await axios.post(
+          `${constants.SERVER_URL}/api/friends/accept/${username}`,
+          {},
+          { withCredentials: true }
+        );
+        if (response.data.success) {
+          setFriendshipStatus('friends');
+          if (setUserChanged) setUserChanged(true);
+        }
+      } else if (action === 'reject') {
+        response = await axios.post(
+          `${constants.SERVER_URL}/api/friends/reject/${username}`,
+          {},
+          { withCredentials: true }
+        );
+        if (response.data.success) {
+          setFriendshipStatus('none');
+        }
+      } else if (action === 'unfriend') {
+        if (!window.confirm(`Are you sure you want to remove ${username} as a friend?`)) {
+          setIsUpdatingFriendship(false);
+          return;
+        }
+        response = await axios.delete(
+          `${constants.SERVER_URL}/api/friends/${username}`,
+          { withCredentials: true }
+        );
+        if (response.data.success) {
+          setFriendshipStatus('none');
+          if (setUserChanged) setUserChanged(true);
+        }
+      }
+
+      if (response && !response.data.success) {
+        window.alert(response.data.message || 'Action failed');
+      }
+    } catch (err) {
+      console.error(`Error ${action}ing friend:`, err);
+      window.alert(err.response?.data?.message || `Failed to ${action} friend`);
+    } finally {
+      setIsUpdatingFriendship(false);
+    }
+  };
+
+  const renderFriendButton = () => {
+    if (!isPublicView || friendshipStatus === 'self') {
+      return null;
+    }
+
+    if (friendshipStatus === 'none') {
+      return (
+        <button
+          onClick={() => handleFriendAction('send')}
+          disabled={isUpdatingFriendship}
+          className="btn btn-primary"
+          style={{ marginLeft: '1rem' }}
+        >
+          {isUpdatingFriendship ? 'Sending...' : 'Add Friend'}
+        </button>
+      );
+    }
+
+    if (friendshipStatus === 'request_sent') {
+      return (
+        <button
+          disabled
+          className="btn btn-secondary"
+          style={{ marginLeft: '1rem', cursor: 'not-allowed' }}
+        >
+          Friend Request Sent
+        </button>
+      );
+    }
+
+    if (friendshipStatus === 'request_received') {
+      return (
+        <div style={{ display: 'flex', gap: '0.5rem', marginLeft: '1rem' }}>
+          <button
+            onClick={() => handleFriendAction('accept')}
+            disabled={isUpdatingFriendship}
+            className="btn btn-success"
+          >
+            {isUpdatingFriendship ? 'Accepting...' : 'Accept Friend Request'}
+          </button>
+          <button
+            onClick={() => handleFriendAction('reject')}
+            disabled={isUpdatingFriendship}
+            className="btn btn-danger"
+          >
+            Reject
+          </button>
+        </div>
+      );
+    }
+
+    if (friendshipStatus === 'friends') {
+      return (
+        <div style={{ display: 'flex', gap: '0.5rem', marginLeft: '1rem', alignItems: 'center' }}>
+          <span style={{ color: theme.colors?.status?.success || '#28a745', fontSize: '0.875rem' }}>
+            <i className="fas fa-check-circle" style={{ marginRight: '0.25rem' }}></i>
+            Friends
+          </span>
+          <button
+            onClick={() => handleFriendAction('unfriend')}
+            disabled={isUpdatingFriendship}
+            className="btn btn-danger btn-sm"
+          >
+            {isUpdatingFriendship ? 'Removing...' : 'Unfriend'}
+          </button>
+        </div>
+      );
+    }
+
+    return null;
   };
 
   const fetchSharedLists = async () => {
@@ -405,7 +542,10 @@ function Profile({ user: currentUser, setUserChanged }) {
           marginBottom: '2rem',
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
         }}>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: '600', marginBottom: '1.5rem' }}>Profile</h1>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <h1 style={{ fontSize: '1.75rem', fontWeight: '600', margin: 0 }}>Profile</h1>
+            {renderFriendButton()}
+          </div>
 
           {/* Username Section */}
           <div style={{ marginBottom: '1.5rem' }}>

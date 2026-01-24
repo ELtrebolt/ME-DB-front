@@ -1,25 +1,26 @@
-import { BrowserRouter as Router, Route, Routes, Navigate, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useParams, useLocation } from 'react-router-dom';
 
 // Components
-import Navbar from "./components/Navbar";
+import Navbar from "./app/Navbar";
 // Pages
-import CreateMedia from './pages/CreateMedia';
-import ShowMediaList from './pages/ShowMediaList';
-import ShowMediaDetails from './pages/ShowMediaDetails';
-import SharedView from './pages/SharedView';
-import About from "./pages/About";
-import Intro from "./pages/Intro";
-import Privacy from "./pages/Privacy";
-import Terms from "./pages/Terms";
-import NotFound from "./pages/NotFound";
-import Logout from "./pages/Logout";
-import Stats from './pages/Stats';
-import Profile from './pages/Profile';
+import CreateMedia from './app/pages/CreateMedia';
+import ShowMediaList from './app/pages/ShowMediaList';
+import ShowMediaDetails from './app/pages/ShowMediaDetails';
+import SharedView from './app/pages/SharedView';
+import About from "./landing/pages/About";
+import Intro from "./landing/pages/Intro";
+import Privacy from "./landing/pages/Privacy";
+import Terms from "./landing/pages/Terms";
+import NotFound from "./landing/pages/NotFound";
+import Logout from "./app/pages/Logout";
+import Stats from './app/pages/Stats';
+import Profile from './app/pages/Profile';
+import Friends from './app/pages/Friends';
 // Other
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import axios from 'axios';
-const constants = require('./constants');
-const theme = require('./theme');
+const constants = require('./app/constants');
+const theme = require('./styling/theme');
 
 const App = () => {
   axios.defaults.withCredentials = true;
@@ -27,15 +28,18 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userChanged, setUserChanged] = useState(false);
   const [newTypes, setNewTypes] = useState([]);
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tagsParam = params.get('tags');
+    if (tagsParam) {
+      return tagsParam.split(',').map(label => ({ label, value: label }));
+    }
+    return [];
+  });
   const [filteredData, setFilteredData] = useState({});
 
-  // function onUserChanged({foo}) {
-  //   setUserChanged(true);
-  //   foo();
-  // }
   useEffect(() => {
-    // get User data from MongoDB, use for TierTitle and AddNewType
+    // get User data from MongoDB
     const getUser = async () => {
       if(!user || userChanged)
       {
@@ -48,7 +52,6 @@ const App = () => {
           setUserChanged(false);
         })
         .catch((err) => {
-          // Only log if it's not a normal 401/403 (expected when not logged in)
           if (err.response?.status && err.response.status !== 401 && err.response.status !== 403) {
             console.error('Auth error:', err.response?.status, err.response?.data);
           }
@@ -56,14 +59,13 @@ const App = () => {
         })
         .finally(() => {
           setIsLoading(false);
-        })
-        ;
+        });
       }
     };
     getUser();
-  });
+  }, [user, userChanged]);
 
-  // Set CSS variables from theme for desktop card styling
+  // Set CSS variables from theme
   useEffect(() => {
     const cardConstants = theme.components?.cards?.desktop;
     if (cardConstants) {
@@ -78,7 +80,7 @@ const App = () => {
     }
   }, []);
 
-  // Session refresh mechanism - refresh session every 30 minutes
+  // Session refresh
   useEffect(() => {
     if (user) {
       const sessionRefreshInterval = setInterval(() => {
@@ -89,10 +91,10 @@ const App = () => {
               setUser(null);
             }
           })
-          .catch((err) => {
+          .catch(() => {
             setUser(null);
           });
-      }, 30 * 60 * 1000); // 30 minutes
+      }, 30 * 60 * 1000);
 
       return () => clearInterval(sessionRefreshInterval);
     }
@@ -113,6 +115,7 @@ const App = () => {
             <Route path='/terms' element={<Terms/>} />
             <Route path='/stats' element={user ? <Stats user={user}/> : <Navigate to="/"/>} />
             <Route path='/profile' element={user ? <Profile user={user} setUserChanged={setUserChanged}/> : <Navigate to="/"/>} />
+            <Route path='/friends' element={user ? <Friends user={user} setUserChanged={setUserChanged}/> : <Navigate to="/"/>} />
             <Route path='/user/:username' element={<Profile />} />
             <Route path='/user/:username/:mediaType' element={<SharedView />} />
             <Route path='/logout' element={<Logout/>} />
@@ -135,23 +138,45 @@ const App = () => {
 };
 
 function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, setSelectedTags, filteredData, setFilteredData}) {
-  const defaultTypes = ['anime', 'tv', 'movies', 'games']
-  var mediaTypes;
-  if(newTypes.length > 0) {
-    mediaTypes = [...defaultTypes, ...newTypes];
-  } else {
-    mediaTypes = defaultTypes;
-  }
   const { mediaType, group } = useParams();
+  const location = useLocation();
   const newType = newTypes.includes(mediaType);
+  const defaultTypes = useMemo(() => ['anime', 'tv', 'movies', 'games'], []);
+  const mediaTypes = useMemo(() => newTypes.length > 0 ? [...defaultTypes, ...newTypes] : defaultTypes, [newTypes, defaultTypes]);
 
-  // Clear tags when media type changes (navigating to different media type)
-  // Only clear if we're actually switching between different media types
+  // Use ref to track previous URL search to detect actual URL navigation
+  const prevSearchRef = useRef(location.search);
+
+  // Read tags from URL parameters - only when URL actually changes (navigation)
+  useEffect(() => {
+    if (!setSelectedTags) return;
+    
+    // Only process if URL search actually changed (not just state change)
+    const prevSearch = prevSearchRef.current;
+    if (prevSearch === location.search) return;
+    prevSearchRef.current = location.search;
+
+    const urlParams = new URLSearchParams(location.search);
+    const tagsParam = urlParams.get('tags');
+    
+    if (tagsParam) {
+      // URL has tags - set them (this is a navigation event)
+      const tagLabels = tagsParam.split(',');
+      setSelectedTags(tagLabels.map(label => ({ label, value: label })));
+    } else {
+      // URL has no tags - only clear if we actually navigated away
+      const pathParts = location.pathname.split('/');
+      if (pathParts.length <= 3) {
+        setSelectedTags([]);
+      }
+    }
+  }, [location.search, location.pathname, setSelectedTags]);
+
+  // Clear tags when media type changes
   const [previousMediaType, setPreviousMediaType] = useState(null);
   useEffect(() => {
     if (setSelectedTags && previousMediaType && previousMediaType !== mediaType) {
       setSelectedTags([]);
-      // Clear tags from sessionStorage if it exists
       if (typeof sessionStorage !== 'undefined') {
         sessionStorage.removeItem('selectedTags');
       }
@@ -159,18 +184,15 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
     setPreviousMediaType(mediaType);
   }, [mediaType, setSelectedTags, previousMediaType]);
 
-  // Fetch media data if filteredData is empty and we're navigating to a media details page
+  // Fetch media data for details page
   useEffect(() => {
     if (!isNaN(group) && (!filteredData || Object.keys(filteredData).length === 0)) {
-      // Only fetch if mediaType is valid
       if (mediaTypes.includes(mediaType)) {
-        // Fetch both collection and to-do data to get all media
         Promise.all([
           axios.get(constants['SERVER_URL'] + `/api/media/${mediaType}/collection`),
           axios.get(constants['SERVER_URL'] + `/api/media/${mediaType}/to-do`)
         ])
         .then(([collectionRes, toDoRes]) => {
-          // Combine both responses into filteredData format
           const combinedData = {
             S: [...(collectionRes.data.media || []).filter(m => m.tier === 'S'), ...(toDoRes.data.media || []).filter(m => m.tier === 'S')],
             A: [...(collectionRes.data.media || []).filter(m => m.tier === 'A'), ...(toDoRes.data.media || []).filter(m => m.tier === 'A')],
@@ -179,7 +201,6 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
             D: [...(collectionRes.data.media || []).filter(m => m.tier === 'D'), ...(toDoRes.data.media || []).filter(m => m.tier === 'D')],
             F: [...(collectionRes.data.media || []).filter(m => m.tier === 'F'), ...(toDoRes.data.media || []).filter(m => m.tier === 'F')]
           };
-          
           setFilteredData(combinedData);
         })
         .catch((err) => {
@@ -190,40 +211,17 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
   }, [mediaType, group, filteredData, setFilteredData, mediaTypes]);
 
   if (mediaTypes.includes(mediaType)) {
-    if(n === 3)
-    {
-      return <CreateMedia user={user} toDo={false} newType={newType} selectedTags={selectedTags}/>;
+    if(n === 3) return <CreateMedia user={user} toDo={false} newType={newType} selectedTags={selectedTags}/>;
+    if(n === 4) return <CreateMedia user={user} toDo={true} newType={newType} selectedTags={selectedTags}/>;
+    if(n === 5) {
+      if(!isNaN(group)) return <ShowMediaDetails user={user} newType={newType} filteredData={filteredData}/>;
+      if(group === "collection" || group === undefined) return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={false} newType={newType} selectedTags={selectedTags} setSelectedTags={setSelectedTags} filteredData={filteredData} setFilteredData={setFilteredData}/>;
+      if(group === "to-do") return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={true} newType={newType} selectedTags={selectedTags} setSelectedTags={setSelectedTags} filteredData={filteredData} setFilteredData={setFilteredData}/>;
+      return <Navigate to="/404" />;
     }
-    else if(n === 4)
-    {
-      return <CreateMedia user={user} toDo={true} newType={newType} selectedTags={selectedTags}/>;
-    }
-    else if(n === 5)
-    {
-      if(!isNaN(group))
-      {
-        return <ShowMediaDetails user={user} newType={newType} filteredData={filteredData}/>;
-      }
-      else if(group === "collection" || group === undefined)
-      {
-        return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={false} newType={newType} selectedTags={selectedTags} setSelectedTags={setSelectedTags} filteredData={filteredData} setFilteredData={setFilteredData}/>;
-      }
-      else if(group === "to-do")
-      {
-        return <ShowMediaList user={user} setUserChanged={setUserChanged} toDo={true} newType={newType} selectedTags={selectedTags} setSelectedTags={setSelectedTags} filteredData={filteredData} setFilteredData={setFilteredData}/>;
-      }
-      else {
-        return <Navigate to="/404" />;
-      }
-    }
-    else if(n === 6)
-    {
-      // Redirect to ShowMediaDetails since we now have inline editing
-      return <Navigate to={`/${mediaType}/${group}`} replace />;
-    }
-  } else {
-    return <Navigate to="/404" />;
+    if(n === 6) return <Navigate to={`/${mediaType}/${group}`} replace />;
   }
+  return <Navigate to="/404" />;
 }
 
 export default App;

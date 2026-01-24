@@ -3,10 +3,10 @@ import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import DeleteModal from "../components/DeleteModal";
 import TagMaker from "../components/TagMaker";
-import useSwipe from "../useSwipe.tsx";
+import useSwipe from "../hooks/useSwipe.tsx";
 import DuplicateModal from "../components/DuplicateModal";
 const constants = require('../constants');
-const theme = require('../theme');
+const theme = require('../../styling/theme');
 
 function toCapitalNotation(inputString) {
   return inputString
@@ -102,8 +102,7 @@ function ShowMediaDetails({user, newType, filteredData}) {
   const handleFieldChange = (field, value) => {
     setTempMedia(prev => ({
       ...prev,
-      [field]: field === 'toDo' ? value === 'true' : 
-               field === 'year' ? parseInt(value) : value
+      [field]: field === 'toDo' ? value === 'true' : value
     }));
   };
 
@@ -328,18 +327,14 @@ function ShowMediaDetails({user, newType, filteredData}) {
       switch (type) {
         case 'select':
           if (field === 'year') {
-            const years = Array.from({ length: constants.currentYear - 1969 }, (_, index) => constants.currentYear - index);
             return (
-              <select 
-                className='form-select form-select-sm' 
-                value={tempMedia[field]} 
+              <input 
+                type='date'
+                className='form-control form-control-sm' 
+                value={tempMedia[field] ? (typeof tempMedia[field] === 'string' ? tempMedia[field].split('T')[0] : new Date(tempMedia[field]).toISOString().split('T')[0]) : ''} 
                 onChange={(e) => handleFieldChange(field, e.target.value)}
-                style={{ width: 'auto', minWidth: '80px' }}
-              >
-                {years.map((year) => (
-                  <option key={year} value={year}>{year}</option>
-                ))}
-              </select>
+                style={{ width: 'auto', minWidth: '150px' }}
+              />
             );
           } else if (field === 'tier') {
             const tiers = ['S', 'A', 'B', 'C', 'D', 'F'];
@@ -430,7 +425,9 @@ function ShowMediaDetails({user, newType, filteredData}) {
               ((tempMedia[field] || media[field]) && (tempMedia[field] || media[field]).length > 0 ? (tempMedia[field] || media[field]).join(', ') : '-') :
               field === 'toDo' ?
                 ((tempMedia[field] !== undefined ? tempMedia[field] : media[field]) ? 'To-Do List' : 'My Collection') :
-                (tempMedia[field] || value)
+                field === 'year' ?
+                  (tempMedia[field] || media[field] ? new Date(tempMedia[field] || media[field]).toISOString().split('T')[0] : '-') :
+                  (tempMedia[field] || value)
           }
         </span>
       );
@@ -514,7 +511,7 @@ function ShowMediaDetails({user, newType, filteredData}) {
                       </tr>
                       <tr style={{backgroundColor: theme.colors.background.dark}}>
                         <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>2</th>
-                        <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>Year</td>
+                        <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>Date</td>
                         <td className='px-4 py-3 text-white' style={{backgroundColor: theme.colors.background.dark}}>
                           {renderEditableField('year', media.year, 'select')}
                         </td>

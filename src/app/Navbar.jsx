@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import NewTypeModal from "../components/NewTypeModal";
-import ImportModal from "../components/ImportModal";
+import NewTypeModal from "./components/NewTypeModal";
+import ImportModal from "./components/ImportModal";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-const constants = require('../constants');
-const theme = require('../theme');
+const constants = require('./constants');
+const theme = require('../styling/theme');
 
 const NavbarFunction = ({user, setUserChanged, newTypes}) => {
   const [showModal, setShowModal] = useState(false);
@@ -14,6 +14,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
   const [pendingNewType, setPendingNewType] = useState(null);
   const [isMediaMenuOpen, setIsMediaMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [incomingRequestsCount, setIncomingRequestsCount] = useState(0);
   
   const mediaDropdownRef = useRef(null);
   const userDropdownRef = useRef(null);
@@ -28,6 +29,33 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
       setPendingNewType(null);
     }
   }, [newTypes, pendingNewType, navigate]);
+
+  // Fetch incoming friend requests count
+  useEffect(() => {
+    const fetchFriendRequestsCount = async () => {
+      if (user) {
+        try {
+          const response = await axios.get(`${constants.SERVER_URL}/api/friends/requests`, {
+            withCredentials: true
+          });
+          if (response.data.success) {
+            setIncomingRequestsCount(response.data.incoming?.length || 0);
+          }
+        } catch (err) {
+          // Silently fail - user might not be authenticated or other error
+          setIncomingRequestsCount(0);
+        }
+      } else {
+        setIncomingRequestsCount(0);
+      }
+    };
+
+    fetchFriendRequestsCount();
+    
+    // Refresh count periodically (every 30 seconds)
+    const interval = setInterval(fetchFriendRequestsCount, 30000);
+    return () => clearInterval(interval);
+  }, [user]);
 
   // Calculate dynamic width for mobile profile dropdown
   const calculateProfileDropdownWidth = () => {
@@ -223,6 +251,38 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                 whiteSpace: 'nowrap'
               }} onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover} onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}>
                 Stats
+              </a>
+              <a href="/friends" style={{
+                color: theme.components.navbar.colors.text.default,
+                textDecoration: 'none',
+                fontSize: theme.components.navbar.mobile.linkFontSize,
+                transition: theme.components.navbar.linkTransition,
+                padding: `${theme.spacing.sm} ${theme.spacing.sm}`,
+                whiteSpace: 'nowrap',
+                position: 'relative',
+                display: 'inline-flex',
+                alignItems: 'center'
+              }} onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover} onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}>
+                Friends
+                {incomingRequestsCount > 0 && (
+                  <span style={{
+                    backgroundColor: '#dc3545',
+                    color: '#ffffff',
+                    borderRadius: '50%',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                    minWidth: '18px',
+                    height: '18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0 4px',
+                    marginLeft: '6px',
+                    lineHeight: '1'
+                  }}>
+                    {incomingRequestsCount > 99 ? '99+' : incomingRequestsCount}
+                  </span>
+                )}
               </a>
               
               {/* Mobile Media Dropdown */}
@@ -501,6 +561,35 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                   transition: theme.components.navbar.linkTransition
                 }} onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover} onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}>
                   Stats
+                </a>
+                <a href="/friends" style={{
+                  color: theme.components.navbar.colors.text.default,
+                  textDecoration: 'none',
+                  transition: theme.components.navbar.linkTransition,
+                  position: 'relative',
+                  display: 'inline-flex',
+                  alignItems: 'center'
+                }} onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover} onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}>
+                  Friends
+                  {incomingRequestsCount > 0 && (
+                    <span style={{
+                      backgroundColor: '#dc3545',
+                      color: '#ffffff',
+                      borderRadius: '50%',
+                      fontSize: '0.75rem',
+                      fontWeight: 'bold',
+                      minWidth: '18px',
+                      height: '18px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '0 4px',
+                      marginLeft: '6px',
+                      lineHeight: '1'
+                    }}>
+                      {incomingRequestsCount > 99 ? '99+' : incomingRequestsCount}
+                    </span>
+                  )}
                 </a>
                 
                 {/* Media Dropdown */}

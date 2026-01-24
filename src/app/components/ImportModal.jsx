@@ -147,7 +147,17 @@ function ImportModal({ show, setShow, user, onImportComplete }) {
               const toDoVal = getValue(idxMap.toDo).toLowerCase();
               const toDo = toDoVal === 'yes' || toDoVal === 'true';
               const yearStr = getValue(idxMap.year);
-              const year = yearStr ? parseInt(yearStr, 10) : new Date().getFullYear();
+              let year;
+              if (yearStr) {
+                if (/^\d{4}$/.test(yearStr)) {
+                  year = new Date(`${yearStr}-01-01`).toISOString();
+                } else {
+                  const date = new Date(yearStr);
+                  year = isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
+                }
+              } else {
+                year = new Date().toISOString();
+              }
               const tagsRaw = getValue(idxMap.tags);
               // Handle pipe | or comma , separator
               const tags = tagsRaw ? (tagsRaw.includes('|') ? tagsRaw.split('|') : tagsRaw.split(',')) : [];

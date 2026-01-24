@@ -5,7 +5,7 @@ import YearDistributionChart from '../components/stats/YearDistributionChart';
 import TierDistributionChart from '../components/stats/TierDistributionChart';
 import TierByTypeChart from '../components/stats/TierByTypeChart';
 const constants = require('../constants');
-const theme = require('../theme');
+const theme = require('../../styling/theme');
 
 const Stats = ({ user }) => {
   const [statsData, setStatsData] = useState(null);

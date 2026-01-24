@@ -1,5 +1,5 @@
 import React from 'react';
-const theme = require('../theme');
+const theme = require('../../styling/theme');
 
 const About = (props) => {
 
