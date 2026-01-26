@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-function DeleteModal({onDeleteClick, type, onModalOpen, onModalClose}) {
+function DeleteModal({onDeleteClick, type, onModalOpen, onModalClose, buttonStyle, iconStyle}) {
   const [show, setShow] = useState(false);
   const modalRef = useRef(null);
   const areYouSureText = type === 'media' ? 'Are you sure you want to remove this record?' : 
@@ -39,8 +39,23 @@ function DeleteModal({onDeleteClick, type, onModalOpen, onModalClose}) {
 
   return (
     <>
+      {/* Mobile: icon only */}
       <button 
-        className='btn btn-danger btn-lg' 
+        className='btn btn-danger btn-sm d-md-none' 
+        onClick={(e) => {
+          e.stopPropagation();
+          handleOpen();
+        }}
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+        title="Delete"
+        style={buttonStyle}
+      >
+        <i className="fas fa-trash" style={iconStyle}></i>
+      </button>
+      {/* Desktop: full button */}
+      <button 
+        className='btn btn-danger btn-lg d-none d-md-inline-block' 
         onClick={(e) => {
           e.stopPropagation();
           handleOpen();
@@ -48,7 +63,7 @@ function DeleteModal({onDeleteClick, type, onModalOpen, onModalClose}) {
         onMouseDown={(e) => e.stopPropagation()}
         onTouchStart={(e) => e.stopPropagation()}
       >
-        Delete
+        <i className="fas fa-trash me-2"></i>Delete
       </button>
       
       {show && (

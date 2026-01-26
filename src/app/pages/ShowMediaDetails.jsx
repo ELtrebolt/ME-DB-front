@@ -415,7 +415,18 @@ function ShowMediaDetails({user, newType, filteredData}) {
     } else {
       return (
         <span 
-          style={{ cursor: 'pointer', color: '#ffffff' }}
+          style={{ 
+            cursor: 'pointer', 
+            color: '#ffffff',
+            ...(field === 'description' ? { 
+              display: 'block',
+              maxWidth: '100%',
+              wordWrap: 'break-word',
+              overflowWrap: 'break-word',
+              whiteSpace: 'normal',
+              wordBreak: 'normal'
+            } : {})
+          }}
           onDoubleClick={() => startEditing(field)}
           title="Double-click to edit"
         >
@@ -436,32 +447,69 @@ function ShowMediaDetails({user, newType, filteredData}) {
   
   return (
     <div className='ShowMediaDetails min-vh-100' style={{backgroundColor: theme.colors.background.primary, color: 'white'}} {...swipeHandlers}>
-      <div className='container-fluid px-2 py-3'>
+      <style>{`
+        @media (min-width: 768px) {
+          .ShowMediaDetails table {
+            table-layout: auto;
+          }
+          .ShowMediaDetails .description-cell {
+            max-width: 70ch !important;
+            width: 70ch !important;
+            overflow-wrap: break-word !important;
+            word-wrap: break-word !important;
+          }
+          .ShowMediaDetails .description-cell > span {
+            max-width: 100% !important;
+            display: block !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            white-space: normal !important;
+            word-break: normal !important;
+          }
+        }
+        @media (max-width: 767.98px) {
+          .ShowMediaDetails table tbody tr td:nth-child(2) {
+            width: 25% !important;
+            min-width: 80px;
+            padding-left: 0.75rem !important;
+            padding-right: 0.5rem !important;
+          }
+          .ShowMediaDetails table tbody tr td:nth-child(3) {
+            width: 75% !important;
+            padding-left: 0.5rem !important;
+            padding-right: 0.75rem !important;
+          }
+        }
+      `}</style>
+      <div className='py-3' style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
         {/* Mobile layout - single row */}
-        <div className='row mb-4 d-md-none align-items-center'>
-          <div className='col-3'>
-            <Link to={buildBackUrl()} className='btn btn-outline-warning btn-sm w-100'>
-              <i className="fas fa-arrow-left me-1"></i>Back
-            </Link>
-          </div>
-          <div className='col-6 text-center'>
-            <h1 className='fw-bold text-white mb-1' style={{fontSize: '1.2rem', lineHeight: '1.2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{toCapitalNotation(mediaType)} Record</h1>
-            <div className="border-bottom border-2 border-warning mx-auto" style={{width: '60%'}}></div>
-          </div>
-          <div className='col-3'>
-            <div className='d-flex justify-content-end gap-2'>
+        <div className='mb-4 d-md-none' style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div className='d-flex align-items-center'>
+            <div style={{ flex: '0 0 auto', minWidth: '80px' }}>
+              <Link to={buildBackUrl()} className='btn btn-outline-warning btn-sm'>
+                <i className="fas fa-arrow-left me-1"></i>Back
+              </Link>
+            </div>
+            <div style={{ flex: '1', textAlign: 'center', padding: '0 0.5rem' }}>
+              <h1 className='fw-bold text-white mb-1' style={{fontSize: '1.2rem', lineHeight: '1.2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{toCapitalNotation(mediaType)} Record</h1>
+              <div className="border-bottom border-2 border-warning mx-auto" style={{width: '60%'}}></div>
+            </div>
+            <div style={{ flex: '0 0 auto', display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
               <button
                 onClick={onDuplicateClick}
                 className='btn btn-success btn-sm'
                 title="Duplicate"
+                style={{ fontSize: '1rem', padding: '0.4rem 0.5rem' }}
               >
-                <i className="fas fa-copy"></i>
+                <i className="fas fa-copy" style={{ fontSize: '1rem' }}></i>
               </button>
               <DeleteModal 
                 onDeleteClick={onDeleteClick} 
                 type='media'
                 onModalOpen={handleModalOpen}
                 onModalClose={handleModalClose}
+                buttonStyle={{ fontSize: '1rem', padding: '0.4rem 0.5rem' }}
+                iconStyle={{ fontSize: '1rem' }}
               ></DeleteModal>
             </div>
           </div>
@@ -495,9 +543,8 @@ function ShowMediaDetails({user, newType, filteredData}) {
           </div>
         </div>
         
-        <div className='row justify-content-center'>
-          <div className='col-lg-10 col-md-12'>
-            <div className="card shadow-soft border-0" style={{backgroundColor: theme.colors.background.dark}}>
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div className="card shadow-soft border-0" style={{backgroundColor: theme.colors.background.dark}}>
               <div className="card-body p-0" style={{backgroundColor: theme.colors.background.dark}}>
                 <div className="table-responsive">
                   <table className='table table-hover mb-0 text-white' style={{backgroundColor: theme.colors.background.dark}}>
@@ -533,7 +580,7 @@ function ShowMediaDetails({user, newType, filteredData}) {
                       <tr style={{backgroundColor: theme.colors.background.dark}}>
                         <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>5</th>
                         <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>Description</td>
-                        <td className='px-4 py-3 text-white' style={{backgroundColor: theme.colors.background.dark}}>
+                        <td className='px-4 py-3 text-white description-cell' style={{backgroundColor: theme.colors.background.dark, wordWrap: 'break-word', overflowWrap: 'break-word'}}>
                           {renderEditableField('description', media.description ? media.description : '-')}
                         </td>
                       </tr>
@@ -550,33 +597,28 @@ function ShowMediaDetails({user, newType, filteredData}) {
               </div>
             </div>
           </div>
-        </div>
         
-        <div className='row mt-4'>
-          <div className='col-md-4'></div>
-          <div className='col-md-4 text-center'>
-            {isEditing ? (
-              <div className='d-flex gap-2 justify-content-center'>
-                <button 
-                  onClick={saveChanges}
-                  className='btn btn-warning btn-lg'
-                >
-                  <i className="fas fa-save me-2"></i>Update Media
-                </button>
-                <button 
-                  onClick={cancelEditing}
-                  className='btn btn-secondary btn-lg'
-                >
-                  <i className="fas fa-times me-2"></i>Cancel
-                </button>
-              </div>
-            ) : (
-              <div className='text-warning'>
-                <small><strong>Double-click any field value to edit</strong></small>
-              </div>
-            )}
-          </div>
-          <div className='col-md-4'></div>
+        <div className='mt-4' style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
+          {isEditing ? (
+            <div className='d-flex gap-2 justify-content-center'>
+              <button 
+                onClick={saveChanges}
+                className='btn btn-warning btn-lg'
+              >
+                <i className="fas fa-save me-2"></i>Update Media
+              </button>
+              <button 
+                onClick={cancelEditing}
+                className='btn btn-secondary btn-lg'
+              >
+                <i className="fas fa-times me-2"></i>Cancel
+              </button>
+            </div>
+          ) : (
+            <div className='text-warning'>
+              <small><strong>Double-click any field value to edit</strong></small>
+            </div>
+          )}
         </div>
       </div>
       

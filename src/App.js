@@ -16,6 +16,13 @@ import Logout from "./app/pages/Logout";
 import Stats from './app/pages/Stats';
 import Profile from './app/pages/Profile';
 import Friends from './app/pages/Friends';
+// Demo Pages
+import DemoNavbar from "./demo/components/DemoNavbar";
+import DemoBanner from "./demo/components/DemoBanner";
+import DemoShowMediaList from "./demo/pages/DemoShowMediaList";
+import DemoShowMediaDetails from "./demo/pages/DemoShowMediaDetails";
+import DemoCreateMedia from "./demo/pages/DemoCreateMedia";
+import DemoStats from "./demo/pages/DemoStats";
 // Other
 import { useEffect, useState, useMemo, useRef } from "react";
 import axios from 'axios';
@@ -104,11 +111,35 @@ const App = () => {
   {
     return (
       <Router>
-        <div>
-          {user ? (
-            <Navbar user={user} setUserChanged={setUserChanged} newTypes={newTypes}/>
-          ) : null}
-          <Routes>
+        <AppContent user={user} setUserChanged={setUserChanged} newTypes={newTypes} selectedTags={selectedTags} setSelectedTags={setSelectedTags} filteredData={filteredData} setFilteredData={setFilteredData} />
+      </Router>
+    );
+  }
+};
+
+// Separate component to access useLocation inside Router
+function AppContent({ user, setUserChanged, newTypes, selectedTags, setSelectedTags, filteredData, setFilteredData }) {
+  const location = useLocation();
+  const isDemoRoute = location.pathname.startsWith('/demo');
+  const isPublicPage = ['/about', '/privacy', '/terms'].includes(location.pathname);
+  
+  // Determine which navbar to show:
+  // - Demo routes: DemoNavbar (without sign-in, handled by DemoLayout)
+  // - Logged in (non-demo): Normal Navbar
+  // - Not logged in on public pages (about, privacy, terms): DemoNavbar with sign-in
+  // - Landing page: No navbar (IntroNavbar is part of Intro component)
+  const showNormalNavbar = user && !isDemoRoute;
+  const showDemoNavbarWithSignIn = !user && isPublicPage && !isDemoRoute;
+  
+  return (
+    <div>
+      {showNormalNavbar && (
+        <Navbar user={user} setUserChanged={setUserChanged} newTypes={newTypes}/>
+      )}
+      {showDemoNavbarWithSignIn && (
+        <DemoNavbar user={user} />
+      )}
+      <Routes>
             <Route path='/' element={user ? <Navigate to={user.customizations?.homePage ? `/${user.customizations.homePage}` : "/anime/collection"}/> : <Intro />} />
             <Route path='/about' element={<About/>} />
             <Route path='/privacy' element={<Privacy/>} />
@@ -128,14 +159,22 @@ const App = () => {
             <Route path='/:mediaType/:group' element={<RestrictMediaType user={user} n={5} setUserChanged={setUserChanged} newTypes={newTypes} selectedTags={selectedTags} setSelectedTags={setSelectedTags} filteredData={filteredData} setFilteredData={setFilteredData}/>} />
             <Route path='/:mediaType/:id/edit' element={<RestrictMediaType user={user} n={6} setUserChanged={setUserChanged} newTypes={newTypes}/>} />
             
+            {/* Demo Routes - No authentication required */}
+            <Route path='/demo' element={<Navigate to="/demo/anime/collection" />} />
+            <Route path='/demo/stats' element={<DemoLayout user={user}><DemoStats /></DemoLayout>} />
+            <Route path='/demo/:mediaType' element={<DemoLayout user={user}><DemoRouteHandler /></DemoLayout>} />
+            <Route path='/demo/:mediaType/collection' element={<DemoLayout user={user}><DemoShowMediaList toDo={false} /></DemoLayout>} />
+            <Route path='/demo/:mediaType/to-do' element={<DemoLayout user={user}><DemoShowMediaList toDo={true} /></DemoLayout>} />
+            <Route path='/demo/:mediaType/collection/create' element={<DemoLayout user={user}><DemoCreateMedia toDo={false} /></DemoLayout>} />
+            <Route path='/demo/:mediaType/to-do/create' element={<DemoLayout user={user}><DemoCreateMedia toDo={true} /></DemoLayout>} />
+            <Route path='/demo/:mediaType/:group' element={<DemoLayout user={user}><DemoDetailRouteHandler /></DemoLayout>} />
+            
             <Route path='/404' element={<NotFound/>} />
             <Route path="/*" element={<NotFound />} />
           </Routes>
         </div>
-      </Router>
-    );
-  }
-};
+  );
+}
 
 function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, setSelectedTags, filteredData, setFilteredData}) {
   const { mediaType, group } = useParams();
@@ -221,6 +260,60 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
     }
     if(n === 6) return <Navigate to={`/${mediaType}/${group}`} replace />;
   }
+  return <Navigate to="/404" />;
+}
+
+// Check if localStorage is available
+function isLocalStorageAvailable() {
+  try {
+    const testKey = '__storage_test__';
+    localStorage.setItem(testKey, testKey);
+    localStorage.removeItem(testKey);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// Demo Layout Component - Wraps demo pages with DemoNavbar and DemoBanner
+function DemoLayout({ children, user }) {
+  const storageAvailable = isLocalStorageAvailable();
+  
+  return (
+    <>
+      <DemoNavbar user={user} />
+      <DemoBanner storageAvailable={storageAvailable} />
+      {children}
+    </>
+  );
+}
+
+// Demo Route Handler - Handles /demo/:mediaType route
+function DemoRouteHandler() {
+  const { mediaType } = useParams();
+  const validTypes = ['anime', 'tv', 'movies', 'games'];
+  
+  if (validTypes.includes(mediaType)) {
+    return <Navigate to={`/demo/${mediaType}/collection`} replace />;
+  }
+  return <Navigate to="/404" />;
+}
+
+// Demo Detail Route Handler - Handles /demo/:mediaType/:group where group could be ID or "collection"/"to-do"
+function DemoDetailRouteHandler() {
+  const { mediaType, group } = useParams();
+  const validTypes = ['anime', 'tv', 'movies', 'games'];
+  
+  if (!validTypes.includes(mediaType)) {
+    return <Navigate to="/404" />;
+  }
+  
+  // If group is a valid ID (could be string like "demo-anime-1"), show details
+  // Otherwise redirect to 404
+  if (group && group !== 'collection' && group !== 'to-do') {
+    return <DemoShowMediaDetails />;
+  }
+  
   return <Navigate to="/404" />;
 }
 

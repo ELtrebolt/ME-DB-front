@@ -35,12 +35,13 @@ const ExtraFilters = ({
   };
 
   return (
-    <div className="extra-filters p-3 rounded mb-3" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-      <div className="row g-2 align-items-end">
+    <div className="extra-filters p-2 p-md-3 rounded mb-3" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+      <div className="row g-2">
         {/* Custom Range Dates */}
-        <div className="col-md-4">
-          <label className="form-label text-white fw-semibold mb-2" style={{ fontSize: '0.875rem' }}>
-            Custom Range {timePeriod !== 'custom' && <span className="text-warning" style={{ fontSize: '0.65rem' }}>(Select "Custom Range" to apply)</span>}
+        <div className="col-12 col-md-4 d-flex flex-column">
+          <label className="form-label text-white fw-semibold mb-1 mb-md-2" style={{ fontSize: '0.75rem', lineHeight: '1.2', height: '1.5rem', display: 'flex', alignItems: 'center' }}>
+            <span>Custom Range</span>
+            {timePeriod !== 'custom' && <span className="text-warning d-none d-md-inline ms-1" style={{ fontSize: '0.65rem' }}>(Select "Custom Range" to apply)</span>}
           </label>
           <div className="d-flex gap-2">
             <input
@@ -49,6 +50,7 @@ const ExtraFilters = ({
               value={startDate}
               onChange={(e) => handleDateChange('start', e.target.value)}
               placeholder="Start"
+              style={{ fontSize: '0.75rem' }}
             />
             <input
               type="date"
@@ -56,25 +58,57 @@ const ExtraFilters = ({
               value={endDate}
               onChange={(e) => handleDateChange('end', e.target.value)}
               placeholder="End"
+              style={{ fontSize: '0.75rem' }}
             />
           </div>
         </div>
 
         {/* Search Scope */}
-        <div className="col-md-3">
-          <label className="form-label text-white fw-semibold mb-2" style={{ fontSize: '0.875rem' }}>Search In</label>
-          <div className="d-flex gap-2 py-1">
+        <div className="col-12 col-md-3 d-flex flex-column">
+          <label className="form-label text-white fw-semibold mb-1 mb-md-2" style={{ fontSize: '0.75rem', lineHeight: '1.2', height: '1.5rem', display: 'flex', alignItems: 'center' }}>Search In</label>
+          <div className="row g-2 d-md-none">
+            <div className="col-8">
+              <div className="d-flex gap-2 py-1">
+                {['title', 'tags', 'description'].map(scope => (
+                  <div key={scope} className="form-check form-check-inline m-0">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id={`scope-${scope}`}
+                      checked={searchScope.includes(scope)}
+                      onChange={() => toggleScope(scope)}
+                      style={{ cursor: 'pointer' }}
+                    />
+                    <label className="form-check-label text-white" htmlFor={`scope-${scope}`} style={{ fontSize: '0.7rem', cursor: 'pointer', textTransform: 'capitalize' }}>
+                      {scope}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="col-4 d-flex align-items-center">
+              <button 
+                className="btn btn-danger btn-sm w-100" 
+                onClick={onClearFilters}
+                style={{ fontSize: '0.7rem', padding: '0.25rem 0.5rem' }}
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+          {/* Desktop: Search In checkboxes only */}
+          <div className="d-none d-md-flex gap-2 py-1">
             {['title', 'tags', 'description'].map(scope => (
               <div key={scope} className="form-check form-check-inline m-0">
                 <input
                   className="form-check-input"
                   type="checkbox"
-                  id={`scope-${scope}`}
+                  id={`scope-${scope}-desktop`}
                   checked={searchScope.includes(scope)}
                   onChange={() => toggleScope(scope)}
                   style={{ cursor: 'pointer' }}
                 />
-                <label className="form-check-label text-white" htmlFor={`scope-${scope}`} style={{ fontSize: '0.75rem', cursor: 'pointer', textTransform: 'capitalize' }}>
+                <label className="form-check-label text-white" htmlFor={`scope-${scope}-desktop`} style={{ fontSize: '0.7rem', cursor: 'pointer', textTransform: 'capitalize' }}>
                   {scope}
                 </label>
               </div>
@@ -82,13 +116,14 @@ const ExtraFilters = ({
           </div>
         </div>
 
-        {/* Sort Order */}
-        <div className="col-md-2">
-          <label className="form-label text-white fw-semibold mb-2" style={{ fontSize: '0.875rem' }}>Sort By</label>
+        {/* Sort Order - Switched with Tag Logic */}
+        <div className="col-6 col-md-2 d-flex flex-column">
+          <label className="form-label text-white fw-semibold mb-1 mb-md-2" style={{ fontSize: '0.75rem', lineHeight: '1.2', height: '1.5rem', display: 'flex', alignItems: 'center' }}>Sort By</label>
           <select 
             className="form-select form-select-sm" 
             value={sortOrder} 
             onChange={(e) => { setSortOrder(e.target.value); setSearchChanged(true); }}
+            style={{ fontSize: '0.75rem' }}
           >
             <option value="default">Default</option>
             <option value="dateNewest">Newest</option>
@@ -97,9 +132,9 @@ const ExtraFilters = ({
           </select>
         </div>
 
-        {/* Tag Logic */}
-        <div className="col-md-2">
-          <label className="form-label text-white fw-semibold mb-2" style={{ fontSize: '0.875rem' }}>Tag Logic</label>
+        {/* Tag Logic - Switched with Sort By */}
+        <div className="col-6 col-md-2 d-flex flex-column">
+          <label className="form-label text-white fw-semibold mb-1 mb-md-2" style={{ fontSize: '0.75rem', lineHeight: '1.2', height: '1.5rem', display: 'flex', alignItems: 'center' }}>Tag Logic</label>
           <div className="btn-group btn-group-sm w-100" role="group">
             <button 
               type="button" 
@@ -120,12 +155,13 @@ const ExtraFilters = ({
           </div>
         </div>
 
-        {/* Clear Actions */}
-        <div className="col-md-1 d-flex">
+        {/* Clear Actions - Desktop only */}
+        <div className="col-md-1 d-none d-md-flex flex-column">
+          <div style={{ height: '1.5rem', marginBottom: '0.25rem' }}></div>
           <button 
-            className="btn btn-outline-danger btn-sm w-100" 
+            className="btn btn-danger btn-sm w-100" 
             onClick={onClearFilters}
-            style={{ fontSize: '0.75rem', paddingLeft: '0.2rem', paddingRight: '0.2rem' }}
+            style={{ fontSize: '0.7rem', padding: '0.25rem 0.5rem' }}
           >
             Clear
           </button>

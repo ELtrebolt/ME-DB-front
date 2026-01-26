@@ -364,37 +364,59 @@ const theme = {
       descriptionFontSize: '1rem',
     },
 
-    // Intro Page (Landing Page)
+    // Intro Page (Landing Page) - Play Bootstrap style
     introPage: {
-      // Background colors - professional medium scheme (between dark and light)
-      bg1: '#475569',        // Main hero/primary sections - medium slate blue-gray
-      bg2: '#64748b',        // Alternate sections (Features, FAQ) - lighter slate blue-gray
+      // Section backgrounds
+      heroBg: '#1D2144',              // Dark navy for Hero (like Play template)
+      aboutBg: '#0f1629',             // Even darker gray/navy for About section
+      lightBg: '#e5e7eb',             // Medium gray for Features, FAQ (slightly darker)
+      darkBg: '#1D2144',              // Dark navy for Use Cases (like Play template)
       
-      // Text colors
+      // Text colors for dark backgrounds (hero, dark sections)
       text: {
-        primary: '#ffffff',           // Main headings and important text
-        secondary: '#f1f5f9',         // Body text and descriptions - light gray
-        muted: 'rgba(241, 245, 249, 0.8)',  // Muted/secondary text
+        primary: '#ffffff',           // White headings on dark/purple bg
+        secondary: '#f1f5f9',         // Light body text on dark/purple bg
+        muted: 'rgba(241, 245, 249, 0.8)',  // Muted text on dark bg
         accent: '#e2e8f0',            // Accent text (like "SCROLL TO EXPLORE")
+      },
+      
+      // Text colors for light backgrounds
+      textLight: {
+        primary: '#1f2937',           // Dark headings on light bg
+        secondary: '#6b7280',         // Gray body text on light bg
+        muted: '#9ca3af',             // Muted text on light bg
       },
       
       // Navbar colors (for intro page navbar)
       navbar: {
-        backgroundColor: '#64748b',  // Navbar background when not scrolled
+        backgroundColor: 'transparent',  // Navbar background when not scrolled (blends with purple)
         backgroundColorScrolled: '#ffffff',  // Navbar background when scrolled
         textColor: '#ffffff',         // Navbar text when not scrolled
         textColorScrolled: '#1f2937', // Navbar text when scrolled
       },
       
-      // Card/Glass effect colors
-      cardGlass: 'rgba(255, 255, 255, 0.15)',      // Glass-morphism background - more visible on medium bg
-      cardGlassHover: 'rgba(255, 255, 255, 0.2)', // Glass-morphism hover
-      cardBorder: 'rgba(255, 255, 255, 0.2)',     // Card border - more visible
+      // Card styles for light sections (white cards with shadow)
+      cardLight: {
+        background: '#ffffff',
+        border: '1px solid #e5e7eb',
+        shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      },
       
-      // Accordion colors
-      accordionBackground: 'rgba(255, 255, 255, 0.15)',
-      accordionItemBackground: 'rgba(255, 255, 255, 0.1)',
-      accordionBorder: 'rgba(255, 255, 255, 0.2)',
+      // Card styles for dark sections (glass effect)
+      cardDark: {
+        background: 'rgba(255, 255, 255, 0.05)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        shadow: 'none',
+      },
+      
+      // Accordion colors for light sections
+      accordionLight: {
+        background: '#ffffff',
+        itemBackground: '#ffffff',
+        border: '#e5e7eb',
+        textColor: '#1f2937',
+        bodyColor: '#6b7280',
+      },
     },
 
     // Tier Titles

@@ -218,8 +218,12 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
               fontSize: logoFontSize,
               fontWeight: 'bold',
               color: theme.components.navbar.colors.text.dark,
-              textDecoration: 'none'
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
             }}>
+              <img src="/favicon.ico" alt="ME-DB" style={{ width: isMobile ? '24px' : '32px', height: isMobile ? '24px' : '32px' }} />
               ME-DB
             </a>
           </div>
@@ -231,17 +235,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
               alignItems: 'center',
               gap: theme.spacing.sm
             }}>
-              {/* Mobile About and Stats Links */}
-              <a href="/about" style={{
-                color: theme.components.navbar.colors.text.default,
-                textDecoration: 'none',
-                fontSize: theme.components.navbar.mobile.linkFontSize,
-                transition: theme.components.navbar.linkTransition,
-                padding: `${theme.spacing.sm} ${theme.spacing.sm}`,
-                whiteSpace: 'nowrap'
-              }} onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover} onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}>
-                About
-              </a>
+              {/* Mobile Stats Link */}
               <a href="/stats" style={{
                 color: theme.components.navbar.colors.text.default,
                 textDecoration: 'none',
@@ -519,6 +513,15 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                     }} className="navbar-dropdown-item" onClick={switchGoogleAccount}>
                       Switch Account
                     </button>
+                    <a href="/about" style={{
+                      display: 'block',
+                      padding: '0.375rem 0.75rem',
+                      fontSize: theme.components.navbar.mobile.dropdownItemFontSize,
+                      color: theme.components.navbar.colors.dropdownItemText,
+                      textDecoration: 'none'
+                    }} className="navbar-dropdown-item">
+                      About
+                    </a>
                     <hr style={{ margin: '0.125rem 0', border: 'none', borderTop: `${theme.components.navbar.hr.thickness} solid ${theme.components.navbar.hr.color}` }} />
                     <a href="/logout" style={{
                       display: 'block',

@@ -239,11 +239,11 @@
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  width: 240px !important;
-  height: 42px !important;
+  width: 280px !important;
+  height: 50px !important;
   background-color: #4285f4 !important;
   border: none !important;
-  border-radius: 4px !important;
+  border-radius: 6px !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25) !important;
   cursor: pointer !important;
   position: relative !important;
@@ -253,17 +253,17 @@
   transition: all 0.2s ease !important;
   overflow: hidden !important;
   flex-shrink: 0 !important;
-  min-width: 240px !important;
-  max-width: 240px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
   box-sizing: border-box !important;
 }
 
 /* More specific selector to override any conflicts */
 .card-body .google-btn {
   display: flex !important;
-  width: 240px !important;
-  min-width: 240px !important;
-  max-width: 240px !important;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
   box-sizing: border-box !important;
 }
 
@@ -279,21 +279,21 @@
 }
   
 .google-btn .google-icon-wrapper {
-    position: absolute !important;
+  position: absolute !important;
   left: 1px !important;
   top: 1px !important;
-  width: 40px !important;
-  height: 40px !important;
+  width: 48px !important;
+  height: 48px !important;
   background-color: #ffffff !important;
-  border-radius: 2px !important;
+  border-radius: 4px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
 }
 
 .google-btn .google-icon {
-  width: 18px !important;
-  height: 18px !important;
+  width: 22px !important;
+  height: 22px !important;
   display: block !important;
 }
 
@@ -303,13 +303,13 @@
   top: 50% !important;
   transform: translate(-50%, -50%) !important;
   color: #ffffff !important;
-  font-size: clamp(12px, 2vw, 14px) !important;
+  font-size: 16px !important;
   font-weight: 500 !important;
   letter-spacing: 0.25px !important;
   white-space: nowrap !important;
   margin: 0 !important;
   padding: 0 !important;
-  }
+}
   
   /* Ensure filter row containers don't clip dropdowns */
   .row.g-3.mb-4 {

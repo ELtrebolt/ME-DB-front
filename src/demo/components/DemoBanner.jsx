@@ -1,0 +1,78 @@
+import React from 'react';
+
+const DemoBanner = ({ storageAvailable = true }) => {
+  // Show warning banner if localStorage is not available
+  if (!storageAvailable) {
+    return (
+      <div style={{
+        backgroundColor: '#dc3545',
+        color: '#ffffff',
+        padding: '8px 16px',
+        textAlign: 'center',
+        fontSize: '0.875rem',
+        fontWeight: 500,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '8px'
+      }}>
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          width="16" 
+          height="16" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+        >
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <span>
+          <strong>Demo Mode</strong> - Storage unavailable (private browsing?). Changes won't persist after refresh.
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{
+      backgroundColor: '#ffc107',
+      color: '#1f2937',
+      padding: '6px 12px',
+      textAlign: 'center',
+      fontSize: '0.75rem',
+      fontWeight: 500,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '6px',
+      whiteSpace: 'nowrap'
+    }}>
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        width="14" 
+        height="14" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+        style={{ flexShrink: 0 }}
+      >
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+      <span>
+        <strong>Demo</strong> - Saved to browser, sign in for permanent storage
+      </span>
+    </div>
+  );
+};
+
+export default DemoBanner;

@@ -4,10 +4,9 @@ const theme = require('../../styling/theme');
 const About = (props) => {
 
   return (
-    <div className="container-fluid min-vh-100" style={{backgroundColor: theme.colors.background.primary}}>
-      <div className="container py-5 about-container">
-        <div className="row justify-content-center">
-          <div className="col-lg-8 col-md-10 text-white">
+    <div className="container-fluid min-vh-100 px-0" style={{backgroundColor: theme.colors.background.primary}}>
+      <div className="py-5 about-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 1rem' }}>
+        <div className="text-white">
             <div className="text-center mb-5">
               <h1 className="display-4 fw-bold mb-3 about-title">About</h1>
               <div className="border-bottom border-3 border-white w-25 mx-auto"></div>
@@ -58,7 +57,6 @@ const About = (props) => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 
