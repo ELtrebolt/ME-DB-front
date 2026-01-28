@@ -1402,7 +1402,7 @@
 
 .CreateMedia .react-tags__combobox-input,
 .ShowMediaDetails .react-tags__combobox-input {
-  font-size: 0.875rem;
+  font-size: 16px; /* Prevents iOS auto-zoom on focus */
 }
 
 .CreateMedia .react-tags__listbox,
@@ -1419,6 +1419,34 @@
 @media (max-width: 767.98px) {
   .ShowMediaDetails th[scope="row"] {
     display: none !important;
+  }
+  
+  /* Prevent TagMaker from overflowing table on mobile */
+  .ShowMediaDetails .react-tags {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .ShowMediaDetails .react-tags__combobox {
+    max-width: 100% !important;
+    flex-wrap: wrap !important;
+    min-width: 0 !important;
+  }
+  
+  .ShowMediaDetails .react-tags__combobox-input {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    width: auto !important;
+    flex: 1 1 auto !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+  }
+  
+  /* Constrain the table cell containing tags */
+  .ShowMediaDetails table td {
+    max-width: 0 !important;
+    overflow: hidden !important;
   }
 }
 

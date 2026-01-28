@@ -408,7 +408,7 @@ function ShowMediaList({
               <SearchBar mediaType={mediaType} allMedia={filteredData} searchQuery={searchQuery} setSearchQuery={setSearchQuery} setSearchChanged={setSearchChanged} basePath={basePath}/>
               <button className="btn btn-link btn-sm text-warning p-0" onClick={() => setShowExtraFilters(!showExtraFilters)} style={{ fontSize: '0.7rem', textDecoration: 'none' }}>{showExtraFilters ? 'Hide Advanced' : 'More Filters...'}</button>
             </div>
-            <div className='col-4'><TagFilter suggestedTags={suggestedTags} selected={selectedTags} setSelected={setSelectedTags} setSearchChanged={setSearchChanged} tagLogic={tagLogic} setTagLogic={setTagLogic}/></div>
+            <div className='col-4'><TagFilter suggestedTags={suggestedTags} selected={selectedTags} setSelected={setSelectedTags} setSearchChanged={setSearchChanged} tagLogic={tagLogic} setTagLogic={setTagLogic} placeholder={constants[mediaType]?.tags || constants['other'].tags}/></div>
           </div>
 
           {showExtraFilters && (

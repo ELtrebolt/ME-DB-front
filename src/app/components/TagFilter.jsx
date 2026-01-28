@@ -2,7 +2,7 @@ import React, { useCallback } from 'react'
 import { ReactTags } from 'react-tag-autocomplete'
 import { suggestionsByLabel } from '../helpers';
 
-const Function = ({suggestedTags, selected, setSelected, setSearchChanged, tagLogic, setTagLogic}) => {
+const Function = ({suggestedTags, selected, setSelected, setSearchChanged, tagLogic, setTagLogic, placeholder}) => {
   
   const suggestions = suggestedTags;
   // suggested and selected are lists of { value: index, label: name }
@@ -40,6 +40,7 @@ const Function = ({suggestedTags, selected, setSelected, setSearchChanged, tagLo
         onDelete={onDelete}
         noOptionsText="No matching tags" 
         suggestionsTransform={suggestionsByLabel}
+        placeholderText={placeholder}
       />
     </div>
   )

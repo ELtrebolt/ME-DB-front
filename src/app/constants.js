@@ -92,8 +92,8 @@ const json = {
         'description' : '[How You Feel About Attending This]'
     },
     'other' : {
-        'title' : 'e.g. Something-Cool',
-        'tags' : 'Add a cool tag here to categorize this',
+        'title' : 'Add a title',
+        'tags' : 'Add a tag',
         'description' : '[How You Feel About Experiencing This]'
     },
     // Stats Page Configuration
