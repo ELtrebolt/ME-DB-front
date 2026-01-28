@@ -91,6 +91,11 @@ const json = {
         'tags' : 'e.g. pop-punk, 2000s',
         'description' : '[How You Feel About Attending This]'
     },
+    'sandwiches' : {
+        'title' : 'e.g. Italian Sub',
+        'tags' : 'e.g. deli, meat',
+        'description' : '[How You Feel About Eating This]'
+    },
     'other' : {
         'title' : 'Add a title',
         'tags' : 'Add a tag',

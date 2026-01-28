@@ -9,6 +9,7 @@ import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import TierTitle from "../components/TierTitle";
 import useSwipe from "../hooks/useSwipe.tsx";
 import ShareLinkModal from "../components/modals/ShareLinkModal";
+import EditListModal from "../components/modals/EditListModal";
 import Modal from "../components/modals/Modal";
 import { filterData, toCapitalNotation, getTruncatedTitle, calculateDropdownWidth, createEmptyTiersObject } from "../helpers";
 import { useMediaData } from "../hooks/useMediaData";
@@ -31,7 +32,9 @@ function ShowMediaList({
   onReorderInTier,
   onMoveToTier,
   tierTitleOverrides = {},
-  onTierTitleSave = undefined
+  onTierTitleSave = undefined,
+  onDescriptionSave = undefined,
+  descriptionOverride = undefined
 }) {
   const { mediaType } = useParams();
   const location = useLocation();
@@ -45,6 +48,7 @@ function ShowMediaList({
   const [localByTier, setLocalByTier] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showEditListModal, setShowEditListModal] = useState(false);
   const [existingShareData, setExistingShareData] = useState(null);
   const [activeId, setActiveId] = useState(null);
 
@@ -68,7 +72,7 @@ function ShowMediaList({
   const { uniqueTags: demoUniqueTags } = useMediaData(mediaType, dataSource);
 
   useEffect(() => {
-    const options = [{ text: 'Download CSV', hasIcon: true }, { text: 'Delete Type', hasIcon: false }, { text: 'Set As Home Page', hasIcon: true }];
+    const options = [{ text: 'Edit List', hasIcon: false }, { text: 'Download CSV', hasIcon: true }, { text: 'Delete Type', hasIcon: false }];
     const mobileWidth = calculateDropdownWidth(options, { variant: 'mobile', minWidth: 100, iconWidth: 30 });
     const desktopWidth = calculateDropdownWidth(options, { variant: 'desktop', minWidth: 120, iconWidth: 30 });
     document.documentElement.style.setProperty('--mobile-settings-dropdown-width', `${mobileWidth}px`);
@@ -150,13 +154,59 @@ function ShowMediaList({
     document.body.removeChild(link);
   }
 
-  function setAsHomePage() {
-    if (dataSource === 'api') {
-      const newHomePage = `${mediaType}/${toDoString}`;
-      axios.put(constants['SERVER_URL'] + '/api/user/customizations', { homePage: newHomePage })
+  function handleEditListSave({ description, setAsHome }) {
+    if (dataSource === 'demo' && onDescriptionSave) {
+      // Demo mode: use callback
+      onDescriptionSave(description);
+    } else if (dataSource === 'api') {
+      const requests = [];
+      const currentHomePage = `${mediaType}/${toDoString}`;
+      const isCurrentlyHomePage = user?.customizations?.homePage === currentHomePage;
+      
+      // Save description
+      requests.push(
+        axios.put(constants['SERVER_URL'] + '/api/user/customizations', {
+          description,
+          mediaType,
+          listType: toDoString,
+          isNewType: newType
+        })
+      );
+      
+      // Set or clear home page based on checkbox state
+      if (setAsHome && !isCurrentlyHomePage) {
+        // Set as home page
+        requests.push(
+          axios.put(constants['SERVER_URL'] + '/api/user/customizations', { homePage: currentHomePage })
+        );
+      } else if (!setAsHome && isCurrentlyHomePage) {
+        // Clear home page
+        requests.push(
+          axios.put(constants['SERVER_URL'] + '/api/user/customizations', { homePage: '' })
+        );
+      }
+      
+      Promise.all(requests)
         .then(() => setUserChanged(true))
-        .catch(err => console.error('Error setting home page:', err));
+        .catch(err => console.error('Error saving list settings:', err));
     }
+  }
+
+  // Get current description from user object or override (for demo)
+  function getCurrentDescription() {
+    // Check for demo override first
+    if (descriptionOverride !== undefined) {
+      return descriptionOverride;
+    }
+    if (!user) return '';
+    const descriptionField = toDoString === 'to-do' ? 'todoDescription' : 'collectionDescription';
+    if (newType && user.newTypes && user.newTypes[mediaType]) {
+      return user.newTypes[mediaType][descriptionField] || '';
+    }
+    if (user[mediaType]) {
+      return user[mediaType][descriptionField] || '';
+    }
+    return '';
   }
 
   function onDeleteClick() {
@@ -293,14 +343,19 @@ function ShowMediaList({
               <h1 className='fw-light text-white mb-0' style={{ fontSize: 'clamp(16px, 4.5vw, 24px)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {getTruncatedTitle(mediaType, toDoString)}
               </h1>
+              {getCurrentDescription() && (
+                <p className='text-white-50 mb-0 mt-1' style={{ fontSize: '0.7rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {getCurrentDescription().length > 36 ? getCurrentDescription().substring(0, 36) + '...' : getCurrentDescription()}
+                </p>
+              )}
             </div>
             <div className='col-auto px-1'>
               <div className="dropdown">
                 <button className="btn btn-warning btn-xs dropdown-toggle" data-bs-toggle="dropdown">Settings</button>
                 <ul className="dropdown-menu dropdown-menu-end">
+                  <li><button className="dropdown-item py-1" style={{fontSize: '0.75rem'}} onClick={() => setShowEditListModal(true)}>Edit List</button></li>
                   {dataSource === 'api' && <li><button className="dropdown-item py-1" style={{fontSize: '0.75rem'}} onClick={() => setShowShareModal(true)}>{existingShareData ? 'Unshare / Edit' : 'Share List'}</button></li>}
                   <li><button className="dropdown-item py-1" style={{fontSize: '0.75rem'}} onClick={exportToCsv}>Download CSV</button></li>
-                  {dataSource === 'api' && <li><button className="dropdown-item py-1" style={{fontSize: '0.75rem'}} onClick={setAsHomePage} disabled={user?.customizations?.homePage === `${mediaType}/${toDoString}`}>Set As Home Page</button></li>}
                   {dataSource === 'api' && newType && <li><button className="dropdown-item py-1 text-danger" style={{fontSize: '0.75rem'}} onClick={() => setShowDeleteModal(true)}>Delete Type</button></li>}
                 </ul>
               </div>
@@ -309,14 +364,21 @@ function ShowMediaList({
 
           <div className='row align-items-center mb-3 d-none d-md-flex'>
             <div className='col-md-2 text-center'><button className='btn btn-warning btn-lg' onClick={switchToDo}><i className="fas fa-exchange-alt me-2"></i>{toDoState ? toCapitalNotation('collection') : 'To-Do'}</button></div>
-            <div className='col-md-8 text-center'><h1 className='fw-light text-white mb-0' style={{ fontSize: 'clamp(28px, 4.5vw, 52px)' }}>{getTruncatedTitle(mediaType, toDoString)}</h1></div>
+            <div className='col-md-8 text-center'>
+              <h1 className='fw-light text-white mb-0' style={{ fontSize: 'clamp(28px, 4.5vw, 52px)' }}>{getTruncatedTitle(mediaType, toDoString)}</h1>
+              {getCurrentDescription() && (
+                <p className='text-white-50 mb-0 mt-1' style={{ fontSize: '0.85rem' }}>
+                  {getCurrentDescription().length > 120 ? getCurrentDescription().substring(0, 120) + '...' : getCurrentDescription()}
+                </p>
+              )}
+            </div>
             <div className='col-md-2 text-center'>
               <div className="dropdown">
                 <button className="btn btn-warning btn-lg dropdown-toggle" data-bs-toggle="dropdown">Settings</button>
                 <ul className="dropdown-menu">
+                  <li><button className="dropdown-item py-1" onClick={() => setShowEditListModal(true)}>Edit List</button></li>
                   {dataSource === 'api' && <li><button className="dropdown-item py-1" onClick={() => setShowShareModal(true)}>{existingShareData ? 'Unshare / Edit' : 'Share List'}</button></li>}
                   <li><button className="dropdown-item py-1" onClick={exportToCsv}>Download CSV</button></li>
-                  {dataSource === 'api' && <li><button className="dropdown-item py-1" onClick={setAsHomePage} disabled={user?.customizations?.homePage === `${mediaType}/${toDoString}`}>Set As Home Page</button></li>}
                   {dataSource === 'api' && newType && <li><button className="dropdown-item py-1 text-danger" onClick={() => setShowDeleteModal(true)}>Delete Type</button></li>}
                 </ul>
               </div>
@@ -417,6 +479,15 @@ function ShowMediaList({
       </Modal>
 
       {dataSource === 'api' && <ShareLinkModal show={showShareModal} onClose={() => setShowShareModal(false)} mediaType={mediaType} toDoState={toDoString === 'to-do'} username={user?.username} onUpdate={() => axios.get(constants['SERVER_URL'] + `/api/share/status/${mediaType}`).then(res => setExistingShareData(res.data.exists ? res.data : null))}/>}
+
+      <EditListModal
+        show={showEditListModal}
+        setShow={setShowEditListModal}
+        currentDescription={getCurrentDescription()}
+        isHomePage={user?.customizations?.homePage === `${mediaType}/${toDoString}`}
+        showHomePageOption={dataSource === 'api'}
+        onSave={handleEditListSave}
+      />
     </>
   );
 }

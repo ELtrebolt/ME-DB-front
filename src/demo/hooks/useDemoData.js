@@ -8,10 +8,10 @@ import moviesData from '../data/movies.json';
 import gamesData from '../data/games.json';
 
 const STORAGE_KEY_PREFIX = 'demo_';
-const VERSION_KEY = 'demo_version';
+export const VERSION_KEY = 'demo_version';
 // Increment this version when you update the default JSON data files
-// This will cause all users to get fresh data on their next visit
-const DEMO_VERSION = '2.0';
+// This will cause all users to get fresh data AND descriptions on their next visit
+export const DEMO_VERSION = '3.0';
 
 const defaultData = {
   anime: animeData,

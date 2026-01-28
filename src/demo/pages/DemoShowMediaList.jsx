@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import ShowMediaList from '../../app/pages/ShowMediaList';
 import { useDemoData } from "../hooks/useDemoData";
 import { useDemoTierTitles } from "../hooks/useDemoTierTitles";
+import { useDemoDescriptions } from "../hooks/useDemoDescriptions";
 
 const DemoShowMediaList = ({ toDo }) => {
   const { mediaType } = useParams();
@@ -19,6 +20,11 @@ const DemoShowMediaList = ({ toDo }) => {
     setTierTitle, 
     overrides: tierTitleOverrides
   } = useDemoTierTitles();
+
+  const {
+    getDescription,
+    setDescription
+  } = useDemoDescriptions();
 
   const [filteredData, setFilteredData] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
@@ -43,6 +49,11 @@ const DemoShowMediaList = ({ toDo }) => {
     setTierTitle(mediaType, toDoString, tier, newTitle);
   }, [mediaType, toDoString, setTierTitle]);
 
+  // Callback to save description
+  const handleDescriptionSave = useCallback((description) => {
+    setDescription(mediaType, toDoString, description);
+  }, [mediaType, toDoString, setDescription]);
+
   // Show loading while data is being fetched
   if (loading) {
     return <div className="text-center p-5 text-white">Loading...</div>;
@@ -62,6 +73,8 @@ const DemoShowMediaList = ({ toDo }) => {
       setSelectedTags={setSelectedTags}
       tierTitleOverrides={tierTitleOverrides}
       onTierTitleSave={handleTierTitleSave}
+      descriptionOverride={getDescription(mediaType, toDoString)}
+      onDescriptionSave={handleDescriptionSave}
     />
   );
 };

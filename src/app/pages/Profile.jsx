@@ -382,7 +382,11 @@ function Profile({ user: currentUser, setUserChanged }) {
     return (
       <div
         ref={setNodeRef}
-        style={style}
+        style={{
+          ...style,
+          minWidth: 0,
+          overflow: 'hidden'
+        }}
         {...attributes}
         {...(!isPublicView ? listeners : {})}
       >
@@ -393,7 +397,8 @@ function Profile({ user: currentUser, setUserChanged }) {
             backgroundColor: theme.colors?.background?.tertiary || '#0f1419',
             border: '1px solid #333',
             transition: 'border-color 0.2s',
-            height: '100%'
+            height: '100%',
+            overflow: 'hidden'
           }}
         >
           <div style={{
@@ -498,7 +503,7 @@ function Profile({ user: currentUser, setUserChanged }) {
               e.target.style.color = theme.colors?.primary || '#ffc107';
             }}
           >
-            {`${window.location.origin}/user/${username}/${list.mediaType}`}
+            {`./user/${username}/${list.mediaType}`}
           </a>
         </div>
       </div>
@@ -732,7 +737,7 @@ function Profile({ user: currentUser, setUserChanged }) {
                         e.target.style.color = theme.colors?.primary || '#ffc107';
                       }}
                     >
-                      {`${window.location.origin}/user/${username}`}
+                      {`./user/${username}`}
                     </a>
                     <button 
                       className="btn btn-warning btn-sm"
@@ -792,11 +797,19 @@ function Profile({ user: currentUser, setUserChanged }) {
                 items={sharedLists.map(list => list.mediaType)}
                 strategy={rectSortingStrategy}
                 >
-                  <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(2, 1fr)',
-                  gap: '1rem'
-                }}>
+                  <style>{`
+                    .profile-lists-grid {
+                      display: grid;
+                      grid-template-columns: 1fr;
+                      gap: 1rem;
+                    }
+                    @media (min-width: 768px) {
+                      .profile-lists-grid {
+                        grid-template-columns: repeat(2, 1fr);
+                      }
+                    }
+                  `}</style>
+                  <div className="profile-lists-grid">
                   {sharedLists.map((list) => (
                     <SortableSharedList key={list.mediaType} list={list} />
                   ))}
