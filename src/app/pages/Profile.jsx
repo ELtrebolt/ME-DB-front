@@ -156,7 +156,8 @@ function Profile({ user: currentUser, setUserChanged }) {
   };
 
   const renderFriendButton = () => {
-    if (!isPublicView || friendshipStatus === 'self') {
+    // Don't show friend button if not viewing public profile, if it's self, or if no user is logged in
+    if (!isPublicView || friendshipStatus === 'self' || !currentUser) {
       return null;
     }
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 
 import CardsContainer from "../components/CardsContainer";
 import TimeFilter from "../components/TimeFilter";
@@ -8,8 +8,7 @@ import ExtraFilters from "../components/ExtraFilters";
 import SearchBar from "../components/SearchBar";
 import TagFilter from "../components/TagFilter";
 import useSwipe from "../hooks/useSwipe.tsx";
-import { toCapitalNotation, filterData } from "../helpers";
-
+import { toCapitalNotation, filterData, createEmptyTiersObject } from "../helpers";
 import TierTitle from "../components/TierTitle";
 
 const constants = require('../constants');
@@ -18,11 +17,13 @@ const theme = require('../../styling/theme');
 function SharedView() {
   const { token, username, mediaType: urlMediaType } = useParams();
   
-  const [isLoading, setIsLoading] = useState(true);
+  const [firstLoad, setFirstLoad] = useState(true);
   const [error, setError] = useState(null);
   
-  // Data
-  const [allMedia, setAllMedia] = useState([]);
+  // Data (matching ShowMediaList pattern)
+  const [tierData, setTierData] = useState(null);
+  const [allTags, setAllTags] = useState([]);
+  const [allMedia, setAllMedia] = useState([]); // Keep raw media for switching collection/todo
   const [shareConfig, setShareConfig] = useState(null);
   const [mediaType, setMediaType] = useState('');
   const [ownerName, setOwnerName] = useState('');
@@ -31,8 +32,8 @@ function SharedView() {
   const [todoTierTitles, setTodoTierTitles] = useState({});
   
   // View State
-  const [toDoState, setToDoState] = useState(false); // default to collection unless only todo shared
-  const [filteredData, setFilteredData] = useState({});
+  const [toDoState, setToDoState] = useState(false);
+  const [filteredData, setFilteredData] = useState(null);
   
   // Filters
   const [timePeriod, setTimePeriod] = useState('all');
@@ -74,14 +75,29 @@ function SharedView() {
     setSearchChanged(true);
   };
   
-  // Modal for card details
-  const [selectedMedia, setSelectedMedia] = useState(null);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  // Build the basePath for card navigation
+  const basePath = username ? `/user/${username}` : '';
 
   const tiers = constants.STANDARD_TIERS;
 
-  // Fetch Data
+  // Helper to process media into tier structure
+  const processMediaIntoTiers = (media, forToDo) => {
+    const currentList = media.filter(m => m.toDo === forToDo);
+    const tiersObj = createEmptyTiersObject();
+    const tags = new Set();
+    
+    currentList.forEach(m => {
+      if (tiersObj[m.tier]) tiersObj[m.tier].push(m);
+      if (m.tags) m.tags.forEach(t => tags.add(t));
+    });
+    
+    return { tiersObj, tags: Array.from(tags).map((t, i) => ({ value: i, label: t })) };
+  };
+
+  // Fetch Data (matching ShowMediaList pattern)
   useEffect(() => {
+    if (!firstLoad) return;
+    
     const fetchUrl = (username && urlMediaType) 
       ? `${constants['SERVER_URL']}/api/share/user/${username}/${urlMediaType}`
       : `${constants['SERVER_URL']}/api/share/${token}`;
@@ -89,99 +105,64 @@ function SharedView() {
     axios.get(fetchUrl)
       .then(res => {
         if (res.data.success) {
-          console.log('Share data received:', res.data);
+          const config = res.data.shareConfig;
+          const initialToDo = config.todo && !config.collection;
+          
+          // Store raw media for view switching
           setAllMedia(res.data.media);
-          setShareConfig(res.data.shareConfig);
+          setShareConfig(config);
           setMediaType(res.data.mediaType);
-          // Set username (no need to split, backend returns username)
           setOwnerName(res.data.ownerName || 'User');
           
           // Set tier titles
-          console.log('Tier titles from API:', res.data.tierTitles);
-          console.log('Collection tier titles:', res.data.collectionTierTitles);
-          console.log('Todo tier titles:', res.data.todoTierTitles);
+          const collTitles = res.data.collectionTierTitles && Object.keys(res.data.collectionTierTitles).length > 0
+            ? res.data.collectionTierTitles
+            : constants.DEFAULT_TIER_LABELS;
+          const todoTitles = res.data.todoTierTitles && Object.keys(res.data.todoTierTitles).length > 0
+            ? res.data.todoTierTitles
+            : constants.DEFAULT_TIER_LABELS;
           
-          if(res.data.collectionTierTitles && Object.keys(res.data.collectionTierTitles).length > 0) {
-            setCollectionTierTitles(res.data.collectionTierTitles);
-          } else {
-            setCollectionTierTitles(constants.DEFAULT_TIER_LABELS);
-          }
+          setCollectionTierTitles(collTitles);
+          setTodoTierTitles(todoTitles);
+          setTierTitles(initialToDo ? todoTitles : collTitles);
+          setToDoState(initialToDo);
           
-          if(res.data.todoTierTitles && Object.keys(res.data.todoTierTitles).length > 0) {
-            setTodoTierTitles(res.data.todoTierTitles);
-          } else {
-            setTodoTierTitles({ S: 'S Tier', A: 'A Tier', B: 'B Tier', C: 'C Tier', D: 'D Tier', F: 'F Tier' });
-          }
+          // Process into tiers (like ShowMediaList does on fetch)
+          const { tiersObj, tags } = processMediaIntoTiers(res.data.media, initialToDo);
+          setTierData(tiersObj);
+          setAllTags(tags);
           
-          // Set initial tier titles based on the initial view
-          if (res.data.shareConfig.todo && !res.data.shareConfig.collection) {
-            setTierTitles(res.data.todoTierTitles || constants.DEFAULT_TIER_LABELS);
-          } else {
-            setTierTitles(res.data.collectionTierTitles || { S: 'S Tier', A: 'A Tier', B: 'B Tier', C: 'C Tier', D: 'D Tier', F: 'F Tier' });
-          }
-          
-          // Determine initial view
-          if (res.data.shareConfig.todo && !res.data.shareConfig.collection) {
-            setToDoState(true);
-          } else {
-            setToDoState(false);
-          }
-          
-          setIsLoading(false);
-          setSearchChanged(true); // Trigger filter
-          setError(null); // Clear any previous error
+          setFirstLoad(false);
+          setSearchChanged(true);
+          setError(null);
         }
       })
       .catch(err => {
         console.error(err);
         setError(err.response?.data?.error || 'Link invalid or expired');
-        setIsLoading(false);
+        setFirstLoad(false);
       });
-  }, [token, username, urlMediaType]);
+  }, [firstLoad, token, username, urlMediaType]);
 
-  // Process Data into Tiers
+  // Apply filters when tierData or filter state changes (matching ShowMediaList)
   useEffect(() => {
-    if (isLoading || !shareConfig) return;
-
-    // 1. Filter by Collection vs Todo based on current view
-    const currentList = allMedia.filter(m => m.toDo === toDoState);
-    
-    // 2. Extract filterable metadata (tags)
-    var all_tags = new Set();
-    
-    currentList.forEach(m => {
-      if (m.tags) m.tags.forEach(t => all_tags.add(t));
-    });
-
-    // 3. Group by Tier
-    var tierData = {
-      ...constants.EMPTY_TIERS_OBJ
-    };
-    currentList.forEach(m => {
-        if(tierData[m.tier]) tierData[m.tier].push(m);
-    });
-
-    // 4. Apply Filters (Year, Tag, Search)
-    if (searchChanged === undefined || searchChanged === true) {
-        const data = filterData(tierData, timePeriod, startDate, endDate, Array.from(all_tags).map((t, i) => ({ value: i, label: t })), selectedTags, tagLogic, setSuggestedTags, setSearchChanged, searchQuery, searchScope, selectedTiers, sortOrder);
-        setFilteredData(data);
+    if (tierData && (searchChanged === undefined || searchChanged === true)) {
+      const data = filterData(tierData, timePeriod, startDate, endDate, allTags, selectedTags, tagLogic, setSuggestedTags, setSearchChanged, searchQuery, searchScope, selectedTiers, sortOrder);
+      setFilteredData(data);
     }
-    
-  }, [allMedia, toDoState, isLoading, shareConfig, searchChanged, timePeriod, startDate, endDate, selectedTags, tagLogic, searchQuery, searchScope, selectedTiers, sortOrder]);
+  }, [tierData, searchChanged, timePeriod, startDate, endDate, allTags, selectedTags, tagLogic, searchQuery, searchScope, selectedTiers, sortOrder]);
 
 
   function switchToDo() {
     if (shareConfig.collection && shareConfig.todo) {
         const newToDoState = !toDoState;
         setToDoState(newToDoState);
+        setTierTitles(newToDoState ? todoTierTitles : collectionTierTitles);
         
-        // Update tier titles based on the new view
-        if (newToDoState) {
-          setTierTitles(todoTierTitles);
-        } else {
-          setTierTitles(collectionTierTitles);
-        }
-        
+        // Reprocess media for new view (like ShowMediaList re-fetches)
+        const { tiersObj, tags } = processMediaIntoTiers(allMedia, newToDoState);
+        setTierData(tiersObj);
+        setAllTags(tags);
         setSearchChanged(true);
     }
   }
@@ -203,13 +184,8 @@ function SharedView() {
     onSwipedLeft: onSwipeLeft, 
     onSwipedRight: onSwipeRight,
   });
-  
-  const handleCardClick = (media) => {
-    setSelectedMedia(media);
-    setShowDetailsModal(true);
-  };
 
-  if (isLoading) return <div className="text-white text-center pt-5">Loading...</div>;
+  if (firstLoad || !filteredData) return <div className="text-white text-center pt-5">Loading...</div>;
   if (error) return <div className="text-danger text-center pt-5"><h3>{error}</h3></div>;
 
   const showSwitch = shareConfig.collection && shareConfig.todo;
@@ -230,10 +206,51 @@ function SharedView() {
           }
         }}
     >
+      <style>{`
+        .profile-link {
+          transition: all 0.3s ease;
+          display: inline-block;
+        }
+        .profile-link:hover {
+          transform: scale(1.05);
+          text-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+        }
+        .profile-link:hover i {
+          animation: pulse 0.5s ease-in-out;
+        }
+        @keyframes pulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.2); }
+          100% { transform: scale(1); }
+        }
+      `}</style>
       <div className='container'>
         <div className='pt-4'>
-            {/* Header */}
-            <div className='row align-items-center mb-3'>
+            {/* Header - Mobile */}
+            <div className='d-md-none mb-3'>
+                {showSwitch && (
+                    <div className='d-flex justify-content-center mb-2'>
+                        <button 
+                            className='btn btn-warning btn-sm'
+                            onClick={switchToDo}
+                        >
+                             <i className="fas fa-exchange-alt me-1"></i>
+                             {toDoState ? 'View Collection' : 'View To-Do'}
+                        </button>
+                    </div>
+                )}
+                <div className='text-center'>
+                    <h1 className='fw-light text-white mb-0' style={{ 
+                        fontFamily: 'Roboto, sans-serif', 
+                        fontSize: 'clamp(18px, 5vw, 28px)',
+                    }}>
+                        <Link to={`/user/${username}`} className="profile-link" style={{color: theme.colors.primary, textDecoration: 'none'}}><i className="fas fa-user me-1" style={{fontSize: '0.8em'}}></i>{ownerName}</Link> - {toCapitalNotation(mediaType)} {toDoState ? 'To-Do' : 'Collection'}
+                    </h1>
+                </div>
+            </div>
+
+            {/* Header - Desktop */}
+            <div className='row align-items-center mb-3 d-none d-md-flex'>
                 <div className='col-3 d-flex justify-content-start'>
                     {showSwitch && (
                         <button 
@@ -241,8 +258,7 @@ function SharedView() {
                             onClick={switchToDo}
                         >
                              <i className="fas fa-exchange-alt me-1"></i>
-                             <span className="d-none d-md-inline">{toDoState ? 'View Collection' : 'View To-Do'}</span>
-                             <span className="d-md-none">{toDoState ? 'Col' : 'To-Do'}</span>
+                             {toDoState ? 'View Collection' : 'View To-Do'}
                         </button>
                     )}
                 </div>
@@ -251,7 +267,7 @@ function SharedView() {
                         fontFamily: 'Roboto, sans-serif', 
                         fontSize: 'clamp(18px, 5vw, 36px)',
                     }}>
-                        <span style={{color: theme.colors.primary}}>{ownerName}</span>'s {toCapitalNotation(mediaType)} {toDoState ? 'To-Do' : 'Collection'}
+                        <Link to={`/user/${username}`} className="profile-link" style={{color: theme.colors.primary, textDecoration: 'none'}}><i className="fas fa-user me-2"></i>{ownerName}</Link> - {toCapitalNotation(mediaType)} {toDoState ? 'To-Do' : 'Collection'}
                     </h1>
                 </div>
                 <div className='col-3 d-flex justify-content-end'>
@@ -307,7 +323,7 @@ function SharedView() {
 
       {/* Tiers */}
       <div className='container'>
-      {tiers.map((item) => (
+      {tiers.map((item, index) => (
           <div className='tier-container' key={item}>
             <TierTitle 
                 title={tierTitles[item] || item} 
@@ -322,53 +338,13 @@ function SharedView() {
             <CardsContainer
               tier={item}
               items={filteredData[item]}
-              onCardClick={handleCardClick}
+              basePath={basePath}
+              readOnly={true}
             />
+            {index < tiers.length - 1 && <hr />}
           </div>
         ))}
       </div>
-      
-      {/* Details Modal */}
-      {showDetailsModal && selectedMedia && (
-        <div className="modal fade show d-block" style={{backgroundColor: 'rgba(0,0,0,0.7)'}} tabIndex="-1" onClick={() => setShowDetailsModal(false)}>
-          <div className="modal-dialog modal-dialog-centered modal-xl" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-content shared-view-modal">
-              <div className="modal-header shared-view-modal-header">
-                <h5 className="modal-title fw-semibold text-dark">{selectedMedia.title}</h5>
-                <button type="button" className="btn-close shared-view-close" onClick={() => setShowDetailsModal(false)} aria-label="Close"></button>
-              </div>
-              <div className="modal-body shared-view-modal-body p-4">
-                <div className="table-responsive">
-                  <table className='table table-borderless mb-0'>
-                    <tbody>
-                      <tr>
-                        <td className='fw-semibold py-2 shared-view-label'>Date</td>
-                        <td className='py-2 fw-medium shared-view-value'>{selectedMedia.year ? new Date(selectedMedia.year).toISOString().split('T')[0] : '-'}</td>
-                      </tr>
-                      <tr>
-                        <td className='fw-semibold py-2 shared-view-label'>Tier</td>
-                        <td className='py-2 fw-medium shared-view-value'>{tierTitles[selectedMedia.tier] || selectedMedia.tier}</td>
-                      </tr>
-                      <tr>
-                        <td className='fw-semibold py-2 shared-view-label'>Tags</td>
-                        <td className='py-2 fw-medium shared-view-value'>{selectedMedia.tags && selectedMedia.tags.length > 0 ? selectedMedia.tags.join(', ') : '-'}</td>
-                      </tr>
-                      <tr>
-                        <td className='fw-semibold py-2 shared-view-label'>Description</td>
-                        <td className='py-2 fw-medium shared-view-value'>{selectedMedia.description || '-'}</td>
-                      </tr>
-                      <tr>
-                        <td className='fw-semibold py-2 shared-view-label'>List Type</td>
-                        <td className='py-2 fw-medium shared-view-value'>{selectedMedia.toDo ? 'To-Do List' : 'Collection'}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
       
        {/* Back to Top Button */}
        <div className='container py-4 text-center'>

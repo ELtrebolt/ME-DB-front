@@ -7,6 +7,7 @@ import CreateMedia from './app/pages/CreateMedia';
 import ShowMediaList from './app/pages/ShowMediaList';
 import ShowMediaDetails from './app/pages/ShowMediaDetails';
 import SharedView from './app/pages/SharedView';
+import SharedMediaDetails from './app/pages/SharedMediaDetails';
 import About from "./landing/pages/About";
 import Intro from "./landing/pages/Intro";
 import Privacy from "./landing/pages/Privacy";
@@ -149,6 +150,7 @@ function AppContent({ user, setUserChanged, newTypes, selectedTags, setSelectedT
             <Route path='/friends' element={user ? <Friends user={user} setUserChanged={setUserChanged}/> : <Navigate to="/"/>} />
             <Route path='/user/:username' element={<Profile />} />
             <Route path='/user/:username/:mediaType' element={<SharedView />} />
+            <Route path='/user/:username/:mediaType/:id' element={<SharedMediaDetails />} />
             <Route path='/logout' element={<Logout/>} />
             <Route path='/shared/:token' element={<SharedView/>} />
 

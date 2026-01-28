@@ -90,11 +90,12 @@ const IntroNavbar = () => {
   };
   
   return (
-    <nav className={`navbar navbar-expand-md fixed-top transition-all duration-300 ${isScrolled ? 'bg-white shadow-sm' : ''}`} 
+    <nav className={`navbar navbar-expand-md fixed-top transition-all duration-300 ${isScrolled ? 'navbar-scrolled' : ''}`} 
          style={{ 
            transition: 'all 0.3s ease', 
            padding: isScrolled ? '0.5rem 1rem' : '1.5rem 1rem',
-           backgroundColor: isScrolled ? theme.components.introPage.navbar.backgroundColorScrolled : theme.components.introPage.navbar.backgroundColor
+           backgroundColor: isScrolled ? '#ffffff' : 'transparent',
+           boxShadow: isScrolled ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
          }}>
       <div className="container">
         {/* Logo - Left */}
@@ -122,8 +123,8 @@ const IntroNavbar = () => {
         </button>
 
         {/* Center Links */}
-        <div className="collapse navbar-collapse justify-content-center" id="introNavbar">
-          <ul className="navbar-nav gap-md-4">
+        <div className="collapse navbar-collapse justify-content-center" id="introNavbar" style={{ background: 'transparent', backgroundColor: 'transparent' }}>
+          <ul className="navbar-nav gap-md-5" style={{ background: 'transparent' }}>
             {['About', 'Features', 'Why', 'FAQ'].map((item) => (
               <li className="nav-item" key={item}>
                 <a 
@@ -160,6 +161,24 @@ const IntroNavbar = () => {
           .hover-opacity:hover { opacity: 0.8; }
           .transition-colors { transition: color 0.2s ease; }
           
+          /* Desktop navbar - remove any box/background from inner elements only */
+          @media (min-width: 768px) {
+            #introNavbar,
+            #introNavbar *,
+            .navbar-collapse,
+            .navbar-nav,
+            .nav-item,
+            .nav-link {
+              background-color: transparent !important;
+              background: none !important;
+              background-image: none !important;
+              border: none !important;
+              box-shadow: none !important;
+              outline: none !important;
+              -webkit-box-shadow: none !important;
+            }
+          }
+          
           /* Mobile navbar: horizontal row instead of vertical dropdown */
           @media (max-width: 767.98px) {
             #introNavbar {
@@ -167,9 +186,10 @@ const IntroNavbar = () => {
               top: 100%;
               left: 0;
               right: 0;
-              background-color: #1D2144;
+              background-color: #3d4470;
               padding: 0.5rem 0.75rem;
-              border-top: 1px solid rgba(255, 255, 255, 0.1);
+              border-top: 1px solid rgba(255, 255, 255, 0.2);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             }
             #introNavbar .navbar-nav {
               flex-direction: row !important;
@@ -181,8 +201,8 @@ const IntroNavbar = () => {
               flex: 0 0 auto;
             }
             #introNavbar .nav-link {
-              padding: 0.25rem 0.5rem !important;
-              font-size: 0.8rem !important;
+              padding: 0.5rem 0.75rem !important;
+              font-size: 0.85rem !important;
             }
             /* Mobile logo styling */
             .navbar-brand {
@@ -193,10 +213,13 @@ const IntroNavbar = () => {
               height: 24px !important;
             }
           }
-          /* When navbar is scrolled (white background) */
-          .navbar.bg-white #introNavbar {
-            background-color: #ffffff !important;
-            border-top: 1px solid #e5e7eb;
+          /* When navbar is scrolled (white background) - mobile only */
+          @media (max-width: 767.98px) {
+            .navbar-scrolled #introNavbar {
+              background-color: #f8f9fa !important;
+              border-top: 1px solid #e5e7eb;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
           }
         `}
       </style>
@@ -218,19 +241,20 @@ const Intro = () => {
       <IntroNavbar />
       
       {/* 1. Hero Section - Dark Navy */}
-      <section id="hero" className="d-flex align-items-center position-relative" 
+      <section id="hero" className="d-flex flex-column position-relative" 
                style={{ 
                  minHeight: '100vh', 
                  backgroundColor: theme.components.introPage.heroBg,
                  paddingTop: '80px'
                }}>
-        <div className="container text-center" style={{ color: theme.components.introPage.text.primary }}>
-          <div className="row justify-content-center">
-            <div className="col-lg-8">
+        {/* Main content - centered vertically */}
+        <div className="container text-center flex-grow-1 d-flex align-items-center justify-content-center" style={{ color: theme.components.introPage.text.primary }}>
+          <div className="row justify-content-center w-100 mx-0">
+            <div className="col-lg-8 px-3">
               <FadeUp>
-                <h1 style={{ color: theme.components.introPage.text.primary, marginBottom: '2rem', marginTop: '6rem' }}>
-                  <span className="fw-bold d-block mb-2 display-5">Build your own</span>
-                  <span className="fw-bold display-5 text-decoration-underline">Media Entertainment Database</span>
+                <h1 style={{ color: theme.components.introPage.text.primary, marginBottom: '2rem' }}>
+                  <span className="fw-bold d-block mb-2 display-5" style={{ color: '#e2e8f0' }}>Build your own</span>
+                  <span className="fw-bold display-5" style={{ color: theme.colors.primary }}>Media Entertainment Database</span>
                 </h1>
               </FadeUp>
               
@@ -247,23 +271,33 @@ const Intro = () => {
 
               <FadeUp delay={300}>
                 <div className="mb-4" style={{ color: theme.components.introPage.text.secondary }}>
-                  <p className="lead fs-5 fw-bold mb-3" style={{ lineHeight: '1.6' }}>
-                    Tier lists for your Collection and your To-Do List. All in one.
+                  <p className="lead fs-5 mb-3" style={{ lineHeight: '1.6' }}>
+                    <span className="d-none d-md-inline">
+                      <span className="fw-bold">Tier lists</span> <span className="fw-normal">for your</span> <span className="fw-bold">Collection</span> <span className="fw-normal">and</span> <span className="fw-bold">To-Do List. All in one app.</span>
+                    </span>
+                    <span className="d-md-none">
+                      <span className="fw-bold">Tier lists</span> <span className="fw-normal">for your</span><br />
+                      <span className="fw-bold">Collection</span> <span className="fw-normal">and</span> <span className="fw-bold">To-Do List.</span><br />
+                      <span className="fw-bold">All in one app.</span>
+                    </span>
                   </p>
                   <p className="fs-5 mb-0" style={{ color: theme.components.introPage.text.muted }}>
                     Built for anime, tv shows, movies, video games, and more!
                   </p>
                 </div>
               </FadeUp>
-
-              <FadeUp delay={450}>
-                <div className="mt-5 pt-5 small" style={{ color: theme.components.introPage.text.accent }}>
-                  SCROLL TO EXPLORE
-                  <div className="mt-2">↓</div>
-                </div>
-              </FadeUp>
             </div>
           </div>
+        </div>
+        
+        {/* Scroll indicator - pinned to bottom */}
+        <div style={{ marginTop: 'auto' }}>
+          <FadeUp delay={450}>
+            <div className="text-center pb-3 small" style={{ color: theme.components.introPage.text.accent }}>
+              <div>SCROLL TO EXPLORE</div>
+              <div className="mt-2">↓</div>
+            </div>
+          </FadeUp>
         </div>
       </section>
 
@@ -321,7 +355,7 @@ const Intro = () => {
             </div>
           </FadeUp>
           
-          <div className="row g-4 pt-4">
+          <div className="row g-4 pt-4 justify-content-center">
             {[
               { title: 'Tier Lists', icon: '📊', desc: 'Rank your favorites with S-F tier grading. Visualize your taste instantly.' },
               { title: 'Collection Tracking', icon: '📚', desc: 'Keep a comprehensive history of everything you have watched or played.' },
@@ -460,45 +494,145 @@ const Intro = () => {
             transition: all 0.3s ease;
           }
           
-          /* Mobile styles for hero section */
+          /* Hero section centering */
+          #hero .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          #hero .row {
+            margin-left: 0;
+            margin-right: 0;
+          }
+          
+          /* About section centering */
+          #about .container {
+            text-align: center;
+          }
+          #about .row {
+            margin-left: auto;
+            margin-right: auto;
+          }
+          
+          /* Features section centering */
+          #features .container {
+            text-align: center;
+          }
+          #features .row {
+            margin-left: auto;
+            margin-right: auto;
+          }
+          
+          /* Why section - left aligned */
+          #why .container {
+            text-align: left;
+          }
+          #why .row {
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+          }
+          
+          /* FAQ section centering */
+          #faq .container {
+            text-align: center;
+          }
+          #faq .row {
+            margin-left: auto;
+            margin-right: auto;
+          }
+          #faq .accordion {
+            width: 100%;
+          }
+          
+          /* Mobile styles */
           @media (max-width: 768px) {
-            /* Move title higher */
-            #hero h1 {
-              margin-top: 0.5rem !important;
+            /* Global mobile centering */
+            section .container {
+              text-align: center;
             }
-            
-            /* Ensure text centering */
-            #hero, #hero * {
+            section .row {
+              margin-left: 0;
+              margin-right: 0;
+              justify-content: center !important;
+            }
+            section .col-6,
+            section .col-md-3,
+            section .col-md-4,
+            section .col-lg-6,
+            section .col-lg-8 {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
               text-align: center;
             }
             
-            /* Make Google sign-in button bigger */
+            /* Hero section */
+            #hero h1 {
+              margin-top: 0.5rem !important;
+            }
+            #hero, #hero * {
+              text-align: center;
+            }
             #hero .google-btn {
-              padding: 14px 24px !important;
-              font-size: 1.1rem !important;
+              width: 300px !important;
+              min-width: 300px !important;
+              max-width: 300px !important;
+              height: 60px !important;
+              border-radius: 8px !important;
             }
             #hero .google-btn .google-icon-wrapper {
-              width: 40px !important;
-              height: 40px !important;
+              width: 56px !important;
+              height: 56px !important;
+              left: 2px !important;
+              top: 2px !important;
+              border-radius: 6px !important;
             }
             #hero .google-btn .google-icon {
-              width: 24px !important;
-              height: 24px !important;
+              width: 30px !important;
+              height: 30px !important;
             }
             #hero .google-btn .btn-text {
-              font-size: 1.1rem !important;
+              font-size: 18px !important;
+              left: 55% !important;
             }
-            
-            /* Move subtitles lower - more space after Google button */
             #hero .mb-5 {
-              margin-bottom: 4rem !important;
+              margin-bottom: 3rem !important;
             }
             #hero .mb-4 {
+              margin-top: 1rem !important;
               margin-bottom: 2rem !important;
             }
-            #hero .mt-5.pt-5 {
-              margin-top: 3rem !important;
-              padding-top: 2rem !important;
+            
+            /* About section demo cards */
+            #about .row.g-4 {
+              --bs-gutter-y: 0.75rem;
+            }
+            
+            /* Why section - keep left aligned on mobile */
+            #why .row {
+              text-align: left !important;
+            }
+            #why .col-lg-6 {
+              align-items: flex-start !important;
+              text-align: left !important;
+            }
+            #why h2,
+            #why p,
+            #why ul,
+            #why li {
+              text-align: left !important;
+            }
+            
+            /* FAQ section - keep accordion full width */
+            #faq .col-lg-8 {
+              width: 100% !important;
+              max-width: 100% !important;
+              padding-left: 0;
+              padding-right: 0;
+            }
+            #faq .accordion {
+              width: 100% !important;
             }
           }
         `}

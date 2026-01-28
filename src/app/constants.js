@@ -11,6 +11,8 @@ const json = {
     'maxCustomTypes': 8,
     'STANDARD_MEDIA_TYPES': ['anime', 'tv', 'movies', 'games'],
     'STANDARD_TIERS': ['S', 'A', 'B', 'C', 'D', 'F'],
+    'EMPTY_TIERS_OBJ': { S: [], A: [], B: [], C: [], D: [], F: [] },
+    'DEFAULT_TIER_LABELS': { S: 'S Tier', A: 'A Tier', B: 'B Tier', C: 'C Tier', D: 'D Tier', F: 'F Tier' },
     // 4 Basic Media Types
     'anime': {
         'title' : 'e.g. One Piece',
