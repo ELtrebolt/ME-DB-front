@@ -546,6 +546,8 @@
     padding: 0 !important;
     font-size: 0.75rem !important;
     width: 100% !important;
+  }
+  
   /* Make TagMaker components match other form controls on mobile */
   .CreateMedia .react-tags,
   .ShowMediaDetails .react-tags {
@@ -570,12 +572,7 @@
   
   .CreateMedia .react-tags__combobox-input,
   .ShowMediaDetails .react-tags__combobox-input {
-    font-size: 0.875rem !important;
-  }
-  
-  
-    font-size: 0.875rem !important;
-    margin-bottom: 0.25rem !important;
+    font-size: 16px !important; /* Prevents iOS auto-zoom on focus */
   }
   
   /* Make tier add button smaller on mobile to prevent clipping */
@@ -732,9 +729,8 @@
   
   .CreateMedia .react-tags__combobox-input,
   .ShowMediaDetails .react-tags__combobox-input {
-    font-size: 0.875rem !important;
+    font-size: 16px !important; /* Prevents iOS auto-zoom on focus */
   }
-  
   
   .ShowMediaDetails .d-md-none .col-4:last-child .btn {
     width: 100% !important;
@@ -1190,7 +1186,7 @@
   }
   
   .react-tags__combobox-input {
-    font-size: 0.875rem;
+    font-size: 16px; /* Prevents iOS auto-zoom on focus */
   }
   
   .react-tags__listbox {
@@ -1317,7 +1313,7 @@
   }
   
   .ShowMediaList .row .react-tags__combobox-input {
-    font-size: 0.7rem;
+    font-size: 16px; /* Prevents iOS auto-zoom on focus */
   }
   
   .ShowMediaList .row .react-tags__tag {
@@ -1328,7 +1324,7 @@
   
   .ShowMediaList .row select,
   .ShowMediaList .year-filter-container select {
-    font-size: 0.7rem !important;
+    font-size: 16px !important; /* Prevents iOS auto-zoom on focus */
     padding: 0.2rem 0.3rem !important;
     min-height: 28px !important;
     border-width: 1px !important;
@@ -1347,7 +1343,7 @@
     }
     
     .ShowMediaList .row .react-tags__combobox-input {
-      font-size: 0.65rem;
+      font-size: 16px; /* Prevents iOS auto-zoom on focus */
     }
     
     .ShowMediaList .row .react-tags__tag {
@@ -1357,7 +1353,7 @@
     
     .ShowMediaList .row select,
     .ShowMediaList .year-filter-container select {
-      font-size: 0.65rem !important;
+      font-size: 16px !important; /* Prevents iOS auto-zoom on focus */
       padding: 0.15rem 0.25rem !important;
       min-height: 26px !important;
     }

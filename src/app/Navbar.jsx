@@ -218,7 +218,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: theme.spacing.sm
+              gap: theme.spacing.xs
             }}>
               {/* Mobile Stats Link */}
               <a href="/stats" style={{
@@ -282,7 +282,10 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                   }}
                   onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover}
                   onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}
-                  onClick={() => setIsMediaMenuOpen(!isMediaMenuOpen)}
+                  onClick={() => {
+                    setIsUserMenuOpen(false);
+                    setIsMediaMenuOpen(!isMediaMenuOpen);
+                  }}
                 >
                   Media
                   <svg style={{ width: '12px', height: '12px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -388,7 +391,10 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                   }}
                   onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover}
                   onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  onClick={() => {
+                    setIsMediaMenuOpen(false);
+                    setIsUserMenuOpen(!isUserMenuOpen);
+                  }}
                 >
                   <img
                     src={user.profilePic}
@@ -423,9 +429,6 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                       console.log('Profile picture loaded successfully:', user.profilePic);
                     }}
                   />
-                  <svg style={{ width: '12px', height: '12px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
                 </button>
                 
                 {isUserMenuOpen && (
@@ -596,7 +599,10 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                     }}
                     onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover}
                     onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}
-                    onClick={() => setIsMediaMenuOpen(!isMediaMenuOpen)}
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      setIsMediaMenuOpen(!isMediaMenuOpen);
+                    }}
                   >
                     Media
                     <svg style={{ width: '16px', height: '16px' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -707,7 +713,10 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                     }}
                     onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover}
                     onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}
-                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                    onClick={() => {
+                      setIsMediaMenuOpen(false);
+                      setIsUserMenuOpen(!isUserMenuOpen);
+                    }}
                   >
                     <img
                       src={user.profilePic}

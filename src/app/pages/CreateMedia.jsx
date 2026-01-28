@@ -424,7 +424,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
                       )}
                     </div>
                     
-                    <div className="form-group mb-1">
+                    <div className="form-group mb-1" style={{ textAlign: 'left' }}>
                       <label className="form-label text-white fw-semibold mb-1" style={{fontSize: '0.75rem'}}><span className="text-warning">2.</span> {yearString}</label>
                       {useYearSelect ? (
                         <select 
@@ -456,7 +456,8 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
                             fontSize: '0.75rem',
                             padding: '0.2rem 0.4rem',
                             height: 'auto',
-                            minHeight: '28px'
+                            minHeight: '28px',
+                            width: 'fit-content'
                           }}
                         />
                       )}

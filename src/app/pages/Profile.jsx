@@ -656,8 +656,7 @@ function Profile({ user: currentUser, setUserChanged }) {
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '1rem',
-                flexWrap: 'wrap'
+                gap: '1rem'
               }}>
                 <input 
                   className="form-check-input" 
@@ -683,20 +682,29 @@ function Profile({ user: currentUser, setUserChanged }) {
                 }}>
                   {user?.isPublicProfile ? 'Public' : 'Private'}
                 </label>
-                
-                {/* Public Link Section (only if public) */}
-                {user?.isPublicProfile && (
+              </div>
+              
+              {/* Public Link Section (only if public) - on its own row */}
+              {user?.isPublicProfile && (
+                <div style={{ 
+                  marginTop: '1rem',
+                  padding: '0.75rem 1rem',
+                  borderRadius: '8px',
+                  backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                  border: `1px solid ${theme.colors?.primary || '#ffc107'}`
+                }}>
                   <div style={{ 
-                    padding: '0.5rem 1rem',
-                    borderRadius: '8px',
-                    backgroundColor: 'rgba(255, 193, 7, 0.1)',
-                    border: `1px solid ${theme.colors?.primary || '#ffc107'}`,
+                    fontSize: '0.875rem', 
+                    color: theme.colors?.primary, 
+                    marginBottom: '0.5rem' 
+                  }}>
+                    Your profile is public at:
+                  </div>
+                  <div style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.5rem',
-                    width: 'fit-content'
+                    gap: '0.5rem'
                   }}>
-                    <span style={{ fontSize: '0.875rem', color: theme.colors?.primary, whiteSpace: 'nowrap' }}>Your profile is public at:</span>
                     <a 
                       href={`${window.location.origin}/user/${username}`}
                       style={{
@@ -707,9 +715,13 @@ function Profile({ user: currentUser, setUserChanged }) {
                         borderRadius: '4px',
                         fontSize: '0.875rem',
                         textDecoration: 'none',
-                        whiteSpace: 'nowrap',
                         fontFamily: 'monospace',
-                        transition: 'all 0.2s'
+                        transition: 'all 0.2s',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        flex: 1,
+                        minWidth: 0
                       }}
                       onMouseEnter={(e) => {
                         e.target.style.backgroundColor = theme.colors?.primary || '#ffc107';
@@ -731,8 +743,8 @@ function Profile({ user: currentUser, setUserChanged }) {
                       <i className={`fas fa-${profileCopyFeedback ? 'check' : 'copy'}`}></i>
                     </button>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           )}
         </div>

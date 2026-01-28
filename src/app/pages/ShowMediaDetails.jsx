@@ -340,7 +340,7 @@ function ShowMediaDetails({
   const swipeHandlers = useSwipe({ 
     onSwipedLeft: onSwipeLeft, 
     onSwipedRight: onSwipeRight,
-    disabled: isModalOpen // Disable swipe when modal is open
+    disabled: isModalOpen || isEditing // Disable swipe when modal is open or editing
   });
   
   // Handle modal state changes
@@ -588,13 +588,13 @@ function ShowMediaDetails({
         {/* Mobile layout - single row */}
         <div className='mb-4 d-md-none' style={{ maxWidth: '900px', margin: '0 auto' }}>
           <div className='d-flex align-items-center'>
-            <div style={{ flex: '0 0 auto', minWidth: '80px' }}>
-              <Link to={buildBackUrl()} className='btn btn-outline-warning btn-sm'>
-                <i className="fas fa-arrow-left me-1"></i>Back
+            <div style={{ flex: '0 0 auto' }}>
+              <Link to={buildBackUrl()} className='btn btn-outline-warning btn-sm' title="Go Back">
+                <i className="fas fa-arrow-left"></i>
               </Link>
             </div>
-            <div style={{ flex: '1', textAlign: 'center', padding: '0 0.5rem' }}>
-              <h1 className='fw-bold text-white mb-1' style={{fontSize: '1.2rem', lineHeight: '1.2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>{toCapitalNotation(mediaType)} Record</h1>
+            <div style={{ flex: '1', textAlign: 'center', padding: '0 0.5rem', minWidth: 0 }}>
+              <h1 className='fw-bold text-white mb-1' style={{fontSize: '1.1rem', lineHeight: '1.3'}}>{toCapitalNotation(mediaType)} Record</h1>
               <div className="border-bottom border-2 border-warning mx-auto" style={{width: '60%'}}></div>
             </div>
             <div style={{ flex: '0 0 auto', display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
