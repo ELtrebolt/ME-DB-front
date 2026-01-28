@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import DeleteModal from "../components/DeleteModal";
+import DeleteModal from "../components/modals/DeleteModal";
 import TagMaker from "../components/TagMaker";
 import useSwipe from "../hooks/useSwipe.tsx";
-import DuplicateModal from "../components/DuplicateModal";
+import DuplicateModal from "../components/modals/DuplicateModal";
 import { toCapitalNotation } from "../helpers";
 const constants = require('../constants');
 const theme = require('../../styling/theme');

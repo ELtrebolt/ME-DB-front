@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import Modal from './ui/Modal';
-const constants = require('../constants');
+import Modal from './Modal';
+const constants = require('../../constants');
 
 function ImportModal({ show, setShow, user, onImportComplete }) {
   const [file, setFile] = useState(null);
@@ -343,4 +343,3 @@ function ImportModal({ show, setShow, user, onImportComplete }) {
 }
 
 export default ImportModal;
-

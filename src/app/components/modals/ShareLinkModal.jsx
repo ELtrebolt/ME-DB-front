@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { toCapitalNotation } from '../helpers';
-import Modal from './ui/Modal';
-const constants = require('../constants');
+import { toCapitalNotation } from '../../helpers';
+import Modal from './Modal';
+const constants = require('../../constants');
 
 function ShareLinkModal({ 
   show, 
@@ -219,4 +219,3 @@ function ShareLinkModal({
 }
 
 export default ShareLinkModal;
-

@@ -1305,15 +1305,25 @@
     padding: 0.15rem 0 0 0.15rem;
     min-height: 28px;
     border-width: 1px;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   
   .ShowMediaList .row .react-tags__combobox {
     padding: 0.2rem 0.1rem;
     margin-bottom: 0.1rem;
+    max-width: 100% !important;
+    min-width: 0 !important;
   }
   
   .ShowMediaList .row .react-tags__combobox-input {
     font-size: 16px; /* Prevents iOS auto-zoom on focus */
+    max-width: 100% !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
   }
   
   .ShowMediaList .row .react-tags__tag {
@@ -1443,10 +1453,21 @@
     overflow: hidden !important;
   }
   
-  /* Constrain the table cell containing tags */
-  .ShowMediaDetails table td {
-    max-width: 0 !important;
-    overflow: hidden !important;
+  /* Ensure tags dropdown appears above table on mobile */
+  .ShowMediaDetails .table-responsive,
+  .ShowMediaDetails table,
+  .ShowMediaDetails .card-body {
+    overflow: visible !important;
+  }
+  
+  .ShowMediaDetails .react-tags__listbox {
+    z-index: 1000 !important;
+    position: absolute !important;
+    left: 0 !important;
+    right: auto !important;
+    width: max-content !important;
+    min-width: 150px !important;
+    max-width: 80vw !important;
   }
 }
 

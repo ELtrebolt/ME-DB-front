@@ -1,5 +1,5 @@
 import React from 'react';
-import Modal from './ui/Modal';
+import Modal from './Modal';
 
 function DuplicateModal({ show, onDone, onGoToCopy }) {
   return (
@@ -30,4 +30,3 @@ function DuplicateModal({ show, onDone, onGoToCopy }) {
 }
 
 export default DuplicateModal;
-

@@ -1,18 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 
-import TimeFilter from "../components/TimeFilter";
-import ExtraFilters from "../components/ExtraFilters";
 import CardsContainer from "../components/CardsContainer";
+import FiltersBar from "../components/filters/FiltersBar";
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, KeyboardSensor, DragOverlay } from '@dnd-kit/core';
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import TierTitle from "../components/TierTitle";
-import TagFilter from "../components/TagFilter";
-import SearchBar from "../components/SearchBar";
 import useSwipe from "../hooks/useSwipe.tsx";
-import ShareLinkModal from "../components/ShareLinkModal";
-import Modal from "../components/ui/Modal";
+import ShareLinkModal from "../components/modals/ShareLinkModal";
+import Modal from "../components/modals/Modal";
 import { filterData, toCapitalNotation, getTruncatedTitle, calculateDropdownWidth, createEmptyTiersObject } from "../helpers";
 import { useMediaData } from "../hooks/useMediaData";
 
@@ -63,7 +60,6 @@ function ShowMediaList({
   const [searchChanged, setSearchChanged] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showExtraFilters, setShowExtraFilters] = useState(false);
-  const hasHadTagsRef = useRef(false);
 
   const tiers = constants.STANDARD_TIERS;
   const mediaTypeLoc = user ? (newType ? user.newTypes[mediaType] : user[mediaType]) : null;
@@ -78,81 +74,6 @@ function ShowMediaList({
     document.documentElement.style.setProperty('--mobile-settings-dropdown-width', `${mobileWidth}px`);
     document.documentElement.style.setProperty('--desktop-settings-dropdown-width', `${desktopWidth}px`);
   }, []);
-
-  useEffect(() => {
-    if (timePeriod === 'custom') setShowExtraFilters(true);
-  }, [timePeriod]);
-
-  const clearFilters = () => {
-    setTimePeriod('all');
-    setStartDate('');
-    setEndDate('');
-    setSelectedTags([]);
-    setTagLogic('AND');
-    setSearchQuery('');
-    setSearchScope(['title']);
-    setSelectedTiers(constants.STANDARD_TIERS);
-    setSortOrder('default');
-    setSearchChanged(true);
-    const urlParams = new URLSearchParams(location.search);
-    urlParams.delete('tags');
-    urlParams.delete('tagLogic');
-    urlParams.delete('timePeriod');
-    urlParams.delete('startDate');
-    urlParams.delete('endDate');
-    urlParams.delete('from');
-    navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
-  };
-
-  const toggleLogic = () => {
-    const newLogic = tagLogic === 'AND' ? 'OR' : 'AND';
-    setTagLogic(newLogic);
-    setSearchChanged(true);
-  };
-
-  useEffect(() => {
-    if (firstLoad) return;
-    const urlParams = new URLSearchParams(location.search);
-    let changed = false;
-    
-    const updateParam = (key, val, def) => {
-      if (val !== def) {
-        if (urlParams.get(key) !== val) { urlParams.set(key, val); changed = true; }
-      } else if (urlParams.has(key)) { urlParams.delete(key); changed = true; }
-    };
-
-    updateParam('timePeriod', timePeriod, 'all');
-    updateParam('startDate', startDate, '');
-    updateParam('endDate', endDate, '');
-    updateParam('tagLogic', tagLogic, 'AND');
-
-    const currentTagsParam = urlParams.get('tags');
-    if (selectedTags && selectedTags.length > 0) {
-      hasHadTagsRef.current = true;
-      const tagLabels = selectedTags.map(tag => tag.label).join(',');
-      if (currentTagsParam !== tagLabels) {
-        urlParams.set('tags', tagLabels);
-        changed = true;
-        const pathParts = location.pathname.split('/');
-        if (pathParts.length >= 3) urlParams.set('from', pathParts[2]);
-      }
-    } else if (currentTagsParam) {
-      const tagLabels = currentTagsParam.split(',').map(s => s.trim()).filter(Boolean);
-      const shouldHydrate = tagLabels.length > 0 && setSelectedTags && !hasHadTagsRef.current;
-      if (shouldHydrate) {
-        // Hydrate from URL when landing with tags (e.g. "Go Back" from detail)
-        setSelectedTags(tagLabels.map(label => ({ label, value: label })));
-      } else {
-        urlParams.delete('tags');
-        urlParams.delete('from');
-        changed = true;
-      }
-    } else {
-      hasHadTagsRef.current = false;
-    }
-
-    if (changed) navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
-  }, [timePeriod, startDate, endDate, tagLogic, selectedTags, location.pathname, location.search, navigate, firstLoad, setSelectedTags]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 15 } }),
@@ -402,18 +323,33 @@ function ShowMediaList({
             </div>
           </div>
 
-          <div className='row g-1 g-md-2 mb-2 mb-md-3' style={{flexWrap: 'nowrap'}}>
-            <div className='col-4'><TimeFilter timePeriod={timePeriod} setTimePeriod={setTimePeriod} setSearchChanged={setSearchChanged}/></div>
-            <div className='col-4 text-center'>
-              <SearchBar mediaType={mediaType} allMedia={filteredData} searchQuery={searchQuery} setSearchQuery={setSearchQuery} setSearchChanged={setSearchChanged} basePath={basePath}/>
-              <button className="btn btn-link btn-sm text-warning p-0" onClick={() => setShowExtraFilters(!showExtraFilters)} style={{ fontSize: '0.7rem', textDecoration: 'none' }}>{showExtraFilters ? 'Hide Advanced' : 'More Filters...'}</button>
-            </div>
-            <div className='col-4'><TagFilter suggestedTags={suggestedTags} selected={selectedTags} setSelected={setSelectedTags} setSearchChanged={setSearchChanged} tagLogic={tagLogic} setTagLogic={setTagLogic} placeholder={constants[mediaType]?.tags || constants['other'].tags}/></div>
-          </div>
-
-          {showExtraFilters && (
-            <ExtraFilters sortOrder={sortOrder} setSortOrder={setSortOrder} searchScope={searchScope} setSearchScope={setSearchScope} onClearFilters={clearFilters} setSearchChanged={setSearchChanged} timePeriod={timePeriod} setTimePeriod={setTimePeriod} startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} tagLogic={tagLogic} setTagLogic={setTagLogic} onLogicToggle={toggleLogic} />
-          )}
+          <FiltersBar
+            mediaType={mediaType}
+            basePath={basePath}
+            filteredData={filteredData}
+            suggestedTags={suggestedTags}
+            selectedTags={selectedTags}
+            setSelectedTags={setSelectedTags}
+            setSearchChanged={setSearchChanged}
+            timePeriod={timePeriod}
+            setTimePeriod={setTimePeriod}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+            tagLogic={tagLogic}
+            setTagLogic={setTagLogic}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            searchScope={searchScope}
+            setSearchScope={setSearchScope}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+            showExtraFilters={showExtraFilters}
+            setShowExtraFilters={setShowExtraFilters}
+            setSelectedTiers={setSelectedTiers}
+            skipUrlSync={firstLoad}
+          />
         </div>
 
         <hr />

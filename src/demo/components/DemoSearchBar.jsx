@@ -1,5 +1,5 @@
 import React from 'react';
-import SearchBar from '../../app/components/SearchBar';
+import SearchBar from '../../app/components/filters/SearchBar';
 
 /**
  * Demo wrapper for SearchBar component

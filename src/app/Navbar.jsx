@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import NewTypeModal from "./components/NewTypeModal";
-import ImportModal from "./components/ImportModal";
+import NewTypeModal from "./components/modals/NewTypeModal";
+import ImportModal from "./components/modals/ImportModal";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useClickOutside } from './hooks/useClickOutside';

@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect } from 'react'
 import { ReactTags } from 'react-tag-autocomplete'
 import { useNavigate } from 'react-router-dom';
-import { suggestionsByLabel } from '../helpers';
-const constants = require('../constants');
+import { suggestionsByLabel } from '../../helpers';
+const constants = require('../../constants');
 
 const SearchBar = ({mediaType, allMedia, searchQuery, setSearchQuery, setSearchChanged, basePath = ''}) => {
   const navigate = useNavigate();

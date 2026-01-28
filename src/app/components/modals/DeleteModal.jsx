@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import Modal from './ui/Modal';
+import Modal from './Modal';
 
 function DeleteModal({onDeleteClick, type, onModalOpen, onModalClose, buttonStyle, iconStyle}) {
   const [show, setShow] = useState(false);

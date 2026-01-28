@@ -3,10 +3,7 @@ import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 
 import CardsContainer from "../components/CardsContainer";
-import TimeFilter from "../components/TimeFilter";
-import ExtraFilters from "../components/ExtraFilters";
-import SearchBar from "../components/SearchBar";
-import TagFilter from "../components/TagFilter";
+import FiltersBar from "../components/filters/FiltersBar";
 import useSwipe from "../hooks/useSwipe.tsx";
 import { toCapitalNotation, filterData, createEmptyTiersObject } from "../helpers";
 import TierTitle from "../components/TierTitle";
@@ -48,32 +45,6 @@ function SharedView() {
   const [searchChanged, setSearchChanged] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showExtraFilters, setShowExtraFilters] = useState(false);
-
-  // Automatically show extra filters when Custom Range is selected
-  useEffect(() => {
-    if (timePeriod === 'custom') {
-      setShowExtraFilters(true);
-    }
-  }, [timePeriod]);
-
-  const clearFilters = () => {
-    setTimePeriod('all');
-    setStartDate('');
-    setEndDate('');
-    setSelectedTags([]);
-    setTagLogic('AND');
-    setSearchQuery('');
-    setSearchScope(['title']);
-    setSelectedTiers(constants.STANDARD_TIERS);
-    setSortOrder('default');
-    setSearchChanged(true);
-  };
-
-  const toggleLogic = () => {
-    const newLogic = tagLogic === 'AND' ? 'OR' : 'AND';
-    setTagLogic(newLogic);
-    setSearchChanged(true);
-  };
   
   // Build the basePath for card navigation
   const basePath = username ? `/user/${username}` : '';
@@ -276,46 +247,32 @@ function SharedView() {
             </div>
 
             {/* Filters */}
-            <div className='row g-1 g-md-2 mb-2 mb-md-3' style={{overflow: 'visible', position: 'relative', display: 'flex', flexWrap: 'nowrap'}}>
-                <div className='col-lg-4 col-md-4 col-sm-4' style={{flex: '0 0 33.333333%', maxWidth: '33.333333%', overflow: 'visible', position: 'relative', paddingLeft: '0.25rem', paddingRight: '0.25rem'}}>
-                    <TimeFilter timePeriod={timePeriod} setTimePeriod={setTimePeriod} setSearchChanged={setSearchChanged}/>
-                </div>
-                <div className='col-lg-4 col-md-4 col-sm-4' style={{flex: '0 0 33.333333%', maxWidth: '33.333333%', overflow: 'visible', position: 'relative', paddingLeft: '0.25rem', paddingRight: '0.25rem'}}>
-                    <SearchBar mediaType={mediaType} allMedia={filteredData} searchQuery={searchQuery} setSearchQuery={setSearchQuery} setSearchChanged={setSearchChanged}></SearchBar>
-                    <div className="text-center mt-1">
-                      <button 
-                        className="btn btn-link btn-sm text-warning p-0" 
-                        onClick={() => setShowExtraFilters(!showExtraFilters)}
-                        style={{ fontSize: '0.7rem', textDecoration: 'none' }}
-                      >
-                        {showExtraFilters ? 'Hide Advanced' : 'More Filters...'}
-                      </button>
-                    </div>
-                </div>
-                <div className='col-lg-4 col-md-4 col-sm-4' style={{overflow: 'visible', position: 'relative', flex: '0 0 33.333333%', maxWidth: '33.333333%', paddingLeft: '0.25rem', paddingRight: '0.25rem'}}>
-                    <TagFilter suggestedTags={suggestedTags} selected={selectedTags} setSelected={setSelectedTags} setSearchChanged={setSearchChanged} tagLogic={tagLogic} setTagLogic={setTagLogic} placeholder={constants[mediaType]?.tags || constants['other'].tags}></TagFilter>
-                </div>
-            </div>
-
-            {showExtraFilters && (
-              <ExtraFilters 
-                sortOrder={sortOrder} 
-                setSortOrder={setSortOrder} 
-                searchScope={searchScope} 
-                setSearchScope={setSearchScope} 
-                onClearFilters={clearFilters}
-                setSearchChanged={setSearchChanged}
-                timePeriod={timePeriod}
-                setTimePeriod={setTimePeriod}
-                startDate={startDate}
-                setStartDate={setStartDate}
-                endDate={endDate}
-                setEndDate={setEndDate}
-                tagLogic={tagLogic}
-                setTagLogic={setTagLogic}
-                onLogicToggle={toggleLogic}
-              />
-            )}
+            <FiltersBar
+              mediaType={mediaType}
+              basePath={basePath}
+              filteredData={filteredData}
+              suggestedTags={suggestedTags}
+              selectedTags={selectedTags}
+              setSelectedTags={setSelectedTags}
+              setSearchChanged={setSearchChanged}
+              timePeriod={timePeriod}
+              setTimePeriod={setTimePeriod}
+              startDate={startDate}
+              setStartDate={setStartDate}
+              endDate={endDate}
+              setEndDate={setEndDate}
+              tagLogic={tagLogic}
+              setTagLogic={setTagLogic}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              searchScope={searchScope}
+              setSearchScope={setSearchScope}
+              sortOrder={sortOrder}
+              setSortOrder={setSortOrder}
+              showExtraFilters={showExtraFilters}
+              setShowExtraFilters={setShowExtraFilters}
+              setSelectedTiers={setSelectedTiers}
+            />
         </div>
       </div>
 

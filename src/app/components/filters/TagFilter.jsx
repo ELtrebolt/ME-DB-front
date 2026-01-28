@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import { ReactTags } from 'react-tag-autocomplete'
-import { suggestionsByLabel } from '../helpers';
+import { suggestionsByLabel } from '../../helpers';
 
 const Function = ({suggestedTags, selected, setSelected, setSearchChanged, tagLogic, setTagLogic, placeholder}) => {
   

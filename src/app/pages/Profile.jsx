@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, KeyboardSensor } from '@dnd-kit/core';
 import { arrayMove, SortableContext, rectSortingStrategy, useSortable, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import ShareLinkModal from '../components/ShareLinkModal';
+import ShareLinkModal from '../components/modals/ShareLinkModal';
 const constants = require('../constants');
 const theme = require('../../styling/theme');
 
