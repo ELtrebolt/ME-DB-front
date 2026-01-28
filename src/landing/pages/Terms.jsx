@@ -1,23 +1,10 @@
 import React from 'react';
+import LegalPageLayout from '../components/LegalPageLayout';
 
 const Terms = () => {
   return (
-    <div className="bg-light min-vh-100">
-      <nav className="navbar navbar-light bg-white border-bottom box-shadow mb-4">
-        <div className="container">
-          <a className="navbar-brand fw-bold" href="/">ME-DB</a>
-        </div>
-      </nav>
-
-      <div className="container py-4">
-        <div className="row justify-content-center">
-          <div className="col-lg-8">
-            <div className="card border-0 shadow-sm">
-              <div className="card-body p-5">
-                <h1 className="h2 mb-4">Terms of Service</h1>
-                <p className="text-muted mb-4">Last updated: {new Date().toLocaleDateString()}</p>
-
-                <div className="mb-4">
+    <LegalPageLayout title="Terms of Service">
+      <div className="mb-4">
                   <h5 className="fw-bold mb-3">Acceptance of Terms</h5>
                   <p className="mb-0">
                     By accessing or using ME-DB, you agree to be bound by these Terms of Service. If you do not agree to these terms, you may not use the service.
@@ -127,17 +114,7 @@ const Terms = () => {
                   </p>
                 </div>
 
-                <div className="mt-5 pt-3 border-top">
-                  <p className="small text-muted">
-                    For questions about these terms, contact us at <a href="mailto:leeep.dev@gmail.com">leeep.dev@gmail.com</a>.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </LegalPageLayout>
   );
 };
 

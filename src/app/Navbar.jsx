@@ -3,6 +3,7 @@ import NewTypeModal from "./components/NewTypeModal";
 import ImportModal from "./components/ImportModal";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useClickOutside } from './hooks/useClickOutside';
 const constants = require('./constants');
 const theme = require('../styling/theme');
 
@@ -58,17 +59,12 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
   }, [user]);
 
   // Calculate dynamic width for mobile profile dropdown
-  const calculateProfileDropdownWidth = () => {
+  const calculateProfileDropdownWidth = useCallback(() => {
     const labels = ['Export All Data', 'Import New List', 'View Profile', 'Switch Account', 'Logout'];
     const longestLabel = labels.reduce((a, b) => a.length > b.length ? a : b);
-    
-    // More conservative estimate: character count * smaller character width + padding
-    // Using 0.75rem font size, roughly 6px per character + 24px padding (0.75rem * 2)
     const estimatedWidth = longestLabel.length * 6 + 24;
-    
-    // Add small buffer and ensure minimum width
     return Math.max(estimatedWidth, 100);
-  };
+  }, []);
 
   // Calculate dynamic width for mobile media dropdown
   const calculateMediaDropdownWidth = useCallback(() => {
@@ -100,35 +96,24 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
   }, [navNewTypes]);
 
   // Calculate dynamic width for desktop profile dropdown
-  const calculateDesktopProfileDropdownWidth = () => {
+  const calculateDesktopProfileDropdownWidth = useCallback(() => {
     const labels = ['Export All Data', 'Import New List', 'View Profile', 'Switch Google Account', 'Logout'];
     const longestLabel = labels.reduce((a, b) => a.length > b.length ? a : b);
-    
-    // Desktop uses 0.875rem font size, roughly 7px per character + 32px padding (1rem * 2)
     const estimatedWidth = longestLabel.length * 7 + 32;
-    
-    // Add small buffer and ensure minimum width
     return Math.max(estimatedWidth, 120);
-  };
+  }, []);
 
   const showNewTypeModal = () => setShowModal(true);
 
   // Close dropdowns when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (mediaDropdownRef.current && !mediaDropdownRef.current.contains(event.target)) {
-        setIsMediaMenuOpen(false);
-      }
-      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
-        setIsUserMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  useClickOutside([mediaDropdownRef, userDropdownRef], (e) => {
+    if (mediaDropdownRef.current && !mediaDropdownRef.current.contains(e.target)) {
+      setIsMediaMenuOpen(false);
+    }
+    if (userDropdownRef.current && !userDropdownRef.current.contains(e.target)) {
+      setIsUserMenuOpen(false);
+    }
+  });
 
   // Set CSS custom properties for dynamic dropdown widths
   useEffect(() => {
@@ -141,7 +126,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
     document.documentElement.style.setProperty('--mobile-media-dropdown-width', `${mediaDropdownWidth}px`);
     document.documentElement.style.setProperty('--desktop-profile-dropdown-width', `${desktopProfileDropdownWidth}px`);
     document.documentElement.style.setProperty('--desktop-media-dropdown-width', `${desktopMediaDropdownWidth}px`);
-  }, [navNewTypes, calculateMediaDropdownWidth, calculateDesktopMediaDropdownWidth]);
+  }, [navNewTypes, calculateProfileDropdownWidth, calculateMediaDropdownWidth, calculateDesktopProfileDropdownWidth, calculateDesktopMediaDropdownWidth]);
 
   const onCreateNewType = (newName) => {
     newName = newName.trim().toLowerCase().replace(/ /g, '-');

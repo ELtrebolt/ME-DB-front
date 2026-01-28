@@ -1,23 +1,8 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import './chartConfig'; // Import to register Chart.js
+import { createBarChartOptions } from './chartConfig';
+const constants = require('../../constants');
 
 const TierByTypeChart = ({ data, customTypes, sortBy }) => {
   // If no data, show message
@@ -39,8 +24,8 @@ const TierByTypeChart = ({ data, customTypes, sortBy }) => {
     'F': '#95A5A6', // Gray
   };
 
-  const tierOrder = ['S', 'A', 'B', 'C', 'D', 'F'];
-  const standardTypes = ['anime', 'tv', 'movies', 'games'];
+  const tierOrder = constants.STANDARD_TIERS;
+  const standardTypes = constants.STANDARD_MEDIA_TYPES;
 
   // Prepare data for sorting
   let typesToShow = Object.keys(data);
@@ -51,59 +36,15 @@ const TierByTypeChart = ({ data, customTypes, sortBy }) => {
     const standardInData = standardTypes.filter(type => typesToShow.includes(type));
     const customInData = customTypes.filter(type => typesToShow.includes(type));
     typesToShow = [...standardInData, ...customInData];
-  } else if (sortBy === 'sTier') {
-    // Sort by S tier percentage descending
+  } else if (sortBy && sortBy.endsWith('Tier')) {
+    // Parameterized sort for all tier sorts (sTier, aTier, bTier, cTier, dTier, fTier)
+    const tier = sortBy.charAt(0).toUpperCase(); // Extract tier letter (e.g., 'sTier' -> 'S')
     typesToShow.sort((a, b) => {
       const aTotal = Object.values(data[a]).reduce((sum, count) => sum + count, 0);
       const bTotal = Object.values(data[b]).reduce((sum, count) => sum + count, 0);
-      const aSPercent = aTotal > 0 ? (data[a]['S'] || 0) / aTotal : 0;
-      const bSPercent = bTotal > 0 ? (data[b]['S'] || 0) / bTotal : 0;
-      return bSPercent - aSPercent;
-    });
-  } else if (sortBy === 'aTier') {
-    // Sort by A tier percentage descending
-    typesToShow.sort((a, b) => {
-      const aTotal = Object.values(data[a]).reduce((sum, count) => sum + count, 0);
-      const bTotal = Object.values(data[b]).reduce((sum, count) => sum + count, 0);
-      const aAPercent = aTotal > 0 ? (data[a]['A'] || 0) / aTotal : 0;
-      const bAPercent = bTotal > 0 ? (data[b]['A'] || 0) / bTotal : 0;
-      return bAPercent - aAPercent;
-    });
-  } else if (sortBy === 'bTier') {
-    // Sort by B tier percentage descending
-    typesToShow.sort((a, b) => {
-      const aTotal = Object.values(data[a]).reduce((sum, count) => sum + count, 0);
-      const bTotal = Object.values(data[b]).reduce((sum, count) => sum + count, 0);
-      const aBPercent = aTotal > 0 ? (data[a]['B'] || 0) / aTotal : 0;
-      const bBPercent = bTotal > 0 ? (data[b]['B'] || 0) / bTotal : 0;
-      return bBPercent - aBPercent;
-    });
-  } else if (sortBy === 'cTier') {
-    // Sort by C tier percentage descending
-    typesToShow.sort((a, b) => {
-      const aTotal = Object.values(data[a]).reduce((sum, count) => sum + count, 0);
-      const bTotal = Object.values(data[b]).reduce((sum, count) => sum + count, 0);
-      const aCPercent = aTotal > 0 ? (data[a]['C'] || 0) / aTotal : 0;
-      const bCPercent = bTotal > 0 ? (data[b]['C'] || 0) / bTotal : 0;
-      return bCPercent - aCPercent;
-    });
-  } else if (sortBy === 'dTier') {
-    // Sort by D tier percentage descending
-    typesToShow.sort((a, b) => {
-      const aTotal = Object.values(data[a]).reduce((sum, count) => sum + count, 0);
-      const bTotal = Object.values(data[b]).reduce((sum, count) => sum + count, 0);
-      const aDPercent = aTotal > 0 ? (data[a]['D'] || 0) / aTotal : 0;
-      const bDPercent = bTotal > 0 ? (data[b]['D'] || 0) / bTotal : 0;
-      return bDPercent - aDPercent;
-    });
-  } else if (sortBy === 'fTier') {
-    // Sort by F tier percentage descending
-    typesToShow.sort((a, b) => {
-      const aTotal = Object.values(data[a]).reduce((sum, count) => sum + count, 0);
-      const bTotal = Object.values(data[b]).reduce((sum, count) => sum + count, 0);
-      const aFPercent = aTotal > 0 ? (data[a]['F'] || 0) / aTotal : 0;
-      const bFPercent = bTotal > 0 ? (data[b]['F'] || 0) / bTotal : 0;
-      return bFPercent - aFPercent;
+      const aTierPercent = aTotal > 0 ? (data[a][tier] || 0) / aTotal : 0;
+      const bTierPercent = bTotal > 0 ? (data[b][tier] || 0) / bTotal : 0;
+      return bTierPercent - aTierPercent; // Descending order
     });
   }
 
@@ -124,57 +65,16 @@ const TierByTypeChart = ({ data, customTypes, sortBy }) => {
     datasets: datasets,
   };
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'top',
-        labels: {
-          color: '#e5e7eb', // Light gray for legend text
-        },
-      },
-      title: {
-        display: false,
-      },
-    },
-    scales: {
-      x: {
-        stacked: true,
-        ticks: {
-          color: '#e5e7eb', // Light gray for x-axis ticks
-        },
-        title: {
-          display: true,
-          text: 'Type',
-          color: '#e5e7eb', // Light gray for x-axis title
-        },
-        grid: {
-          color: 'rgba(229, 231, 235, 0.2)', // Light gray grid lines
-        },
-      },
-      y: {
-        stacked: true,
-        beginAtZero: true,
-        max: 100,
-        ticks: {
-          color: '#e5e7eb', // Light gray for y-axis ticks
-          callback: function(value) {
-            return value + '%';
-          },
-        },
-        title: {
-          display: true,
-          text: 'Percentage (%)',
-          color: '#e5e7eb', // Light gray for y-axis title
-        },
-        grid: {
-          color: 'rgba(229, 231, 235, 0.2)', // Light gray grid lines
-        },
-      },
-    },
-  };
+  const options = createBarChartOptions({ 
+    xTitle: 'Type',
+    yTitle: 'Percentage (%)',
+    showLegend: true,
+    stacked: true,
+    yMax: 100,
+    yTicksCallback: function(value) {
+      return value + '%';
+    }
+  });
 
   return (
     <div style={{ height: '400px' }}>

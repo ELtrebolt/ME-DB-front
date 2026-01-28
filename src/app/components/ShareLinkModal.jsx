@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toCapitalNotation } from '../helpers';
+import Modal from './ui/Modal';
 const constants = require('../constants');
-
-function toCapitalNotation(inputString) {
-  if (!inputString) return '';
-  return inputString
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
-}
 
 function ShareLinkModal({ 
   show, 
@@ -109,18 +103,15 @@ function ShareLinkModal({
     });
   }
 
-  if (!show) return null;
-
   return (
-    <div className="modal fade show d-block" style={{backgroundColor: 'rgba(0,0,0,0.5)'}} tabIndex="-1" onClick={onClose}>
-      <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-content shadow-strong">
-          <div className="modal-header border-bottom">
-            <h5 className="modal-title fw-semibold text-dark">Share {toCapitalNotation(mediaType)} List</h5>
-            <button type="button" className="btn-close" onClick={onClose} aria-label="Close"></button>
-          </div>
-          <div className="modal-body">
-            {!shareToken ? (
+    <Modal
+      show={show}
+      onClose={onClose}
+      title={`Share ${toCapitalNotation(mediaType)} List`}
+      dialogClassName="modal-dialog-centered"
+      onOverlayClick={onClose}
+    >
+      {!shareToken ? (
               <>
                 <p className="text-dark">Select what you want to share via a public link:</p>
                 <div className="form-check mb-2">
@@ -223,10 +214,7 @@ function ShareLinkModal({
                 </button>
               </div>
             )}
-          </div>
-        </div>
-      </div>
-    </div>
+    </Modal>
   );
 }
 

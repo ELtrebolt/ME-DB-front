@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 const constants = require('../constants');
 
-function EditableText({title, mediaType, group, tier, setUserChanged, newType, readOnly}) {
+function TierTitle({title, mediaType, group, tier, setUserChanged, newType, readOnly, onSave, basePath = ''}) {
   // Initialize with title or tier as fallback to prevent undefined
   const [text, setText] = useState(title || tier || '');
   const [editedText, setEditedText] = useState(text);
@@ -25,6 +25,16 @@ function EditableText({title, mediaType, group, tier, setUserChanged, newType, r
 
   const handleCheckmarkMouseDown = (event) => {
     event.preventDefault();
+    
+    // If custom onSave callback provided (for demo mode), use it
+    if (onSave) {
+      onSave(editedText);
+      setText(editedText);
+      setIsEditing(false);
+      return;
+    }
+    
+    // Otherwise, use API (app mode)
     const groupKey = group === 'to-do' ? 'todo' : 'collection';
     
     console.log('TierTitle: Updating tier title:', {
@@ -43,7 +53,7 @@ function EditableText({title, mediaType, group, tier, setUserChanged, newType, r
       .then(() => {
         setText(editedText);
         setIsEditing(false);
-        setUserChanged(true);
+        if (setUserChanged) setUserChanged(true);
         console.log('TierTitle: Successfully updated tier title');
       })
       .catch((error) => {
@@ -117,7 +127,7 @@ function EditableText({title, mediaType, group, tier, setUserChanged, newType, r
           {/* Add button next to title in center - hide in readOnly mode */}
           {!readOnly && (
             <a
-              href={`/${mediaType}/${group}/create?tier=${tier}`}
+              href={`${basePath}/${mediaType}/${group}/create?tier=${tier}`}
               aria-label='Add new in this tier'
               title='Add New'
               className='tier-add-btn animate-scale-in btn btn-outline-warning rounded-circle d-flex align-items-center justify-content-center'
@@ -135,7 +145,7 @@ function EditableText({title, mediaType, group, tier, setUserChanged, newType, r
                 const currentTags = urlParams.get('tags');
                 
                 // Build the create URL with tier and tags
-                let createURL = `/${mediaType}/${group}/create?tier=${tier}`;
+                let createURL = `${basePath}/${mediaType}/${group}/create?tier=${tier}`;
                 if (currentTags) {
                   createURL += `&tags=${currentTags}`;
                 }
@@ -155,4 +165,4 @@ function EditableText({title, mediaType, group, tier, setUserChanged, newType, r
   );
 }
 
-export default EditableText;
+export default TierTitle;

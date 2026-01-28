@@ -1,24 +1,10 @@
 import React from 'react';
+import LegalPageLayout from '../components/LegalPageLayout';
 
 const Privacy = () => {
   return (
-    <div className="bg-light min-vh-100">
-      {/* Basic Navbar for context/navigation back home */}
-      <nav className="navbar navbar-light bg-white border-bottom box-shadow mb-4">
-        <div className="container">
-          <a className="navbar-brand fw-bold" href="/">ME-DB</a>
-        </div>
-      </nav>
-
-      <div className="container py-4">
-        <div className="row justify-content-center">
-          <div className="col-lg-8">
-            <div className="card border-0 shadow-sm">
-              <div className="card-body p-5">
-                <h1 className="h2 mb-4">Privacy Policy</h1>
-                <p className="text-muted mb-4">Last updated: {new Date().toLocaleDateString()}</p>
-
-                <div className="mb-4">
+    <LegalPageLayout title="Privacy Policy">
+      <div className="mb-4">
                   <h5 className="fw-bold mb-3">Information We Collect</h5>
                   <p className="mb-3">
                     When you sign in with Google, we collect basic account information including:
@@ -111,17 +97,7 @@ const Privacy = () => {
                   </p>
                 </div>
 
-                <div className="mt-5 pt-3 border-top">
-                  <p className="small text-muted">
-                    If you have any questions about this policy, contact us at <a href="mailto:leeep.dev@gmail.com">leeep.dev@gmail.com</a>.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </LegalPageLayout>
   );
 };
 

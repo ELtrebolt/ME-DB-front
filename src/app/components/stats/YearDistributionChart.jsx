@@ -1,23 +1,7 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import './chartConfig'; // Import to register Chart.js
+import { createBarChartOptions } from './chartConfig';
 
 const YearDistributionChart = ({ data, toDoData, collectionData, filter }) => {
   // If no data, show message
@@ -86,51 +70,10 @@ const YearDistributionChart = ({ data, toDoData, collectionData, filter }) => {
     };
   }
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: filter === 'split', // Show legend only for split view
-        labels: {
-          color: '#e5e7eb', // Light gray for legend text
-        },
-      },
-      title: {
-        display: false,
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          stepSize: 1,
-          color: '#e5e7eb', // Light gray for y-axis ticks
-        },
-        title: {
-          display: true,
-          text: 'Number of Records',
-          color: '#e5e7eb', // Light gray for y-axis title
-        },
-        grid: {
-          color: 'rgba(229, 231, 235, 0.2)', // Light gray grid lines
-        },
-      },
-      x: {
-        ticks: {
-          color: '#e5e7eb', // Light gray for x-axis ticks
-        },
-        title: {
-          display: true,
-          text: 'Year',
-          color: '#e5e7eb', // Light gray for x-axis title
-        },
-        grid: {
-          color: 'rgba(229, 231, 235, 0.2)', // Light gray grid lines
-        },
-      },
-    },
-  };
+  const options = createBarChartOptions({ 
+    xTitle: 'Year',
+    showLegend: filter === 'split' // Show legend only for split view
+  });
 
   return (
     <div style={{ height: '300px' }}>

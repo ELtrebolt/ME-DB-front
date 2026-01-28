@@ -3,7 +3,7 @@ import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { useDroppable } from '@dnd-kit/core';
 import SortableCard from './SortableCard';
 
-function CardsContainer({ items, tier, onEdgeDrop, readOnly, onCardClick }) {
+function CardsContainer({ items, tier, onEdgeDrop, readOnly, onCardClick, basePath = '' }) {
   const idList = Array.isArray(items) ? items.map(i => i.ID) : [];
   const [edgeDragOver, setEdgeDragOver] = useState({ top: false, bottom: false });
   
@@ -81,7 +81,7 @@ function CardsContainer({ items, tier, onEdgeDrop, readOnly, onCardClick }) {
           }}
         >
           {items && items.map((item) => (
-            <SortableCard key={item.ID} media={item} className="sortable-card" onCardClick={onCardClick} />
+            <SortableCard key={item.ID} media={item} className="sortable-card" onCardClick={onCardClick} basePath={basePath} />
           ))}
         </div>
       </SortableContext>

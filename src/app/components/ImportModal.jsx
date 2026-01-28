@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Modal from './ui/Modal';
 const constants = require('../constants');
 
 function ImportModal({ show, setShow, user, onImportComplete }) {
@@ -10,8 +11,6 @@ function ImportModal({ show, setShow, user, onImportComplete }) {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState('');
   const [errorLog, setErrorLog] = useState([]);
-
-  if (!show) return null;
 
   const handleClose = () => {
     if (uploading) return; // Prevent closing while uploading
@@ -167,8 +166,7 @@ function ImportModal({ show, setShow, user, onImportComplete }) {
               if (!mediaType || !title) return { status: 'skipped' }; // Skip invalid
 
               // Determine if newType
-              const standardTypes = ['anime', 'tv', 'movies', 'games'];
-              const isNewType = !standardTypes.includes(mediaType);
+              const isNewType = !constants.STANDARD_MEDIA_TYPES.includes(mediaType);
 
               const payload = {
                 media: {
@@ -183,7 +181,7 @@ function ImportModal({ show, setShow, user, onImportComplete }) {
                 newType: isNewType
               };
 
-              await axios.post(constants.SERVER_URL + '/api/media', payload, { withCredentials: true });
+              await axios.post(constants['SERVER_URL'] + '/api/media', payload, { withCredentials: true });
               return { status: 'success', type: mediaType };
             } catch (err) {
               const rowIndex = i + chunkIndex + 2;
@@ -238,127 +236,109 @@ function ImportModal({ show, setShow, user, onImportComplete }) {
   };
 
   return (
-    <div className="modal fade show d-block" style={{backgroundColor: 'rgba(0,0,0,0.5)'}} tabIndex="-1">
-      <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content shadow-strong">
-          <div className="modal-header">
-            <h5 className="modal-title fw-semibold">Import List from CSV</h5>
-            {!uploading && (
-              <button type="button" className="btn-close" onClick={handleClose} aria-label="Close"></button>
-            )}
+    <Modal
+      show={show}
+      onClose={handleClose}
+      title="Import List from CSV"
+      dialogClassName="modal-dialog-centered"
+      showCloseButton={!uploading}
+      footer={!uploading && (
+        completed ? (
+          <button type="button" className="btn btn-success px-4" onClick={handleClose}>Done</button>
+        ) : (
+          <>
+            <button type="button" className="btn btn-secondary" onClick={handleClose}>Cancel</button>
+            <button 
+              type="button" 
+              className="btn btn-primary" 
+              onClick={processImport}
+              disabled={!file}
+            >
+              Start Import
+            </button>
+          </>
+        )
+      )}
+    >
+      {!uploading && !completed ? (
+        <>
+          <p className="text-muted mb-3">
+            Upload a CSV file exported from ME-DB. 
+            Existing records with same titles may be duplicated.
+          </p>
+          <div className="mb-3">
+            <input 
+              className="form-control" 
+              type="file" 
+              accept=".csv"
+              onChange={handleFileChange}
+            />
           </div>
-          <div className="modal-body">
-            {!uploading && !completed ? (
-              <>
-                <p className="text-muted mb-3">
-                  Upload a CSV file exported from ME-DB. 
-                  Existing records with same titles may be duplicated.
-                </p>
-                <div className="mb-3">
-                  <input 
-                    className="form-control" 
-                    type="file" 
-                    accept=".csv"
-                    onChange={handleFileChange}
-                  />
-                </div>
-              </>
-            ) : completed ? (
-                <div className="text-center">
-                    <div className="mb-4">
-                        <i className="fas fa-check-circle text-success" style={{fontSize: '3rem'}}></i>
-                        <h4 className="mt-3">Import Complete</h4>
-                    </div>
-                    
-                    <div className="row mb-3">
-                        <div className="col-6 text-end border-end">
-                            <h2 className="text-success mb-0">{importStats.success}</h2>
-                            <small className="text-muted">Imported</small>
-                        </div>
-                        <div className="col-6 text-start">
-                            <h2 className="text-danger mb-0">{importStats.failed}</h2>
-                            <small className="text-muted">Failed</small>
-                        </div>
-                    </div>
-
-                    {Object.keys(importStats.byType).length > 0 && (
-                        <div className="card bg-light mb-3">
-                            <div className="card-body py-2">
-                                <h6 className="card-title text-muted mb-2" style={{fontSize: '0.8rem'}}>RECORDS ADDED</h6>
-                                <div className="d-flex flex-wrap justify-content-center gap-2">
-                                    {Object.entries(importStats.byType).map(([type, count]) => (
-                                        <button 
-                                            key={type} 
-                                            onClick={() => {
-                                                window.location.href = `/${type}/collection`;
-                                            }}
-                                            className="badge bg-secondary text-decoration-none border-0"
-                                            style={{
-                                              transition: 'opacity 0.2s', 
-                                              cursor: 'pointer',
-                                              display: 'inline-flex',
-                                              alignItems: 'center'
-                                            }}
-                                            onMouseOver={(e) => e.target.style.opacity = '0.8'}
-                                            onMouseOut={(e) => e.target.style.opacity = '1'}
-                                        >
-                                            {type.charAt(0).toUpperCase() + type.slice(1)}: {count} <i className="fas fa-arrow-right ms-1" style={{fontSize: '0.7em'}}></i>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            ) : (
-              <div className="text-center py-3">
-                <h5 className="mb-3">{status}</h5>
-                <div className="progress mb-3" style={{height: '25px'}}>
-                  <div 
-                    className="progress-bar progress-bar-striped progress-bar-animated" 
-                    role="progressbar" 
-                    style={{width: `${progress}%`}}
-                    aria-valuenow={progress} 
-                    aria-valuemin="0" 
-                    aria-valuemax="100"
-                  >
-                    {progress}%
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            {errorLog.length > 0 && (
-              <div className="alert alert-warning mt-3" style={{maxHeight: '150px', overflowY: 'auto'}}>
-                <strong>Errors:</strong>
-                <ul className="mb-0 ps-3">
-                  {errorLog.map((err, idx) => <li key={idx}><small>{err}</small></li>)}
-                </ul>
-              </div>
-            )}
+        </>
+      ) : completed ? (
+        <div className="text-center">
+          <div className="mb-4">
+            <i className="fas fa-check-circle text-success" style={{fontSize: '3rem'}}></i>
+            <h4 className="mt-3">Import Complete</h4>
           </div>
-          {!uploading && (
-            <div className="modal-footer">
-              {completed ? (
-                  <button type="button" className="btn btn-success px-4" onClick={handleClose}>Done</button>
-              ) : (
-                  <>
-                    <button type="button" className="btn btn-secondary" onClick={handleClose}>Cancel</button>
+          <div className="row mb-3">
+            <div className="col-6 text-end border-end">
+              <h2 className="text-success mb-0">{importStats.success}</h2>
+              <small className="text-muted">Imported</small>
+            </div>
+            <div className="col-6 text-start">
+              <h2 className="text-danger mb-0">{importStats.failed}</h2>
+              <small className="text-muted">Failed</small>
+            </div>
+          </div>
+          {Object.keys(importStats.byType).length > 0 && (
+            <div className="card bg-light mb-3">
+              <div className="card-body py-2">
+                <h6 className="card-title text-muted mb-2" style={{fontSize: '0.8rem'}}>RECORDS ADDED</h6>
+                <div className="d-flex flex-wrap justify-content-center gap-2">
+                  {Object.entries(importStats.byType).map(([type, count]) => (
                     <button 
-                        type="button" 
-                        className="btn btn-primary" 
-                        onClick={processImport}
-                        disabled={!file}
+                      key={type} 
+                      onClick={() => { window.location.href = `/${type}/collection`; }}
+                      className="badge bg-secondary text-decoration-none border-0"
+                      style={{ transition: 'opacity 0.2s', cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}
+                      onMouseOver={(e) => { e.currentTarget.style.opacity = '0.8'; }}
+                      onMouseOut={(e) => { e.currentTarget.style.opacity = '1'; }}
                     >
-                        Start Import
+                      {type.charAt(0).toUpperCase() + type.slice(1)}: {count} <i className="fas fa-arrow-right ms-1" style={{fontSize: '0.7em'}}></i>
                     </button>
-                  </>
-              )}
+                  ))}
+                </div>
+              </div>
             </div>
           )}
         </div>
-      </div>
-    </div>
+      ) : (
+        <div className="text-center py-3">
+          <h5 className="mb-3">{status}</h5>
+          <div className="progress mb-3" style={{height: '25px'}}>
+            <div 
+              className="progress-bar progress-bar-striped progress-bar-animated" 
+              role="progressbar" 
+              style={{width: `${progress}%`}}
+              aria-valuenow={progress} 
+              aria-valuemin="0" 
+              aria-valuemax="100"
+            >
+              {progress}%
+            </div>
+          </div>
+        </div>
+      )}
+      {errorLog.length > 0 && (
+        <div className="alert alert-warning mt-3" style={{maxHeight: '150px', overflowY: 'auto'}}>
+          <strong>Errors:</strong>
+          <ul className="mb-0 ps-3">
+            {errorLog.map((err, idx) => <li key={idx}><small>{err}</small></li>)}
+          </ul>
+        </div>
+      )}
+    </Modal>
   );
 }
 

@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect } from 'react'
 import { ReactTags } from 'react-tag-autocomplete'
-import { matchSorter } from 'match-sorter'
 import { useNavigate } from 'react-router-dom';
+import { suggestionsByLabel } from '../helpers';
 const constants = require('../constants');
 
-const Function = ({mediaType, allMedia, searchQuery, setSearchQuery, setSearchChanged}) => {
+const SearchBar = ({mediaType, allMedia, searchQuery, setSearchQuery, setSearchChanged, basePath = ''}) => {
   const navigate = useNavigate();
   var selected = []
   var suggestions = [];
@@ -14,15 +14,9 @@ const Function = ({mediaType, allMedia, searchQuery, setSearchQuery, setSearchCh
     }
   }
 
-  function suggestionsTransform(value, suggestions) {
-    return matchSorter(suggestions, value, { keys: ['label'] })
-  }
-
   useEffect(() => {
-    // console.log("Query:", searchQuery);
     setSearchChanged(true);
   }, [searchQuery, setSearchChanged]);
-
 
   function onChange(value) {
     setSearchQuery(value.toLowerCase());
@@ -30,9 +24,8 @@ const Function = ({mediaType, allMedia, searchQuery, setSearchQuery, setSearchCh
 
   const onAdd = useCallback(
     (media) => {
-      // console.log("Selected:", media.value, media.label)
-      navigate(`/${mediaType}/${media.value}`)
-    }, [navigate, mediaType]
+      navigate(`${basePath}/${mediaType}/${media.value}`)
+    }, [navigate, mediaType, basePath]
   )
 
   const onDelete = useCallback(
@@ -54,10 +47,10 @@ const Function = ({mediaType, allMedia, searchQuery, setSearchQuery, setSearchCh
         onInput={onChange}
         onDelete={onDelete}
         noOptionsText={noOptionsText}
-        suggestionsTransform={suggestionsTransform}
+        suggestionsTransform={suggestionsByLabel}
       />
     </div>
-  )
-}
+  );
+};
 
-export default Function;
+export default SearchBar;

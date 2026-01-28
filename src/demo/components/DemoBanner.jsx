@@ -1,10 +1,24 @@
 import React from 'react';
+const theme = require('../../styling/theme');
 
 const DemoBanner = ({ storageAvailable = true }) => {
+  // Calculate navbar height for sticky positioning
+  const isMobile = window.innerWidth < 768;
+  const navbarHeight = isMobile ? theme.components.navbar.mobile.height : theme.components.navbar.height;
+  
+  // Common sticky styles
+  const stickyStyles = {
+    position: 'sticky',
+    top: navbarHeight,
+    zIndex: 40,
+    width: '100%'
+  };
+
   // Show warning banner if localStorage is not available
   if (!storageAvailable) {
     return (
       <div style={{
+        ...stickyStyles,
         backgroundColor: '#dc3545',
         color: '#ffffff',
         padding: '8px 16px',
@@ -40,6 +54,7 @@ const DemoBanner = ({ storageAvailable = true }) => {
 
   return (
     <div style={{
+      ...stickyStyles,
       backgroundColor: '#ffc107',
       color: '#1f2937',
       padding: '6px 12px',
@@ -69,7 +84,7 @@ const DemoBanner = ({ storageAvailable = true }) => {
         <line x1="12" y1="8" x2="12.01" y2="8"></line>
       </svg>
       <span>
-        <strong>Demo</strong> - Saved to browser, sign in for permanent storage
+        <strong>Demo Mode</strong> - Data is saved to browser, sign in for permanent storage
       </span>
     </div>
   );

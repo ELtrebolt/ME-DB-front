@@ -9,6 +9,8 @@ const json = {
         'type' : 'e.g. Restaurants',
     },
     'maxCustomTypes': 8,
+    'STANDARD_MEDIA_TYPES': ['anime', 'tv', 'movies', 'games'],
+    'STANDARD_TIERS': ['S', 'A', 'B', 'C', 'D', 'F'],
     // 4 Basic Media Types
     'anime': {
         'title' : 'e.g. One Piece',

@@ -7,7 +7,7 @@ import TierByTypeChart from '../components/stats/TierByTypeChart';
 const constants = require('../constants');
 const theme = require('../../styling/theme');
 
-const Stats = ({ user }) => {
+const Stats = ({ user, dataSource = 'api', onCalculateStats }) => {
   const [statsData, setStatsData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,8 +16,25 @@ const Stats = ({ user }) => {
   const [typeFilter, setTypeFilter] = useState('total');
 
   useEffect(() => {
-    fetchStats();
-  }, []);
+    if (dataSource === 'demo' && onCalculateStats) {
+      // Demo mode: calculate stats from provided callback
+      setLoading(true);
+      try {
+        const stats = onCalculateStats();
+        if (stats) {
+          setStatsData(stats);
+        }
+      } catch (err) {
+        console.error('Error calculating stats:', err);
+        setError('Error calculating statistics.');
+      } finally {
+        setLoading(false);
+      }
+    } else if (dataSource === 'api') {
+      // API mode: fetch from server
+      fetchStats();
+    }
+  }, [dataSource, onCalculateStats]);
 
   const fetchStats = async () => {
     try {
@@ -134,14 +151,14 @@ const Stats = ({ user }) => {
           </div>
         </div>
 
-        {/* 2nd Row - Distribution by Type (both charts on same row) */}
+        {/* 2nd Row - Distribution by Type */}
         <div className="mb-5">
           <div className="row g-4">
-            <div className="col-lg-6">
+            <div className={dataSource === 'api' ? 'col-lg-6' : 'col-lg-12'}>
               <div className="card shadow-soft border-0 h-100" style={{backgroundColor: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)'}}>
                 <div className="card-body p-4">
                   <div className="d-flex justify-content-between align-items-center mb-3">
-                    <h5 className="h5 fw-semibold text-white mb-0">Distribution by Standard Types</h5>
+                    <h5 className="h5 fw-semibold text-white mb-0">Distribution by {dataSource === 'api' ? 'Standard ' : ''}Types</h5>
                     <select 
                       className="form-select form-select-sm w-auto"
                       value={typeFilter}
@@ -162,31 +179,33 @@ const Stats = ({ user }) => {
                 </div>
               </div>
             </div>
-            <div className="col-lg-6">
-              <div className="card shadow-soft border-0 h-100" style={{backgroundColor: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)'}}>
-                <div className="card-body p-4">
-                  <div className="d-flex justify-content-between align-items-center mb-3">
-                    <h5 className="h5 fw-semibold text-white mb-0">Distribution by Custom Types</h5>
-                    <select 
-                      className="form-select form-select-sm w-auto"
-                      value={typeFilter}
-                      onChange={(e) => setTypeFilter(e.target.value)}
-                    >
-                      <option value="total">Total</option>
-                      <option value="split">To-Do vs Collection</option>
-                    </select>
+            {dataSource === 'api' && (
+              <div className="col-lg-6">
+                <div className="card shadow-soft border-0 h-100" style={{backgroundColor: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)'}}>
+                  <div className="card-body p-4">
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                      <h5 className="h5 fw-semibold text-white mb-0">Distribution by Custom Types</h5>
+                      <select 
+                        className="form-select form-select-sm w-auto"
+                        value={typeFilter}
+                        onChange={(e) => setTypeFilter(e.target.value)}
+                      >
+                        <option value="total">Total</option>
+                        <option value="split">To-Do vs Collection</option>
+                      </select>
+                    </div>
+                    <TypeDistributionChart 
+                      data={statsData.typeDistribution}
+                      toDoData={statsData.tierByTypeToDo}
+                      collectionData={statsData.tierByTypeCollection}
+                      customTypes={statsData.customTypes}
+                      showStandard={false}
+                      filter={typeFilter}
+                    />
                   </div>
-                  <TypeDistributionChart 
-                    data={statsData.typeDistribution}
-                    toDoData={statsData.tierByTypeToDo}
-                    collectionData={statsData.tierByTypeCollection}
-                    customTypes={statsData.customTypes}
-                    showStandard={false}
-                    filter={typeFilter}
-                  />
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -228,7 +247,7 @@ const Stats = ({ user }) => {
                       value={selectedTier}
                       onChange={(e) => setSelectedTier(e.target.value)}
                     >
-                      {['S', 'A', 'B', 'C', 'D', 'F'].map(tier => (
+                      {constants.STANDARD_TIERS.map(tier => (
                         <option key={tier} value={tier}>{tier}</option>
                       ))}
                     </select>
@@ -252,7 +271,7 @@ const Stats = ({ user }) => {
                       value={selectedTier}
                       onChange={(e) => setSelectedTier(e.target.value)}
                     >
-                      {['S', 'A', 'B', 'C', 'D', 'F'].map(tier => (
+                      {constants.STANDARD_TIERS.map(tier => (
                         <option key={tier} value={tier}>{tier}</option>
                       ))}
                     </select>

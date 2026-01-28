@@ -1,27 +1,11 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
+import './chartConfig'; // Import to register Chart.js
+import { getTypeColor, createBarChartOptions } from './chartConfig';
 const constants = require('../../constants');
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
 const TypeDistributionChart = ({ data, toDoData, collectionData, customTypes, showStandard, filter }) => {
-  const standardTypes = ['anime', 'tv', 'movies', 'games'];
+  const standardTypes = constants.STANDARD_MEDIA_TYPES;
   
   // Filter data based on whether to show standard or custom types
   let typesToShow = [];
@@ -68,24 +52,8 @@ const TypeDistributionChart = ({ data, toDoData, collectionData, customTypes, sh
         {
           label: 'Number of Records',
           data: Object.values(totalData),
-          backgroundColor: Object.keys(totalData).map((type, index) => {
-            // Use predefined color for standard types, cycle through custom colors for custom types
-            if (constants.typeColors[type]) {
-              return constants.typeColors[type];
-            } else {
-              // Cycle through custom type colors
-              return constants.customTypeColors[index % constants.customTypeColors.length];
-            }
-          }),
-          borderColor: Object.keys(totalData).map((type, index) => {
-            // Use predefined color for standard types, cycle through custom colors for custom types
-            if (constants.typeColors[type]) {
-              return constants.typeColors[type];
-            } else {
-              // Cycle through custom type colors
-              return constants.customTypeColors[index % constants.customTypeColors.length];
-            }
-          }),
+          backgroundColor: Object.keys(totalData).map((type, index) => getTypeColor(type, index)),
+          borderColor: Object.keys(totalData).map((type, index) => getTypeColor(type, index)),
           borderWidth: 1,
         },
       ],
@@ -126,51 +94,10 @@ const TypeDistributionChart = ({ data, toDoData, collectionData, customTypes, sh
     };
   }
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: filter === 'split', // Show legend only for split view
-        labels: {
-          color: '#e5e7eb', // Light gray for legend text
-        },
-      },
-      title: {
-        display: false,
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          stepSize: 1,
-          color: '#e5e7eb', // Light gray for y-axis ticks
-        },
-        title: {
-          display: true,
-          text: 'Number of Records',
-          color: '#e5e7eb', // Light gray for y-axis title
-        },
-        grid: {
-          color: 'rgba(229, 231, 235, 0.2)', // Light gray grid lines
-        },
-      },
-      x: {
-        ticks: {
-          color: '#e5e7eb', // Light gray for x-axis ticks
-        },
-        title: {
-          display: true,
-          text: 'Type',
-          color: '#e5e7eb', // Light gray for x-axis title
-        },
-        grid: {
-          color: 'rgba(229, 231, 235, 0.2)', // Light gray grid lines
-        },
-      },
-    },
-  };
+  const options = createBarChartOptions({ 
+    xTitle: 'Type',
+    showLegend: filter === 'split' // Show legend only for split view
+  });
 
   return (
     <div style={{ height: '300px' }}>

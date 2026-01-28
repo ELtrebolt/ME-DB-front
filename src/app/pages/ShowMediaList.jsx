@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 
@@ -12,144 +12,30 @@ import TagFilter from "../components/TagFilter";
 import SearchBar from "../components/SearchBar";
 import useSwipe from "../hooks/useSwipe.tsx";
 import ShareLinkModal from "../components/ShareLinkModal";
+import Modal from "../components/ui/Modal";
+import { filterData, toCapitalNotation, getTruncatedTitle, calculateDropdownWidth, createEmptyTiersObject } from "../helpers";
+import { useMediaData } from "../hooks/useMediaData";
 
 const constants = require('../constants');
 const theme = require('../../styling/theme');
 
-function filterData(tierData, timePeriod, startDate, endDate, allTags, selectedTags, tagLogic, setSuggestedTags, setSearchChanged, searchQuery, searchScope, selectedTiers, sortOrder) {
-  var data = {
-    S: [],
-    A: [],
-    B: [],
-    C: [],
-    D: [],
-    F: [],
-  };
-
-  if (!tierData) return data;
-
-  const isInDateRange = (dateStr) => {
-    if (!dateStr) return timePeriod === 'all';
-    const date = new Date(dateStr);
-    const now = new Date();
-    let start = null;
-    let end = null;
-
-    if (timePeriod === 'all') return true;
-
-    if (timePeriod === 'ytd') {
-      start = new Date(now.getFullYear(), 0, 1);
-      end = now;
-    } else if (timePeriod === 'lastMonth') {
-      start = new Date();
-      start.setMonth(now.getMonth() - 1);
-      end = now;
-    } else if (timePeriod === 'last3Months') {
-      start = new Date();
-      start.setMonth(now.getMonth() - 3);
-      end = now;
-    } else if (timePeriod === 'last6Months') {
-      start = new Date();
-      start.setMonth(now.getMonth() - 6);
-      end = now;
-    } else if (timePeriod === 'last12Months') {
-      start = new Date();
-      start.setMonth(now.getMonth() - 12);
-      end = now;
-    } else if (timePeriod === 'custom') {
-      if (startDate) start = new Date(startDate);
-      if (endDate) {
-        end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
-      }
-    }
-
-    if (start && date < start) return false;
-    if (end && date > end) return false;
-    return true;
-  };
-
-  const filteredArray = [];
-  for(const tier of Object.keys(tierData)) {
-    if (selectedTiers && !selectedTiers.includes(tier)) continue;
-
-    for(const m of tierData[tier]) {
-      if(searchQuery !== '') {
-        const query = searchQuery.toLowerCase();
-        let match = false;
-        if (searchScope.includes('title') && m.title.toLowerCase().includes(query)) match = true;
-        if (!match && searchScope.includes('description') && m.description && m.description.toLowerCase().includes(query)) match = true;
-        if (!match && searchScope.includes('tags') && m.tags && m.tags.some(t => t.toLowerCase().includes(query))) match = true;
-        if(!match) continue;
-      }
-
-      if(selectedTags && selectedTags.length > 0) {
-        if(!m.tags || m.tags.length === 0) continue;
-        const tagLabels = selectedTags.map(t => t.label);
-        if (tagLogic === 'AND') {
-          if (!tagLabels.every(label => m.tags.includes(label))) continue;
-        } else {
-          if (!tagLabels.some(label => m.tags.includes(label))) continue;
-        }
-      }
-
-      if (!isInDateRange(m.year)) continue;
-      filteredArray.push(m);
-    }
-  }
-
-  filteredArray.forEach(m => {
-    data[m.tier].push(m);
-  });
-
-  Object.keys(data).forEach(tier => {
-    data[tier].sort((a, b) => {
-      if (sortOrder === 'dateNewest') return new Date(b.year) - new Date(a.year);
-      if (sortOrder === 'dateOldest') return new Date(a.year) - new Date(b.year);
-      if (sortOrder === 'titleAZ') return a.title.localeCompare(b.title);
-      const ai = (typeof a.orderIndex === 'number') ? a.orderIndex : Number.MAX_SAFE_INTEGER;
-      const bi = (typeof b.orderIndex === 'number') ? b.orderIndex : Number.MAX_SAFE_INTEGER;
-      if (ai !== bi) return ai - bi;
-      return (a.title || '').localeCompare(b.title || '');
-    });
-  });
-
-  let tags_list = [];
-  if (tagLogic === 'OR') {
-    tags_list = allTags;
-  } else {
-    const allTagsList = allTags.map((item) => item['label']);
-    const added_tags = new Set();
-    Object.keys(data).forEach(tier => {
-      data[tier].forEach(item => {
-        if(item.tags) {
-          item.tags.forEach(tag => {
-            const foundIndex = allTagsList.indexOf(tag);
-            if(foundIndex >= 0 && !added_tags.has(tag)) {
-              tags_list.push({ value: foundIndex, label: tag });
-              added_tags.add(tag);
-            }
-          });
-        }
-      });
-    });
-  }
-  setSuggestedTags(tags_list);
-  setSearchChanged(false);
-  return data;
-}
-
-function toCapitalNotation(inputString) {
-  return inputString.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
-}
-
-function getTruncatedTitle(mediaType, toDoString) {
-  const displayToDoString = toDoString === 'to-do' ? 'To-Do' : toCapitalNotation(toDoString);
-  const fullTitle = `${toCapitalNotation(mediaType)} ${displayToDoString} Tier List`;
-  return fullTitle.length > 20 ? `${toCapitalNotation(mediaType)} ${displayToDoString}` : fullTitle;
-}
-
-function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSelectedTags, filteredData, setFilteredData}) {
+function ShowMediaList({
+  user, 
+  setUserChanged, 
+  toDo, 
+  newType, 
+  selectedTags, 
+  setSelectedTags, 
+  filteredData, 
+  setFilteredData,
+  dataSource = 'api',
+  basePath = '',
+  onGetMediaByTier,
+  onReorderInTier,
+  onMoveToTier,
+  tierTitleOverrides = {},
+  onTierTitleSave = undefined
+}) {
   const { mediaType } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -170,32 +56,27 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
   const [endDate, setEndDate] = useState(() => new URLSearchParams(location.search).get('endDate') || '');
   const [tagLogic, setTagLogic] = useState(() => new URLSearchParams(location.search).get('tagLogic') || 'AND');
   const [searchScope, setSearchScope] = useState(['title']);
-  const [selectedTiers, setSelectedTiers] = useState(["S", "A", "B", "C", "D", "F"]);
+  const [selectedTiers, setSelectedTiers] = useState(constants.STANDARD_TIERS);
   const [sortOrder, setSortOrder] = useState('default');
   const [allTags, setAllTags] = useState([]);
   const [suggestedTags, setSuggestedTags] = useState([]);
   const [searchChanged, setSearchChanged] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showExtraFilters, setShowExtraFilters] = useState(false);
+  const hasHadTagsRef = useRef(false);
 
-  const tiers = ["S", "A", "B", "C", "D", "F"];
+  const tiers = constants.STANDARD_TIERS;
   const mediaTypeLoc = user ? (newType ? user.newTypes[mediaType] : user[mediaType]) : null;
-
-  const calculateMobileSettingsDropdownWidth = () => {
-    const options = [{ text: 'Download CSV', hasIcon: true }, { text: 'Delete Type', hasIcon: false }, { text: 'Set As Home Page', hasIcon: true }];
-    const widths = options.map(o => (o.text.length * 6 + 24) + (o.hasIcon ? 30 : 0));
-    return Math.max(Math.max(...widths), 100);
-  };
-
-  const calculateDesktopSettingsDropdownWidth = () => {
-    const options = [{ text: 'Download CSV', hasIcon: true }, { text: 'Delete Type', hasIcon: false }, { text: 'Set As Home Page', hasIcon: true }];
-    const widths = options.map(o => (o.text.length * 7 + 32) + (o.hasIcon ? 30 : 0));
-    return Math.max(Math.max(...widths), 120);
-  };
+  
+  // Use useMediaData for tags in demo mode
+  const { uniqueTags: demoUniqueTags } = useMediaData(mediaType, dataSource);
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--mobile-settings-dropdown-width', `${calculateMobileSettingsDropdownWidth()}px`);
-    document.documentElement.style.setProperty('--desktop-settings-dropdown-width', `${calculateDesktopSettingsDropdownWidth()}px`);
+    const options = [{ text: 'Download CSV', hasIcon: true }, { text: 'Delete Type', hasIcon: false }, { text: 'Set As Home Page', hasIcon: true }];
+    const mobileWidth = calculateDropdownWidth(options, { variant: 'mobile', minWidth: 100, iconWidth: 30 });
+    const desktopWidth = calculateDropdownWidth(options, { variant: 'desktop', minWidth: 120, iconWidth: 30 });
+    document.documentElement.style.setProperty('--mobile-settings-dropdown-width', `${mobileWidth}px`);
+    document.documentElement.style.setProperty('--desktop-settings-dropdown-width', `${desktopWidth}px`);
   }, []);
 
   useEffect(() => {
@@ -210,7 +91,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     setTagLogic('AND');
     setSearchQuery('');
     setSearchScope(['title']);
-    setSelectedTiers(["S", "A", "B", "C", "D", "F"]);
+    setSelectedTiers(constants.STANDARD_TIERS);
     setSortOrder('default');
     setSearchChanged(true);
     const urlParams = new URLSearchParams(location.search);
@@ -247,6 +128,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
 
     const currentTagsParam = urlParams.get('tags');
     if (selectedTags && selectedTags.length > 0) {
+      hasHadTagsRef.current = true;
       const tagLabels = selectedTags.map(tag => tag.label).join(',');
       if (currentTagsParam !== tagLabels) {
         urlParams.set('tags', tagLabels);
@@ -255,13 +137,22 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
         if (pathParts.length >= 3) urlParams.set('from', pathParts[2]);
       }
     } else if (currentTagsParam) {
-      urlParams.delete('tags');
-      urlParams.delete('from');
-      changed = true;
+      const tagLabels = currentTagsParam.split(',').map(s => s.trim()).filter(Boolean);
+      const shouldHydrate = tagLabels.length > 0 && setSelectedTags && !hasHadTagsRef.current;
+      if (shouldHydrate) {
+        // Hydrate from URL when landing with tags (e.g. "Go Back" from detail)
+        setSelectedTags(tagLabels.map(label => ({ label, value: label })));
+      } else {
+        urlParams.delete('tags');
+        urlParams.delete('from');
+        changed = true;
+      }
+    } else {
+      hasHadTagsRef.current = false;
     }
 
     if (changed) navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
-  }, [timePeriod, startDate, endDate, tagLogic, selectedTags, location.pathname, location.search, navigate, firstLoad]);
+  }, [timePeriod, startDate, endDate, tagLogic, selectedTags, location.pathname, location.search, navigate, firstLoad, setSelectedTags]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 15 } }),
@@ -270,21 +161,32 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
 
   useEffect(() => {
     if(firstLoad) {
-      axios.get(constants['SERVER_URL'] + '/api/media/' + mediaType + '/' + toDoString)
-      .then((res) => {
-        const tiersObj = { S: [], A: [], B: [], C: [], D: [], F: [] };
-        res.data.media.forEach(m => { if(tiersObj[m.tier]) tiersObj[m.tier].push(m); });
-        setAllTags(res.data.uniqueTags.map((t, i) => ({ value: i, label: t })));
+      if (dataSource === 'demo' && onGetMediaByTier) {
+        // Demo mode: use callback
+        const tiersObj = onGetMediaByTier(toDoState);
+        setAllTags(demoUniqueTags.map((t, i) => ({ value: i, label: t })));
         setTierData(tiersObj);
         setSearchQuery('');
         setFirstLoad(false);
         setSearchChanged(true);
-      })
-      .catch((err) => {
-        if (err.response && err.response.status === 401) navigate('/');
-      });
+      } else if (dataSource === 'api') {
+        // API mode: use axios
+        axios.get(constants['SERVER_URL'] + '/api/media/' + mediaType + '/' + toDoString)
+        .then((res) => {
+          const tiersObj = createEmptyTiersObject();
+          res.data.media.forEach(m => { if(tiersObj[m.tier]) tiersObj[m.tier].push(m); });
+          setAllTags(res.data.uniqueTags.map((t, i) => ({ value: i, label: t })));
+          setTierData(tiersObj);
+          setSearchQuery('');
+          setFirstLoad(false);
+          setSearchChanged(true);
+        })
+        .catch((err) => {
+          if (err.response && err.response.status === 401) navigate('/');
+        });
+      }
     }
-  }, [firstLoad, mediaType, toDoString, navigate]);
+  }, [firstLoad, mediaType, toDoString, navigate, dataSource, onGetMediaByTier, toDoState, demoUniqueTags]);
 
   useEffect(() => {
     setFirstLoad(true);
@@ -307,7 +209,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     setToDoString(newToDoString);
     setTierVariable(newToDoState ? 'todoTiers' : 'collectionTiers');
     setFirstLoad(true);
-    let newUrl = `/${mediaType}/${newToDoString}`;
+    let newUrl = `${basePath}/${mediaType}/${newToDoString}`;
     const urlParams = new URLSearchParams(location.search);
     if (urlParams.toString()) newUrl += `?${urlParams.toString()}`;
     navigate(newUrl);
@@ -328,22 +230,26 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
   }
 
   function setAsHomePage() {
-    const newHomePage = `${mediaType}/${toDoString}`;
-    axios.put(constants['SERVER_URL'] + '/api/user/customizations', { homePage: newHomePage })
-      .then(() => setUserChanged(true))
-      .catch(err => console.error('Error setting home page:', err));
+    if (dataSource === 'api') {
+      const newHomePage = `${mediaType}/${toDoString}`;
+      axios.put(constants['SERVER_URL'] + '/api/user/customizations', { homePage: newHomePage })
+        .then(() => setUserChanged(true))
+        .catch(err => console.error('Error setting home page:', err));
+    }
   }
 
   function onDeleteClick() {
-    axios.delete(constants['SERVER_URL'] + `/api/media/${mediaType}`)
-      .then(() => {
-        setUserChanged(true);
-        navigate('/');
-      })
-      .catch(err => {
-        window.alert('Error deleting media type');
-        console.error(err);
-      });
+    if (dataSource === 'api') {
+      axios.delete(constants['SERVER_URL'] + `/api/media/${mediaType}`)
+        .then(() => {
+          setUserChanged(true);
+          navigate('/');
+        })
+        .catch(err => {
+          window.alert('Error deleting media type');
+          console.error(err);
+        });
+    }
   }
 
   const swipeHandlers = useSwipe({ 
@@ -374,7 +280,11 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
         const updatedTargetTier = [...(localByTier[targetTier] || [])];
         updatedTargetTier.push({ ...movedItem, tier: targetTier });
         setLocalByTier({ ...localByTier, [sourceTier]: updatedSourceTier, [targetTier]: updatedTargetTier });
-        axios.put(constants['SERVER_URL'] + `/api/media/${mediaType}/${activeId}`, { tier: targetTier }).catch(err => console.log(err));
+        if (dataSource === 'demo' && onMoveToTier) {
+          onMoveToTier(activeId, targetTier, updatedTargetTier.length - 1);
+        } else if (dataSource === 'api') {
+          axios.put(constants['SERVER_URL'] + `/api/media/${mediaType}/${activeId}`, { tier: targetTier }).catch(err => console.log(err));
+        }
       }
       return;
     }
@@ -401,7 +311,11 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
     if (sourceTier === destTier) {
       const updatedList = arrayMove(localByTier[sourceTier] || [], sourceIndex, destIndex);
       setLocalByTier({ ...localByTier, [sourceTier]: updatedList });
-      axios.put(constants['SERVER_URL'] + `/api/media/${mediaType}/${toDoString}/${sourceTier}/reorder`, { orderedIds: updatedList.map(m => m.ID) }).catch(err => console.log(err));
+      if (dataSource === 'demo' && onReorderInTier) {
+        onReorderInTier(sourceTier, toDoState, updatedList.map(m => m.ID));
+      } else if (dataSource === 'api') {
+        axios.put(constants['SERVER_URL'] + `/api/media/${mediaType}/${toDoString}/${sourceTier}/reorder`, { orderedIds: updatedList.map(m => m.ID) }).catch(err => console.log(err));
+      }
     } else {
       const fromList = [...(localByTier[sourceTier] || [])];
       const toList = [...(localByTier[destTier] || [])];
@@ -412,19 +326,23 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
       const updated = { ...localByTier, [sourceTier]: fromList, [destTier]: toList };
       setLocalByTier(updated);
       setFilteredData(updated);
-      axios.put(constants['SERVER_URL'] + `/api/media/${mediaType}/${activeId}`, { tier: destTier, orderIndex: destIndex }).catch(err => console.log(err));
+      if (dataSource === 'demo' && onMoveToTier) {
+        onMoveToTier(activeId, destTier, destIndex);
+      } else if (dataSource === 'api') {
+        axios.put(constants['SERVER_URL'] + `/api/media/${mediaType}/${activeId}`, { tier: destTier, orderIndex: destIndex }).catch(err => console.log(err));
+      }
     }
   };
 
   useEffect(() => {
-    if (user && mediaType) {
+    if (dataSource === 'api' && user && mediaType) {
       axios.get(constants['SERVER_URL'] + `/api/share/status/${mediaType}`)
         .then(res => setExistingShareData(res.data.exists ? res.data : null))
         .catch(err => console.error(err));
     }
-  }, [user, mediaType, showShareModal, toDoString]);
+  }, [user, mediaType, showShareModal, toDoString, dataSource]);
 
-  if (!user) {
+  if (dataSource === 'api' && !user) {
     return (
       <div className="container-fluid bg-light min-vh-100 d-flex align-items-center">
         <div className="container text-center">
@@ -459,10 +377,10 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
               <div className="dropdown">
                 <button className="btn btn-warning btn-xs dropdown-toggle" data-bs-toggle="dropdown">Settings</button>
                 <ul className="dropdown-menu dropdown-menu-end">
-                  <li><button className="dropdown-item py-1" style={{fontSize: '0.75rem'}} onClick={() => setShowShareModal(true)}>{existingShareData ? 'Unshare / Edit' : 'Share List'}</button></li>
+                  {dataSource === 'api' && <li><button className="dropdown-item py-1" style={{fontSize: '0.75rem'}} onClick={() => setShowShareModal(true)}>{existingShareData ? 'Unshare / Edit' : 'Share List'}</button></li>}
                   <li><button className="dropdown-item py-1" style={{fontSize: '0.75rem'}} onClick={exportToCsv}>Download CSV</button></li>
-                  <li><button className="dropdown-item py-1" style={{fontSize: '0.75rem'}} onClick={setAsHomePage} disabled={user?.customizations?.homePage === `${mediaType}/${toDoString}`}>Set As Home Page</button></li>
-                  {newType && <li><button className="dropdown-item py-1 text-danger" style={{fontSize: '0.75rem'}} onClick={() => setShowDeleteModal(true)}>Delete Type</button></li>}
+                  {dataSource === 'api' && <li><button className="dropdown-item py-1" style={{fontSize: '0.75rem'}} onClick={setAsHomePage} disabled={user?.customizations?.homePage === `${mediaType}/${toDoString}`}>Set As Home Page</button></li>}
+                  {dataSource === 'api' && newType && <li><button className="dropdown-item py-1 text-danger" style={{fontSize: '0.75rem'}} onClick={() => setShowDeleteModal(true)}>Delete Type</button></li>}
                 </ul>
               </div>
             </div>
@@ -475,10 +393,10 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
               <div className="dropdown">
                 <button className="btn btn-warning btn-lg dropdown-toggle" data-bs-toggle="dropdown">Settings</button>
                 <ul className="dropdown-menu">
-                  <li><button className="dropdown-item py-1" onClick={() => setShowShareModal(true)}>{existingShareData ? 'Unshare / Edit' : 'Share List'}</button></li>
+                  {dataSource === 'api' && <li><button className="dropdown-item py-1" onClick={() => setShowShareModal(true)}>{existingShareData ? 'Unshare / Edit' : 'Share List'}</button></li>}
                   <li><button className="dropdown-item py-1" onClick={exportToCsv}>Download CSV</button></li>
-                  <li><button className="dropdown-item py-1" onClick={setAsHomePage} disabled={user?.customizations?.homePage === `${mediaType}/${toDoString}`}>Set As Home Page</button></li>
-                  {newType && <li><button className="dropdown-item py-1 text-danger" onClick={() => setShowDeleteModal(true)}>Delete Type</button></li>}
+                  {dataSource === 'api' && <li><button className="dropdown-item py-1" onClick={setAsHomePage} disabled={user?.customizations?.homePage === `${mediaType}/${toDoString}`}>Set As Home Page</button></li>}
+                  {dataSource === 'api' && newType && <li><button className="dropdown-item py-1 text-danger" onClick={() => setShowDeleteModal(true)}>Delete Type</button></li>}
                 </ul>
               </div>
             </div>
@@ -487,7 +405,7 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
           <div className='row g-1 g-md-2 mb-2 mb-md-3' style={{flexWrap: 'nowrap'}}>
             <div className='col-4'><TimeFilter timePeriod={timePeriod} setTimePeriod={setTimePeriod} setSearchChanged={setSearchChanged}/></div>
             <div className='col-4 text-center'>
-              <SearchBar mediaType={mediaType} allMedia={filteredData} searchQuery={searchQuery} setSearchQuery={setSearchQuery} setSearchChanged={setSearchChanged}/>
+              <SearchBar mediaType={mediaType} allMedia={filteredData} searchQuery={searchQuery} setSearchQuery={setSearchQuery} setSearchChanged={setSearchChanged} basePath={basePath}/>
               <button className="btn btn-link btn-sm text-warning p-0" onClick={() => setShowExtraFilters(!showExtraFilters)} style={{ fontSize: '0.7rem', textDecoration: 'none' }}>{showExtraFilters ? 'Hide Advanced' : 'More Filters...'}</button>
             </div>
             <div className='col-4'><TagFilter suggestedTags={suggestedTags} selected={selectedTags} setSelected={setSelectedTags} setSearchChanged={setSearchChanged} tagLogic={tagLogic} setTagLogic={setTagLogic}/></div>
@@ -501,13 +419,38 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
         <hr />
 
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={onDragStart} onDragEnd={onDragEnd}>
-          {tiers.map((item, index) => (
-            <div className='tier-container' key={item} id={`tier-${item}`}>
-              <TierTitle title={mediaTypeLoc && mediaTypeLoc[tierVariable] ? mediaTypeLoc[tierVariable][item] : item} mediaType={mediaType} group={toDoString} tier={item} setUserChanged={setUserChanged} newType={newType}/>
-              <CardsContainer tier={item} items={(localByTier && localByTier[item]) ? localByTier[item] : filteredData[item]}/>
-              {index < tiers.length - 1 && <hr />}
-            </div>
-          ))}
+          {tiers.map((item, index) => {
+            // Determine the title: use override (if provided), custom from user (api), or default
+            const overrideKey = `${mediaType}-${toDoString}-${item}`;
+            let tierTitle = item; // Default to just the tier letter
+            if (tierTitleOverrides && tierTitleOverrides[overrideKey]) {
+              tierTitle = tierTitleOverrides[overrideKey];
+            } else if (mediaTypeLoc && mediaTypeLoc[tierVariable] && mediaTypeLoc[tierVariable][item]) {
+              tierTitle = mediaTypeLoc[tierVariable][item];
+            } else if (dataSource === 'demo') {
+              tierTitle = `${item} - Double Click to Edit`;
+            }
+            const handleTierTitleSave = onTierTitleSave
+              ? (newTitle) => onTierTitleSave(item, newTitle)
+              : undefined;
+
+            return (
+              <div className='tier-container' key={item} id={`tier-${item}`}>
+                <TierTitle 
+                  title={tierTitle} 
+                  mediaType={mediaType} 
+                  group={toDoString} 
+                  tier={item} 
+                  setUserChanged={setUserChanged} 
+                  newType={newType}
+                  basePath={basePath}
+                  onSave={handleTierTitleSave}
+                />
+                <CardsContainer tier={item} items={(localByTier && localByTier[item]) ? localByTier[item] : filteredData[item]} basePath={basePath}/>
+                {index < tiers.length - 1 && <hr />}
+              </div>
+            );
+          })}
           <DragOverlay>
             {activeId && (() => {
               for (const t of Object.keys(filteredData)) {
@@ -522,19 +465,22 @@ function ShowMediaList({user, setUserChanged, toDo, newType, selectedTags, setSe
         <div className='container py-4 text-center'><button className='btn btn-outline-warning btn-lg' onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}><i className="fas fa-arrow-up me-2"></i>Back to Top</button></div>
       </div>
 
-      {showDeleteModal && (
-        <div className="modal fade show d-block" style={{backgroundColor: 'rgba(0,0,0,0.5)'}} tabIndex="-1">
-          <div className="modal-dialog" style={{marginTop: '5vh'}}>
-            <div className="modal-content">
-              <div className="modal-header"><h5 className="modal-title">Delete Confirmation</h5><button type="button" className="btn-close" onClick={() => setShowDeleteModal(false)}></button></div>
-              <div className="modal-body"><p>Are you sure you want to delete all records of {mediaType}?</p></div>
-              <div className="modal-footer"><button className="btn btn-secondary" onClick={() => setShowDeleteModal(false)}>Cancel</button><button className="btn btn-danger" onClick={() => { onDeleteClick(); setShowDeleteModal(false); }}>Yes, Delete Everything</button></div>
-            </div>
-          </div>
-        </div>
-      )}
+      <Modal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        title="Delete Confirmation"
+        alignTop={true}
+        footer={
+          <>
+            <button className="btn btn-secondary" onClick={() => setShowDeleteModal(false)}>Cancel</button>
+            <button className="btn btn-danger" onClick={() => { onDeleteClick(); setShowDeleteModal(false); }}>Yes, Delete Everything</button>
+          </>
+        }
+      >
+        <p>Are you sure you want to delete all records of {mediaType}?</p>
+      </Modal>
 
-      <ShareLinkModal show={showShareModal} onClose={() => setShowShareModal(false)} mediaType={mediaType} toDoState={toDoString === 'to-do'} username={user?.username} onUpdate={() => axios.get(constants['SERVER_URL'] + `/api/share/status/${mediaType}`).then(res => setExistingShareData(res.data.exists ? res.data : null))}/>
+      {dataSource === 'api' && <ShareLinkModal show={showShareModal} onClose={() => setShowShareModal(false)} mediaType={mediaType} toDoState={toDoString === 'to-do'} username={user?.username} onUpdate={() => axios.get(constants['SERVER_URL'] + `/api/share/status/${mediaType}`).then(res => setExistingShareData(res.data.exists ? res.data : null))}/>}
     </>
   );
 }

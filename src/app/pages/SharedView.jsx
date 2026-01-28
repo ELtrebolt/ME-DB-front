@@ -8,160 +8,12 @@ import ExtraFilters from "../components/ExtraFilters";
 import SearchBar from "../components/SearchBar";
 import TagFilter from "../components/TagFilter";
 import useSwipe from "../hooks/useSwipe.tsx";
+import { toCapitalNotation, filterData } from "../helpers";
 
 import TierTitle from "../components/TierTitle";
 
 const constants = require('../constants');
 const theme = require('../../styling/theme');
-
-function toCapitalNotation(inputString) {
-  if (!inputString) return '';
-  return inputString
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
-}
-
-function filterData(tierData, timePeriod, startDate, endDate, allTags, selectedTags, tagLogic, setSuggestedTags, setSearchChanged, searchQuery, searchScope, selectedTiers, sortOrder) {
-  var array = [];
-  var data = {
-    S: [],
-    A: [],
-    B: [],
-    C: [],
-    D: [],
-    F: [],
-  };
-  
-  if (!tierData) return data;
-
-  // Helper to check if a date is within range
-  const isInDateRange = (dateStr) => {
-    if (!dateStr) return timePeriod === 'all';
-    const date = new Date(dateStr);
-    const now = new Date();
-    let start = null;
-    let end = null;
-
-    if (timePeriod === 'all') return true;
-
-    if (timePeriod === 'ytd') {
-      start = new Date(now.getFullYear(), 0, 1);
-      end = now;
-    } else if (timePeriod === 'lastMonth') {
-      start = new Date();
-      start.setMonth(now.getMonth() - 1);
-      end = now;
-    } else if (timePeriod === 'last3Months') {
-      start = new Date();
-      start.setMonth(now.getMonth() - 3);
-      end = now;
-    } else if (timePeriod === 'last6Months') {
-      start = new Date();
-      start.setMonth(now.getMonth() - 6);
-      end = now;
-    } else if (timePeriod === 'last12Months') {
-      start = new Date();
-      start.setMonth(now.getMonth() - 12);
-      end = now;
-    } else if (timePeriod === 'custom') {
-      if (startDate) start = new Date(startDate);
-      if (endDate) {
-        end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
-      }
-    }
-
-    if (start && date < start) return false;
-    if (end && date > end) return false;
-    return true;
-  };
-
-  for(const tier of Object.keys(tierData)) {
-    // Filter by Tiers
-    if (selectedTiers && !selectedTiers.includes(tier)) continue;
-
-    for(const m of tierData[tier]) {
-      // 1. Filter by SearchQuery and SearchScope
-      if(searchQuery !== '') {
-        const query = searchQuery.toLowerCase();
-        let match = false;
-        if (searchScope.includes('title') && m.title.toLowerCase().includes(query)) match = true;
-        if (!match && searchScope.includes('description') && m.description && m.description.toLowerCase().includes(query)) match = true;
-        if (!match && searchScope.includes('tags') && m.tags && m.tags.some(t => t.toLowerCase().includes(query))) match = true;
-        
-        if(!match) continue;
-      }
-
-      // 2. Filter by Tags and TagLogic
-      if(selectedTags && selectedTags.length > 0) {
-        if(!m.tags || m.tags.length === 0) continue;
-        const tagLabels = selectedTags.map(t => t.label);
-        if (tagLogic === 'AND') {
-          if (!tagLabels.every(label => m.tags.includes(label))) continue;
-        } else {
-          if (!tagLabels.some(label => m.tags.includes(label))) continue;
-        }
-      }
-
-      // 3. Filter by Time Period
-      if (!isInDateRange(m.year)) continue;
-
-      array.push(m);
-    }
-  }
-
-  // Group back into tiers
-  array.forEach(m => {
-    data[m.tier].push(m);
-  });
-
-  // 4. Sort each tier
-  Object.keys(data).forEach(tier => {
-    data[tier].sort((a, b) => {
-      if (sortOrder === 'dateNewest') {
-        return new Date(b.year) - new Date(a.year);
-      } else if (sortOrder === 'dateOldest') {
-        return new Date(a.year) - new Date(b.year);
-      } else if (sortOrder === 'titleAZ') {
-        return a.title.localeCompare(b.title);
-      } else {
-        // Default: orderIndex then title
-        const ai = (typeof a.orderIndex === 'number') ? a.orderIndex : Number.MAX_SAFE_INTEGER;
-        const bi = (typeof b.orderIndex === 'number') ? b.orderIndex : Number.MAX_SAFE_INTEGER;
-        if (ai !== bi) return ai - bi;
-        const at = a.title || '';
-        const bt = b.title || '';
-        return at.localeCompare(bt);
-      }
-    });
-  });
-
-  // Change TagsList Dynamically
-  let tags_list = [];
-  if (tagLogic === 'OR') {
-    tags_list = allTags;
-  } else {
-    const allTagsList = allTags.map((item) => item['label']);
-    const added_tags = new Set();
-    Object.keys(data).forEach(tier => {
-      data[tier].forEach(item => {
-        if(item.tags) {
-          item.tags.forEach(tag => {
-            const foundIndex = allTagsList.indexOf(tag);
-            if(foundIndex >= 0 && !added_tags.has(tag)) {
-              tags_list.push({ value: foundIndex, label: tag });
-              added_tags.add(tag);
-            }
-          });
-        }
-      });
-    });
-  }
-  setSuggestedTags(tags_list);
-  setSearchChanged(false);
-  return data;
-}
 
 function SharedView() {
   const { token, username, mediaType: urlMediaType } = useParams();
@@ -188,7 +40,7 @@ function SharedView() {
   const [endDate, setEndDate] = useState('');
   const [tagLogic, setTagLogic] = useState('AND');
   const [searchScope, setSearchScope] = useState(['title']);
-  const [selectedTiers, setSelectedTiers] = useState(["S", "A", "B", "C", "D", "F"]);
+  const [selectedTiers, setSelectedTiers] = useState(constants.STANDARD_TIERS);
   const [sortOrder, setSortOrder] = useState('default');
   const [suggestedTags, setSuggestedTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
@@ -211,7 +63,7 @@ function SharedView() {
     setTagLogic('AND');
     setSearchQuery('');
     setSearchScope(['title']);
-    setSelectedTiers(["S", "A", "B", "C", "D", "F"]);
+    setSelectedTiers(constants.STANDARD_TIERS);
     setSortOrder('default');
     setSearchChanged(true);
   };
@@ -226,7 +78,7 @@ function SharedView() {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
-  const tiers = ["S", "A", "B", "C", "D", "F"];
+  const tiers = constants.STANDARD_TIERS;
 
   // Fetch Data
   useEffect(() => {
@@ -252,7 +104,7 @@ function SharedView() {
           if(res.data.collectionTierTitles && Object.keys(res.data.collectionTierTitles).length > 0) {
             setCollectionTierTitles(res.data.collectionTierTitles);
           } else {
-            setCollectionTierTitles({ S: 'S Tier', A: 'A Tier', B: 'B Tier', C: 'C Tier', D: 'D Tier', F: 'F Tier' });
+            setCollectionTierTitles(constants.DEFAULT_TIER_LABELS);
           }
           
           if(res.data.todoTierTitles && Object.keys(res.data.todoTierTitles).length > 0) {
@@ -263,7 +115,7 @@ function SharedView() {
           
           // Set initial tier titles based on the initial view
           if (res.data.shareConfig.todo && !res.data.shareConfig.collection) {
-            setTierTitles(res.data.todoTierTitles || { S: 'S Tier', A: 'A Tier', B: 'B Tier', C: 'C Tier', D: 'D Tier', F: 'F Tier' });
+            setTierTitles(res.data.todoTierTitles || constants.DEFAULT_TIER_LABELS);
           } else {
             setTierTitles(res.data.collectionTierTitles || { S: 'S Tier', A: 'A Tier', B: 'B Tier', C: 'C Tier', D: 'D Tier', F: 'F Tier' });
           }
@@ -303,7 +155,7 @@ function SharedView() {
 
     // 3. Group by Tier
     var tierData = {
-      S: [], A: [], B: [], C: [], D: [], F: []
+      ...constants.EMPTY_TIERS_OBJ
     };
     currentList.forEach(m => {
         if(tierData[m.tier]) tierData[m.tier].push(m);

@@ -1,21 +1,27 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import DeleteModal from "../components/DeleteModal";
 import TagMaker from "../components/TagMaker";
 import useSwipe from "../hooks/useSwipe.tsx";
 import DuplicateModal from "../components/DuplicateModal";
+import { toCapitalNotation } from "../helpers";
 const constants = require('../constants');
 const theme = require('../../styling/theme');
 
-function toCapitalNotation(inputString) {
-  return inputString
-    .split(' ') // Split the string into an array of words
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
-    .join(' '); // Join the words back into a single string
-}
-
-function ShowMediaDetails({user, newType, filteredData}) {
+function ShowMediaDetails({
+  user, 
+  newType, 
+  filteredData,
+  dataSource = 'api',
+  basePath = '',
+  onGetMediaById,
+  onUpdateMedia,
+  onDeleteMedia,
+  onDuplicateMedia,
+  mediaTypeLoc: propMediaTypeLoc,
+  mediaList: propMediaList
+}) {
   const [media, setMedia] = useState({});
   const { mediaType, group } = useParams();
   const [loaded, setLoaded] = useState(false)
@@ -26,11 +32,11 @@ function ShowMediaDetails({user, newType, filteredData}) {
   
   const navigate = useNavigate();
   const location = useLocation();
-  const mediaTypeLoc = user ? (newType ? user.newTypes[mediaType] : user[mediaType]) : null;
+  const mediaTypeLoc = propMediaTypeLoc || (user ? (newType ? user.newTypes[mediaType] : user[mediaType]) : null);
   
   // Function to build back URL with preserved query parameters
   const buildBackUrl = () => {
-    const baseUrl = `/${mediaType}/${media.toDo === true ? 'to-do' : 'collection'}`;
+    const baseUrl = `${basePath}/${mediaType}/${media.toDo === true ? 'to-do' : 'collection'}`;
     const currentSearch = location.search;
     
     // If there are query parameters (like tags), preserve them
@@ -41,38 +47,58 @@ function ShowMediaDetails({user, newType, filteredData}) {
     return baseUrl;
   };
   
-  // Build mediaList from filteredData (clean React approach)
+  // Build mediaList from filteredData (app mode) or prop (demo mode)
   const mediaList = useMemo(() => {
+    if (dataSource === 'demo' && propMediaList) {
+      // Demo mode: use provided mediaList
+      return propMediaList;
+    }
+    // App mode: build from filteredData
     return filteredData ? Object.values(filteredData).reduce((acc, val) => acc.concat(val), []) : [];
-  }, [filteredData]);
+  }, [filteredData, dataSource, propMediaList]);
   
   useEffect(() => {
     if(!loaded) {
-      axios
-      .get(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`)
-      .then((res) => {
-        if(!res.data) {
-          navigate('/404')
+      if (dataSource === 'demo' && onGetMediaById) {
+        // Demo mode: use callback
+        const foundMedia = onGetMediaById(group);
+        if (!foundMedia) {
+          navigate('/404');
         } else {
-          console.log("Details GET /api/media/type/id", res.data)
-          setMedia(res.data);
-          setTempMedia(res.data); // Initialize temp media for editing
-          
-          // Find current media index in the mediaList
-          for(let i = 0; i < mediaList.length; i++) {
-            if(mediaList[i].title === res.data.title) {
-              setCurIndex(i);
-              break;
-            }
-          }
+          setMedia(foundMedia);
+          setTempMedia(foundMedia);
+          // Find current media index - demo mode uses ID matching
+          // This will be handled by parent component providing mediaList
           setLoaded(true);
         }
-      })
-      .catch((err) => {
-        console.log('Error from ShowMediaDetails');
-    });
+      } else if (dataSource === 'api') {
+        // API mode: use axios
+        axios
+        .get(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`)
+        .then((res) => {
+          if(!res.data) {
+            navigate('/404')
+          } else {
+            console.log("Details GET /api/media/type/id", res.data)
+            setMedia(res.data);
+            setTempMedia(res.data); // Initialize temp media for editing
+            
+            // Find current media index in the mediaList
+            for(let i = 0; i < mediaList.length; i++) {
+              if(mediaList[i].title === res.data.title) {
+                setCurIndex(i);
+                break;
+              }
+            }
+            setLoaded(true);
+          }
+        })
+        .catch((err) => {
+          console.log('Error from ShowMediaDetails');
+        });
+      }
     }
-  }, [loaded, mediaType, group, navigate, mediaList]);
+  }, [loaded, mediaType, group, navigate, mediaList, dataSource, onGetMediaById, propMediaList]);
 
   // Editing functions
   const startEditing = (field) => {
@@ -107,10 +133,6 @@ function ShowMediaDetails({user, newType, filteredData}) {
   };
 
   const saveChanges = () => {
-    console.log("=== SAVE CHANGES DEBUG ===");
-    console.log("Current tempMedia state:", tempMedia);
-    console.log("Original media state:", media);
-    
     const data = {
       title: tempMedia.title,
       tier: tempMedia.tier,
@@ -120,42 +142,59 @@ function ShowMediaDetails({user, newType, filteredData}) {
       description: tempMedia.description
     };
 
-    console.log("Data being sent to backend:", data);
-    console.log("API endpoint:", constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`);
+    if (onUpdateMedia) {
+      const success = onUpdateMedia(group, data);
+      if (success) {
+        setMedia(tempMedia);
+        setIsEditing(false);
+        setEditingFields(new Set());
+      } else {
+        setTempMedia(media);
+      }
+      return;
+    }
 
     axios
       .put(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`, data)
       .then((res) => {
-        console.log("PUT /api/media/type/id success:", res.data);
-        console.log("Updated media data:", tempMedia);
         setMedia(tempMedia);
         setIsEditing(false);
         setEditingFields(new Set());
       })
       .catch((err) => {
-        console.log("PUT /api/media/type/id error:", err);
-        console.log("Error details:", err.response?.data || err.message);
-        // Reset on error
         setTempMedia(media);
       });
   };
 
   function onDeleteClick() {
-    axios
-      .delete(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`)
-      .then((res) => {
-        // Use the media object's toDo property as fallback if res.data.toDo is undefined
-        const groupStr = (res.data && res.data.toDo === true) || media.toDo === true ? 'to-do' : 'collection';
-        const backUrl = `/${mediaType}/${groupStr}`;
+    if (dataSource === 'demo' && onDeleteMedia) {
+      // Demo mode: use callback
+      const success = onDeleteMedia(group);
+      if (success) {
+        const groupStr = media.toDo === true ? 'to-do' : 'collection';
+        const backUrl = `${basePath}/${mediaType}/${groupStr}`;
         const currentSearch = location.search;
-        
-        // Preserve query parameters when navigating back after delete
         const finalUrl = currentSearch ? `${backUrl}${currentSearch}` : backUrl;
         navigate(finalUrl);
-      })
-      .catch((err) => {
-        console.log('Error from ShowMediaDetails_deleteClick:', err);
-      });
+      }
+    } else if (dataSource === 'api') {
+      // API mode: use axios
+      axios
+        .delete(constants['SERVER_URL'] + `/api/media/${mediaType}/${group}`)
+        .then((res) => {
+          // Use the media object's toDo property as fallback if res.data.toDo is undefined
+          const groupStr = (res.data && res.data.toDo === true) || media.toDo === true ? 'to-do' : 'collection';
+          const backUrl = `${basePath}/${mediaType}/${groupStr}`;
+          const currentSearch = location.search;
+          
+          // Preserve query parameters when navigating back after delete
+          const finalUrl = currentSearch ? `${backUrl}${currentSearch}` : backUrl;
+          navigate(finalUrl);
+        })
+        .catch((err) => {
+          console.log('Error from ShowMediaDetails_deleteClick:', err);
+        });
+    }
   };
 
   function onDuplicateClick() {
@@ -188,11 +227,22 @@ function ShowMediaDetails({user, newType, filteredData}) {
       newType: newType
     };
 
+    if (onDuplicateMedia) {
+      // Demo mode: use callback, then show success modal
+      const created = onDuplicateMedia(duplicateData);
+      if (created && created.ID) {
+        setDuplicateId(created.ID);
+        setShowDuplicateModal(true);
+      } else {
+        window.alert('Failed to duplicate media');
+      }
+      return;
+    }
+
     axios
       .post(constants['SERVER_URL'] + '/api/media', duplicateData)
       .then((res) => {
         console.log('Media duplicated successfully:', res.data);
-        // Store the new ID and show the success modal
         setDuplicateId(res.data.ID);
         setShowDuplicateModal(true);
       })
@@ -208,7 +258,7 @@ function ShowMediaDetails({user, newType, filteredData}) {
 
   function handleGoToCopy() {
     if (!duplicateId) return;
-    const newUrl = `/${mediaType}/${duplicateId}`;
+    const newUrl = `${basePath}/${mediaType}/${duplicateId}`;
     const currentSearch = location.search;
     const finalUrl = currentSearch ? `${newUrl}${currentSearch}` : newUrl;
     // Reset loaded state so the new media loads
@@ -282,6 +332,10 @@ function ShowMediaDetails({user, newType, filteredData}) {
   const [showDuplicateConfirmation, setShowDuplicateConfirmation] = useState(false);
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const [duplicateId, setDuplicateId] = useState(null);
+  const [tierSelectWidth, setTierSelectWidth] = useState('auto');
+  const tierTextMeasureRef = useRef(null);
+  const tierSelectRef = useRef(null);
+  const tierCellRef = useRef(null);
   
   const swipeHandlers = useSwipe({ 
     onSwipedLeft: onSwipeLeft, 
@@ -298,8 +352,45 @@ function ShowMediaDetails({user, newType, filteredData}) {
     setIsModalOpen(false);
   };
   
-  // Redirect to login if user is not authenticated
-  if (!user) {
+  const tiersVariable = (tempMedia.toDo !== undefined ? tempMedia.toDo : media.toDo) ? 'todoTiers' : 'collectionTiers';
+  
+  // Calculate tier select width based on tier title length
+  useEffect(() => {
+    if (editingFields.has('tier')) {
+      // Use requestAnimationFrame to ensure DOM is ready
+      requestAnimationFrame(() => {
+        if (tierTextMeasureRef.current && tierSelectRef.current && tierCellRef.current) {
+          const currentTier = tempMedia.tier || media.tier;
+          const tierTitle = mediaTypeLoc && mediaTypeLoc[tiersVariable] && mediaTypeLoc[tiersVariable][currentTier] 
+            ? mediaTypeLoc[tiersVariable][currentTier] 
+            : currentTier;
+          
+          // Update the hidden span with the tier title
+          tierTextMeasureRef.current.textContent = tierTitle;
+          
+          // Measure the text width
+          const textWidth = tierTextMeasureRef.current.offsetWidth;
+          
+          // Get the available width in the table cell (accounting for padding)
+          const cellWidth = tierCellRef.current.offsetWidth;
+          const cellPadding = 32; // px-4 = 1rem = 16px on each side
+          const maxAvailableWidth = cellWidth - cellPadding;
+          
+          // Set width to text width + some padding for the select dropdown arrow, but not exceeding cell width
+          const selectPadding = 40; // Space for dropdown arrow and some padding
+          const calculatedWidth = Math.min(textWidth + selectPadding, maxAvailableWidth);
+          
+          setTierSelectWidth(`${Math.max(calculatedWidth, 60)}px`); // Minimum 60px
+        }
+      });
+    } else {
+      // Reset width when not editing
+      setTierSelectWidth('auto');
+    }
+  }, [editingFields, tempMedia.tier, media.tier, mediaTypeLoc, tiersVariable]);
+  
+  // Redirect to login if user is not authenticated (only for API mode)
+  if (dataSource === 'api' && !user) {
     return (
       <div className="container-fluid bg-light min-vh-100 d-flex align-items-center">
         <div className="container">
@@ -319,8 +410,6 @@ function ShowMediaDetails({user, newType, filteredData}) {
     );
   }
   
-  const tiersVariable = (tempMedia.toDo !== undefined ? tempMedia.toDo : media.toDo) ? 'todoTiers' : 'collectionTiers';
-  
   // Helper function to render editable fields
   const renderEditableField = (field, value, type = 'text') => {
     if (editingFields.has(field)) {
@@ -337,18 +426,31 @@ function ShowMediaDetails({user, newType, filteredData}) {
               />
             );
           } else if (field === 'tier') {
-            const tiers = ['S', 'A', 'B', 'C', 'D', 'F'];
             return (
-              <select 
-                className='form-select form-select-sm' 
-                value={tempMedia[field]} 
-                onChange={(e) => handleFieldChange(field, e.target.value)}
-                style={{ width: 'auto', minWidth: '60px' }}
-              >
-                {tiers.map((tier) => (
-                  <option key={tier} value={tier}>{mediaTypeLoc && mediaTypeLoc[tiersVariable] ? mediaTypeLoc[tiersVariable][tier] : tier}</option>
-                ))}
-              </select>
+              <>
+                <span
+                  ref={tierTextMeasureRef}
+                  style={{
+                    position: 'absolute',
+                    visibility: 'hidden',
+                    whiteSpace: 'nowrap',
+                    fontSize: '0.875rem', // form-select-sm font size
+                    fontFamily: 'inherit',
+                    fontWeight: 'inherit'
+                  }}
+                />
+                <select 
+                  ref={tierSelectRef}
+                  className='form-select form-select-sm' 
+                  value={tempMedia[field]} 
+                  onChange={(e) => handleFieldChange(field, e.target.value)}
+                  style={{ width: tierSelectWidth, minWidth: '60px', maxWidth: '100%' }}
+                >
+                  {constants.STANDARD_TIERS.map((tier) => (
+                    <option key={tier} value={tier}>{mediaTypeLoc && mediaTypeLoc[tiersVariable] ? mediaTypeLoc[tiersVariable][tier] : tier}</option>
+                  ))}
+                </select>
+              </>
             );
           } else if (field === 'toDo') {
             return (
@@ -375,6 +477,7 @@ function ShowMediaDetails({user, newType, filteredData}) {
               placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags}
               hideLabel={true}
               size="extra-small"
+              dataSource={dataSource}
             />
           );
         default:
@@ -566,7 +669,7 @@ function ShowMediaDetails({user, newType, filteredData}) {
                       <tr style={{backgroundColor: theme.colors.background.dark}}>
                         <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>3</th>
                         <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>Tier</td>
-                        <td className='px-4 py-3 text-white' style={{backgroundColor: theme.colors.background.dark}}>
+                        <td ref={tierCellRef} className='px-4 py-3 text-white' style={{backgroundColor: theme.colors.background.dark}}>
                           {renderEditableField('tier', mediaTypeLoc && mediaTypeLoc[tiersVariable] ? mediaTypeLoc[tiersVariable][media.tier] : media.tier, 'select')}
                         </td>
                       </tr>
@@ -638,36 +741,22 @@ function ShowMediaDetails({user, newType, filteredData}) {
               </div>
               <div className="modal-body">
                 <p className="text-dark mb-3">Are you sure you want to duplicate this record?</p>
-              </div>
-              <div className="modal-footer border-top">
-                <button 
-                  type="button" 
-                  className="btn btn-secondary btn-sm d-md-none"
-                  onClick={handleCancelDuplicate}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="button" 
-                  className="btn btn-success btn-sm d-md-none"
-                  onClick={handleConfirmDuplicate}
-                >
-                  Duplicate
-                </button>
-                <button 
-                  type="button" 
-                  className="btn btn-secondary btn-lg d-none d-md-inline-block"
-                  onClick={handleCancelDuplicate}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="button" 
-                  className="btn btn-success btn-lg d-none d-md-inline-block"
-                  onClick={handleConfirmDuplicate}
-                >
-                  Duplicate
-                </button>
+                <div className="d-flex gap-2 justify-content-end">
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary btn-sm"
+                    onClick={handleCancelDuplicate}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="button" 
+                    className="btn btn-success btn-sm"
+                    onClick={handleConfirmDuplicate}
+                  >
+                    Duplicate
+                  </button>
+                </div>
               </div>
             </div>
           </div>

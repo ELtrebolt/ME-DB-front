@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { createEmptyTiersObject } from '../../app/helpers';
 
 // Import sample data
 import animeData from '../data/anime.json';
@@ -10,7 +11,7 @@ const STORAGE_KEY_PREFIX = 'demo_';
 const VERSION_KEY = 'demo_version';
 // Increment this version when you update the default JSON data files
 // This will cause all users to get fresh data on their next visit
-const DEMO_VERSION = '1.0';
+const DEMO_VERSION = '2.0';
 
 const defaultData = {
   anime: animeData,
@@ -189,7 +190,7 @@ export const useDemoData = (mediaType) => {
 
   // Get media organized by tier
   const getMediaByTier = useCallback((toDo) => {
-    const tiersObj = { S: [], A: [], B: [], C: [], D: [], F: [] };
+    const tiersObj = createEmptyTiersObject();
     const filtered = getMediaByToDo(toDo);
     
     filtered.forEach(item => {
@@ -216,9 +217,12 @@ export const useDemoData = (mediaType) => {
   const createMedia = useCallback((newItem) => {
     if (!data) return null;
     
-    // Generate unique ID
-    const timestamp = Date.now();
-    const newId = `demo-${mediaType}-new-${timestamp}`;
+    // Generate unique numeric ID (per media type)
+    const maxN = data.reduce((max, item) => {
+      const n = parseInt(item.ID, 10);
+      return !isNaN(n) && n > max ? n : max;
+    }, 0);
+    const newId = String(maxN + 1);
     
     const itemWithId = {
       ...newItem,

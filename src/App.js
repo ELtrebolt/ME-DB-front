@@ -180,7 +180,7 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
   const { mediaType, group } = useParams();
   const location = useLocation();
   const newType = newTypes.includes(mediaType);
-  const defaultTypes = useMemo(() => ['anime', 'tv', 'movies', 'games'], []);
+  const defaultTypes = useMemo(() => constants.STANDARD_MEDIA_TYPES, []);
   const mediaTypes = useMemo(() => newTypes.length > 0 ? [...defaultTypes, ...newTypes] : defaultTypes, [newTypes, defaultTypes]);
 
   // Use ref to track previous URL search to detect actual URL navigation
@@ -291,7 +291,7 @@ function DemoLayout({ children, user }) {
 // Demo Route Handler - Handles /demo/:mediaType route
 function DemoRouteHandler() {
   const { mediaType } = useParams();
-  const validTypes = ['anime', 'tv', 'movies', 'games'];
+  const validTypes = constants.STANDARD_MEDIA_TYPES;
   
   if (validTypes.includes(mediaType)) {
     return <Navigate to={`/demo/${mediaType}/collection`} replace />;
@@ -302,13 +302,13 @@ function DemoRouteHandler() {
 // Demo Detail Route Handler - Handles /demo/:mediaType/:group where group could be ID or "collection"/"to-do"
 function DemoDetailRouteHandler() {
   const { mediaType, group } = useParams();
-  const validTypes = ['anime', 'tv', 'movies', 'games'];
+  const validTypes = constants.STANDARD_MEDIA_TYPES;
   
   if (!validTypes.includes(mediaType)) {
     return <Navigate to="/404" />;
   }
   
-  // If group is a valid ID (could be string like "demo-anime-1"), show details
+  // If group is a valid ID (e.g. numeric like 1 or 50), show details
   // Otherwise redirect to 404
   if (group && group !== 'collection' && group !== 'to-do') {
     return <DemoShowMediaDetails />;

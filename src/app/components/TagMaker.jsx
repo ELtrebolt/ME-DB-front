@@ -1,61 +1,37 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { ReactTags } from 'react-tag-autocomplete'
-import { matchSorter } from 'match-sorter'
-import axios from 'axios';
+import { useMediaData } from '../hooks/useMediaData';
+import { suggestionsByLabel } from '../helpers';
 
-const constants = require('../constants');
-
-const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hideLabel = false, size = 'normal', zIndex = 1000}) => {
-  const [suggestions, setSuggestions] = useState();
+const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hideLabel = false, size = 'normal', zIndex = 1000, dataSource = 'api'}) => {
+  const { uniqueTags } = useMediaData(mediaType, dataSource);
+  const [suggestions, setSuggestions] = useState([]);
   // list of {value, label}
   const [selected, setSelected] = useState([]);
 
-  // get suggestions by iterating through all current media
+  // Build suggestions from uniqueTags
   useEffect(() => {
-    // Get suggestions if they don't exist
-    if(!suggestions) {
-      axios
-      .get(constants['SERVER_URL'] + '/api/media/' + mediaType + '/tags')
-      .then((res) => {
-        var all_tags = [];
-        var alreadySelectedList = [];
-        // keep tag IDs the same betwen ToDo and Collection
-        // keep alreadySelected Tags even if they are not in the other group
-        if (res.data.uniqueTags) {
-          res.data.uniqueTags.forEach((t, index) => {
-            if(alreadySelected && alreadySelected.length > 0) {
-              for(const s of alreadySelected) {
-                if(s === t || s['label'] === t) {
-                  alreadySelectedList.push({value:index, label:t});
-                  break;
-                }
-              }
-            }
-            all_tags.push({value:index, label:t})
-          })
-        }
-        setSuggestions(all_tags);  
-        setSelected(alreadySelectedList);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    } else {
-      // If suggestions exist, only update selected tags if they haven't been set yet
-      if (selected.length === 0 && alreadySelected && alreadySelected.length > 0 && suggestions) {
-        var alreadySelectedList = [];
-        suggestions.forEach((t, index) => {
-          for(const s of alreadySelected) {
-            if(s === t || s['label'] === t) {
-              alreadySelectedList.push({value:index, label:t});
+    if (uniqueTags && uniqueTags.length > 0) {
+      const all_tags = uniqueTags.map((t, index) => ({ value: index, label: t }));
+      setSuggestions(all_tags);
+      
+      // Set already selected tags
+      if (alreadySelected && alreadySelected.length > 0 && selected.length === 0) {
+        const alreadySelectedList = [];
+        uniqueTags.forEach((t, index) => {
+          for (const s of alreadySelected) {
+            if (s === t || s['label'] === t) {
+              alreadySelectedList.push({ value: index, label: t });
               break;
             }
           }
         });
-        setSelected(alreadySelectedList);
+        if (alreadySelectedList.length > 0) {
+          setSelected(alreadySelectedList);
+        }
       }
     }
-  }, [mediaType, suggestions, alreadySelected, selected.length]);
+  }, [uniqueTags, alreadySelected, selected.length]);
 
   // Separate effect to handle initial alreadySelected tags
   useEffect(() => {
@@ -64,16 +40,11 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hid
     }
   }, [alreadySelected, selected.length]);
 
-  function suggestionsTransform(value, suggestions) {
-    return matchSorter(suggestions, value, { keys: ['label'] })
-  }
-
   const onAdd = useCallback(
     (newTag) => {
       const newSelected = [...selected, newTag];
       setSelected(newSelected);
       setMedia({ ...media, tags: newSelected.map(item => item.label) });
-      console.log("Added tag:", newTag.label);
     },
     [selected, setSelected, media, setMedia]
   )
@@ -88,7 +59,7 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hid
     [selected, setSelected, media, setMedia]
   )
 
-  if(selected !== null) {
+  if(selected !== null && suggestions !== null) {
     const baseContainerStyle = {
       position: 'relative',
       zIndex: zIndex,
@@ -121,7 +92,7 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hid
           onDelete={onDelete}
           noOptionsText="No matching tags" 
           allowNew={true}
-          suggestionsTransform={suggestionsTransform}
+          suggestionsTransform={suggestionsByLabel}
           placeholderText={placeholder}
           style={reactTagsStyle}
         />

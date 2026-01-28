@@ -2,17 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import TagMaker from "../components/TagMaker";
+import { toCapitalNotation } from "../helpers";
 const constants = require('../constants');
 const theme = require('../../styling/theme');
 
-function toCapitalNotation(inputString) {
-  return inputString
-    .split(' ') // Split the string into an array of words
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
-    .join(' '); // Join the words back into a single string
-}
-
-const CreateMedia = ({user, toDo, newType, selectedTags}) => {
+const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', basePath = '', onCreateMedia, mediaTypeLoc: propMediaTypeLoc, useYearSelect = false}) => {
   
   const location = useLocation();
   
@@ -51,17 +45,22 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
   const urlParams = new URLSearchParams(window.location.search);
   const preselectedTier = urlParams.get('tier');
   
+  // For demo mode with year select, use just the year; otherwise use full date
+  const initialYear = useYearSelect 
+    ? new Date().getFullYear().toString() 
+    : new Date().toISOString().split('T')[0];
+  
   const [media, setMedia] = useState({
     mediaType: mediaType,
     title: '',
     tier: preselectedTier ? preselectedTier : 'S',
-    toDo: toDo.toString(),
-    year: new Date().toISOString().split('T')[0],
+    toDo: dataSource === 'demo' ? toDo : toDo.toString(),
+    year: initialYear,
     tags: effectiveSelectedTags.map(item => item.label),
     description: ''
   });
   const [titleError, setTitleError] = useState(false);
-  const mediaTypeLoc = user ? (newType ? user.newTypes[mediaType] : user[mediaType]) : null;
+  const mediaTypeLoc = propMediaTypeLoc || (user ? (newType ? user.newTypes[mediaType] : user[mediaType]) : null);
 
   // Update media tags when effectiveSelectedTags changes
   useEffect(() => {
@@ -84,8 +83,8 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
     // This effect ensures the component re-renders when URL search params change
   }, [location.search]); // Include location.search dependency
 
-  // Redirect to login if user is not authenticated
-  if (!user) {
+  // Redirect to login if user is not authenticated (only for API mode)
+  if (dataSource === 'api' && !user) {
     return (
       <div className="container-fluid bg-light min-vh-100 d-flex align-items-center">
         <div className="container">
@@ -136,6 +135,41 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
     // Clear any previous title error
     setTitleError(false);
     
+    // If custom onCreateMedia callback provided (for demo mode), use it
+    if (onCreateMedia) {
+      // Convert year to full date format if using year select (for demo data compatibility)
+      const yearValue = useYearSelect && media.year.length === 4 
+        ? `${media.year}-01-01` 
+        : media.year;
+      
+      const newMedia = onCreateMedia({
+        title: media.title,
+        tier: media.tier,
+        toDo: toDo,
+        year: yearValue,
+        tags: media.tags,
+        description: media.description
+      });
+      
+      if (newMedia) {
+        // Navigate back to list
+        const urlParams = new URLSearchParams(location.search);
+        const currentTags = urlParams.get('tags');
+        const fromParam = urlParams.get('from');
+        
+        let targetURL = `${basePath}/${mediaType}/${toDo ? 'to-do' : 'collection'}`;
+        if (currentTags) {
+          targetURL += `?tags=${currentTags}`;
+          if (fromParam) {
+            targetURL += `&from=${fromParam}`;
+          }
+        }
+        navigate(targetURL);
+      }
+      return;
+    }
+    
+    // Otherwise, use API (app mode)
     console.log("Attempt to Create:", media)
     axios
       .post(constants['SERVER_URL'] + '/api/media', {media: media, newType: newType})
@@ -158,12 +192,19 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
 
   // console.log("Media", media);
   const years = Array.from({ length: constants.currentYear - 1969 }, (_, index) => constants.currentYear - index);
-  const tiers = ['S', 'A', 'B', 'C', 'D', 'F']
+  const tiers = constants.STANDARD_TIERS;
   const tiersName = toDo ? "todoTiers" : "collectionTiers"
   const yearString = toDo ? "Date You First Wanted To Do" : "Date You First Experienced"
+  
+  // Determine container styling based on data source
+  const containerClass = dataSource === 'demo' ? 'container py-2 py-md-3' : '';
+  const containerStyle = dataSource === 'demo' ? {} : { maxWidth: '900px', margin: '0 auto', paddingLeft: '1rem', paddingRight: '1rem' };
+  const wrapperClass = dataSource === 'demo' ? 'row justify-content-center' : '';
+  const cardClass = dataSource === 'demo' ? 'col-lg-10 col-md-12' : '';
+  
   return (
     <div className='CreateMedia' style={{backgroundColor: theme.colors.background.primary, minHeight: '100vh', color: 'white'}}>
-      <div className='py-2 py-md-3' style={{ maxWidth: '900px', margin: '0 auto', paddingLeft: '1rem', paddingRight: '1rem' }}>
+      <div className={containerClass || 'py-2 py-md-3'} style={containerStyle}>
         {/* Mobile layout - only visible on mobile */}
         <div className='row mb-2 d-md-none align-items-center'>
           <div className='col-3 d-flex justify-content-start'>
@@ -174,7 +215,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
                 const currentTags = urlParams.get('tags');
                 const fromParam = urlParams.get('from');
                 
-                let targetURL = `/${mediaType}/${toDo ? 'to-do' : 'collection'}`;
+                let targetURL = `${basePath}/${mediaType}/${toDo ? 'to-do' : 'collection'}`;
                 if (currentTags) {
                   targetURL += `?tags=${currentTags}`;
                   if (fromParam) {
@@ -222,7 +263,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
                 const fromParam = urlParams.get('from');
                 
                 // Build the target URL preserving tags and from parameter
-                let targetURL = `/${mediaType}/${toDo ? 'to-do' : 'collection'}`;
+                let targetURL = `${basePath}/${mediaType}/${toDo ? 'to-do' : 'collection'}`;
                 if (currentTags) {
                   targetURL += `?tags=${currentTags}`;
                   if (fromParam) {
@@ -252,8 +293,9 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
           <div className='col-md-2'></div>
         </div>
         
-        <div>
-          <div className="card shadow-soft border-0" style={{backgroundColor: theme.colors.background.dark}}>
+        <div className={wrapperClass}>
+          <div className={cardClass}>
+            <div className="card shadow-soft border-0" style={{backgroundColor: theme.colors.background.dark}}>
             <div className="card-body p-0" style={{backgroundColor: theme.colors.background.dark}}>
               <form noValidate onSubmit={onSubmit}>
                   <div className="table-responsive d-none d-md-block" style={{overflow: 'visible'}}>
@@ -288,13 +330,26 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
                           <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>2</th>
                           <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>{yearString}</td>
                           <td className='px-4 py-3' style={{backgroundColor: theme.colors.background.dark}}>
-                            <input 
-                              type='date'
-                              className='form-control form-control-sm' 
-                              id='year' 
-                              value={media.year} 
-                              onChange={onChange}
-                            />
+                            {useYearSelect ? (
+                              <select 
+                                className='form-select form-select-sm' 
+                                id='year' 
+                                value={media.year.length === 4 ? media.year : media.year.split('-')[0]} 
+                                onChange={onChange}
+                              >
+                                {years.map((year) => (
+                                  <option key={year} value={year}>{year}</option>
+                                ))}
+                              </select>
+                            ) : (
+                              <input 
+                                type='date'
+                                className='form-control form-control-sm' 
+                                id='year' 
+                                value={media.year} 
+                                onChange={onChange}
+                              />
+                            )}
                           </td>
                         </tr>
                         <tr style={{backgroundColor: theme.colors.background.dark}}>
@@ -317,7 +372,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
                           <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>4</th>
                           <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>Tags (Optional)</td>
                           <td className='px-4 py-3' style={{backgroundColor: theme.colors.background.dark, overflow: 'visible'}}>
-                            <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={effectiveSelectedTags} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags} hideLabel={true} zIndex={10}></TagMaker>
+                            <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={effectiveSelectedTags} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags} hideLabel={true} zIndex={10} dataSource={dataSource}></TagMaker>
                           </td>
                         </tr>
                         <tr style={{backgroundColor: theme.colors.background.dark}}>
@@ -371,24 +426,40 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
                     
                     <div className="form-group mb-1">
                       <label className="form-label text-white fw-semibold mb-1" style={{fontSize: '0.75rem'}}><span className="text-warning">2.</span> {yearString}</label>
-                      <select 
-                        className='form-select form-select-sm' 
-                        id='year' 
-                        value={media.year} 
-                        onChange={onChange}
-                        style={{
-                          fontSize: '0.75rem',
-                          padding: '0.2rem 0.4rem',
-                          height: 'auto',
-                          minHeight: '28px'
-                        }}
-                      >
-                        {years.map((year) => (
-                          <option key={year} value={year}>
-                            {year}
-                          </option>
-                        ))}
-                      </select>
+                      {useYearSelect ? (
+                        <select 
+                          className='form-select form-select-sm' 
+                          id='year' 
+                          value={media.year.length === 4 ? media.year : media.year.split('-')[0]} 
+                          onChange={onChange}
+                          style={{
+                            fontSize: '0.75rem',
+                            padding: '0.2rem 0.4rem',
+                            height: 'auto',
+                            minHeight: '28px'
+                          }}
+                        >
+                          {years.map((year) => (
+                            <option key={year} value={year}>
+                              {year}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input 
+                          type='date'
+                          className='form-control form-control-sm' 
+                          id='year' 
+                          value={media.year} 
+                          onChange={onChange}
+                          style={{
+                            fontSize: '0.75rem',
+                            padding: '0.2rem 0.4rem',
+                            height: 'auto',
+                            minHeight: '28px'
+                          }}
+                        />
+                      )}
                     </div>
                     
                     <div className="form-group mb-1">
@@ -406,7 +477,9 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
                         }}
                       >
                         {tiers.map((tier) => (
-                          <option key={tier} value={tier}>{mediaTypeLoc && mediaTypeLoc[tiersName] ? mediaTypeLoc[tiersName][tier] : tier}</option>
+                          <option key={tier} value={tier}>
+                            {mediaTypeLoc && mediaTypeLoc[tiersName] ? mediaTypeLoc[tiersName][tier] : tier}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -414,7 +487,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
                     <div className="form-group mb-1">
                       <label className="form-label text-white fw-semibold mb-1" style={{fontSize: '0.75rem'}}><span className="text-warning">4.</span> Tags (Optional)</label>
                       <div style={{fontSize: '0.75rem'}}>
-                        <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={effectiveSelectedTags} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags} hideLabel={true} zIndex={10}></TagMaker>
+                        <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={effectiveSelectedTags} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags} hideLabel={true} zIndex={10} dataSource={dataSource}></TagMaker>
                       </div>
                     </div>
                     
@@ -439,25 +512,30 @@ const CreateMedia = ({user, toDo, newType, selectedTags}) => {
               </form>
             </div>
           </div>
+          </div>
         </div>
         
-        <div className='mt-2' style={{ textAlign: 'center' }}>
-          <button 
-            onClick={onSubmit}
-            className='btn btn-warning btn-lg d-none d-md-inline-block'
-          >
-            <i className="fas fa-plus me-2"></i>Create Media
-          </button>
-          <button 
-            onClick={onSubmit}
-            className='btn btn-warning btn-sm d-md-none'
-            style={{
-              fontSize: '0.8rem',
-              padding: '0.375rem 0.75rem'
-            }}
-          >
-            <i className="fas fa-plus me-1"></i>Create Media
-          </button>
+        <div className={dataSource === 'demo' ? 'row mt-2' : 'mt-2'} style={{ textAlign: 'center' }}>
+          {dataSource === 'demo' && <div className='col-md-4'></div>}
+          <div className={dataSource === 'demo' ? 'col-md-4 text-center' : ''}>
+            <button 
+              onClick={onSubmit}
+              className='btn btn-warning btn-lg d-none d-md-inline-block'
+            >
+              <i className="fas fa-plus me-2"></i>Create Media
+            </button>
+            <button 
+              onClick={onSubmit}
+              className='btn btn-warning btn-sm d-md-none'
+              style={{
+                fontSize: '0.8rem',
+                padding: '0.375rem 0.75rem'
+              }}
+            >
+              <i className="fas fa-plus me-1"></i>Create Media
+            </button>
+          </div>
+          {dataSource === 'demo' && <div className='col-md-4'></div>}
         </div>
       </div>
     </div>

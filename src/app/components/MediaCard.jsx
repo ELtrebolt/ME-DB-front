@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-const MediaCard = ({ media, listeners, onCardClick }) => {
+const MediaCard = ({ media, listeners, onCardClick, basePath = '' }) => {
   const location = useLocation();
   
   // Calculate dynamic width based on screen size and title length
@@ -32,7 +32,7 @@ const MediaCard = ({ media, listeners, onCardClick }) => {
   
   // Build the details URL with preserved query parameters
   const buildDetailsUrl = () => {
-    const baseUrl = `/${media.mediaType}/${media.ID}`;
+    const baseUrl = `${basePath}/${media.mediaType}/${media.ID}`;
     const currentSearch = location.search;
     
     // If there are query parameters (like tags), preserve them

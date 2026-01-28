@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useClickOutside } from '../../app/hooks/useClickOutside';
+import { calculateDropdownWidth } from '../../app/helpers';
 const theme = require('../../styling/theme');
 const constants = require('../../app/constants');
 
@@ -18,32 +20,19 @@ const DemoNavbar = ({ user }) => {
   // Calculate dynamic width for mobile media dropdown
   const calculateMediaDropdownWidth = () => {
     const labels = ['Anime', 'TV Shows', 'Movies', 'Games'];
-    const longestLabel = labels.reduce((a, b) => a.length > b.length ? a : b);
-    const estimatedWidth = longestLabel.length * 6 + 24;
-    return Math.max(estimatedWidth, 80);
+    return calculateDropdownWidth(labels, { variant: 'mobile', minWidth: 80 });
   };
 
   // Calculate dynamic width for desktop media dropdown
   const calculateDesktopMediaDropdownWidth = () => {
     const labels = ['Anime', 'TV Shows', 'Movies', 'Games'];
-    const longestLabel = labels.reduce((a, b) => a.length > b.length ? a : b);
-    const estimatedWidth = longestLabel.length * 7 + 32;
-    return Math.max(estimatedWidth, 100);
+    return calculateDropdownWidth(labels, { variant: 'desktop', minWidth: 100 });
   };
 
   // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (mediaDropdownRef.current && !mediaDropdownRef.current.contains(event.target)) {
-        setIsMediaMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  useClickOutside(mediaDropdownRef, () => {
+    setIsMediaMenuOpen(false);
+  });
 
   // Set CSS custom properties for dynamic dropdown widths
   useEffect(() => {

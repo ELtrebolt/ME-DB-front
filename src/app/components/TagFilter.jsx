@@ -1,15 +1,11 @@
 import React, { useCallback } from 'react'
 import { ReactTags } from 'react-tag-autocomplete'
-import { matchSorter } from 'match-sorter'
+import { suggestionsByLabel } from '../helpers';
 
 const Function = ({suggestedTags, selected, setSelected, setSearchChanged, tagLogic, setTagLogic}) => {
   
   const suggestions = suggestedTags;
   // suggested and selected are lists of { value: index, label: name }
-
-  function suggestionsTransform(value, suggestions) {
-    return matchSorter(suggestions, value, { keys: ['label'] })
-  }
 
   const onAdd = useCallback(
     (newTag) => {
@@ -43,7 +39,7 @@ const Function = ({suggestedTags, selected, setSelected, setSearchChanged, tagLo
         onAdd={onAdd}
         onDelete={onDelete}
         noOptionsText="No matching tags" 
-        suggestionsTransform={suggestionsTransform}
+        suggestionsTransform={suggestionsByLabel}
       />
     </div>
   )
