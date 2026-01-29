@@ -765,11 +765,13 @@
     .mobile-profile-dropdown {
       width: var(--mobile-profile-dropdown-width, 180px) !important;
       min-width: var(--mobile-profile-dropdown-width, 180px) !important;
+      background-color: #f8f9fa !important;
     }
     
     .mobile-media-dropdown {
       width: var(--mobile-media-dropdown-width, 120px) !important;
       min-width: var(--mobile-media-dropdown-width, 120px) !important;
+      background-color: #f8f9fa !important;
     }
   }
 

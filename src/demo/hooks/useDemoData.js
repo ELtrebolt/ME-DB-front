@@ -11,7 +11,7 @@ const STORAGE_KEY_PREFIX = 'demo_';
 export const VERSION_KEY = 'demo_version';
 // Increment this version when you update the default JSON data files
 // This will cause all users to get fresh data AND descriptions on their next visit
-export const DEMO_VERSION = '3.0';
+export const DEMO_VERSION = '1.0';
 
 const defaultData = {
   anime: animeData,

@@ -411,7 +411,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
                         }}
                         style={{
                           ...(titleError ? {borderColor: '#dc3545', boxShadow: '0 0 0 0.2rem rgba(220, 53, 69, 0.25)'} : {}),
-                          fontSize: '0.75rem',
+                          fontSize: '16px',
                           padding: '0.2rem 0.4rem',
                           height: 'auto',
                           minHeight: '28px'
@@ -452,13 +452,13 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
                           id='year' 
                           value={media.year} 
                           onChange={onChange}
-                          style={{
-                            fontSize: '0.75rem',
-                            padding: '0.2rem 0.4rem',
-                            height: 'auto',
-                            minHeight: '28px',
-                            width: 'fit-content'
-                          }}
+                        style={{
+                          fontSize: '16px',
+                          padding: '0.2rem 0.4rem',
+                          height: 'auto',
+                          minHeight: '28px',
+                          width: '100%'
+                        }}
                         />
                       )}
                     </div>
@@ -502,7 +502,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
                         value={media.description}
                         onChange={onChange}
                         style={{
-                          fontSize: '0.75rem',
+                          fontSize: '16px',
                           padding: '0.2rem 0.4rem',
                           height: 'auto',
                           minHeight: '28px'

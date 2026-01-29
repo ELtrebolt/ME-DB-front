@@ -7,14 +7,14 @@ const DESCRIPTIONS_VERSION_KEY = 'demo_descriptions_version';
 // Generate default descriptions based on current DEMO_VERSION
 // When DEMO_VERSION changes, these will be applied fresh
 const DEFAULT_DESCRIPTIONS = {
-  'anime-collection': `Top 30 from IMDB as of v${DEMO_VERSION} = imdb.com/search/title/?keywords=anime`,
-  'anime-to-do': `Top 30-60 from IMDB as of v${DEMO_VERSION} = imdb.com/search/title/?keywords=anime`,
-  'movies-collection': `Top 30 from IMDB as of v${DEMO_VERSION} = imdb.com/chart/top/`,
-  'movies-to-do': `Top 30-60 from IMDB as of v${DEMO_VERSION} = imdb.com/chart/top/`,
-  'tv-collection': `Top 30 from IMDB as of v${DEMO_VERSION} = imdb.com/chart/toptv/`,
-  'tv-to-do': `Top 30-60 from IMDB as of v${DEMO_VERSION} = imdb.com/chart/toptv/`,
-  'games-collection': `Top 30 as of v${DEMO_VERSION} = imdb.com/search/title/?title_type=video_game&sort=user_rating,desc`,
-  'games-to-do': `Top 30-60 as of v${DEMO_VERSION} = imdb.com/search/title/?title_type=video_game&sort=user_rating,desc`,
+  'anime-collection': 'Top 30 from IMDB as of Jan 2026 = imdb.com/search/title/?keywords=anime',
+  'anime-to-do': 'Top 30-60 from IMDB as of Jan 2026 = imdb.com/search/title/?keywords=anime',
+  'movies-collection': 'Top 30 from IMDB as of Jan 2026 = imdb.com/chart/top/',
+  'movies-to-do': 'Top 30-60 from IMDB as of Jan 2026 = imdb.com/chart/top/',
+  'tv-collection': 'Top 30 from IMDB as of Jan 2026 = imdb.com/chart/toptv/',
+  'tv-to-do': 'Top 30-60 from IMDB as of Jan 2026 = imdb.com/chart/toptv/',
+  'games-collection': 'Top 30 from Metacritic as of Jan 2026 = metacritic.com/browse/game/',
+  'games-to-do': 'Top 30-60 from Metacritic as of Jan 2026 = metacritic.com/browse/game/',
 };
 
 /**

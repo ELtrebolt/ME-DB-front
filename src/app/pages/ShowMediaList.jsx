@@ -17,6 +17,36 @@ import { useMediaData } from "../hooks/useMediaData";
 const constants = require('../constants');
 const theme = require('../../styling/theme');
 
+/**
+ * Renders description text; if it matches "text = url", the url is shown as a blue clickable link.
+ * @param {string} description - Full description (e.g. "Top 30 from IMDB = imdb.com/chart/top/")
+ * @param {number} [maxLen] - Optional max length; if exceeded, description is truncated with "..."
+ * @returns {React.ReactNode} - Plain string or fragment with text + link
+ */
+function renderDescriptionWithLink(description, maxLen) {
+  if (!description) return null;
+  const truncated = maxLen && description.length > maxLen
+    ? description.substring(0, maxLen) + '...'
+    : description;
+  const eqIndex = truncated.indexOf(' = ');
+  if (eqIndex !== -1) {
+    const afterEq = truncated.slice(eqIndex + 3);
+    if (afterEq.length > 0 && !afterEq.includes('...')) {
+      const text = truncated.slice(0, eqIndex);
+      const href = afterEq.startsWith('http') ? afterEq : 'https://' + afterEq;
+      return (
+        <>
+          {text}{' '}
+          <a href={href} className="text-warning text-decoration-underline fw-semibold" target="_blank" rel="noopener noreferrer">
+            {afterEq}
+          </a>
+        </>
+      );
+    }
+  }
+  return truncated;
+}
+
 function ShowMediaList({
   user, 
   setUserChanged, 
@@ -345,7 +375,7 @@ function ShowMediaList({
               </h1>
               {getCurrentDescription() && (
                 <p className='text-white-50 mb-0 mt-1' style={{ fontSize: '0.7rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {getCurrentDescription().length > 36 ? getCurrentDescription().substring(0, 36) + '...' : getCurrentDescription()}
+                  {renderDescriptionWithLink(getCurrentDescription(), 36)}
                 </p>
               )}
             </div>
@@ -368,7 +398,7 @@ function ShowMediaList({
               <h1 className='fw-light text-white mb-0' style={{ fontSize: 'clamp(28px, 4.5vw, 52px)' }}>{getTruncatedTitle(mediaType, toDoString)}</h1>
               {getCurrentDescription() && (
                 <p className='text-white-50 mb-0 mt-1' style={{ fontSize: '0.85rem' }}>
-                  {getCurrentDescription().length > 120 ? getCurrentDescription().substring(0, 120) + '...' : getCurrentDescription()}
+                  {renderDescriptionWithLink(getCurrentDescription(), 120)}
                 </p>
               )}
             </div>
