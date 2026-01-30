@@ -348,6 +348,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
                                 id='year' 
                                 value={media.year} 
                                 onChange={onChange}
+                                style={{ textAlign: 'left' }}
                               />
                             )}
                           </td>
@@ -457,7 +458,8 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
                           padding: '0.2rem 0.4rem',
                           height: 'auto',
                           minHeight: '28px',
-                          width: '100%'
+                          width: '100%',
+                          textAlign: 'left'
                         }}
                         />
                       )}

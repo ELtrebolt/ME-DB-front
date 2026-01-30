@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Footer from '../Footer';
-import collectionGif from '../img/collection-gif.gif';
-import todoGif from '../img/todo-gif.gif';
+import collectionMp4 from '../img/collection.mp4';
+import todoMp4 from '../img/todo.mp4';
 const constants = require('../../app/constants');
 const theme = require('../../styling/theme');
 
@@ -507,7 +507,7 @@ const Intro = () => {
                 backgroundColor: theme.components.introPage.cardDark.background,
                 border: theme.components.introPage.cardDark.border
               }}>
-                <img src={collectionGif} alt="Collection / tier list view" className="w-100" style={{ display: 'block' }} />
+                <video src={collectionMp4} className="w-100" style={{ display: 'block' }} autoPlay muted loop playsInline preload="metadata" aria-label="Collection / tier list view" />
               </div>
             </FadeUp>
             <FadeUp className="col-lg-6 order-lg-1">
@@ -538,7 +538,7 @@ const Intro = () => {
                 backgroundColor: theme.components.introPage.cardDark.background,
                 border: theme.components.introPage.cardDark.border
               }}>
-                <img src={todoGif} alt="To-Do list view" className="w-100" style={{ display: 'block' }} />
+                <video src={todoMp4} className="w-100" style={{ display: 'block' }} autoPlay muted loop playsInline preload="metadata" aria-label="To-Do list view" />
               </div>
             </FadeUp>
             <FadeUp className="col-lg-6" delay={150}>

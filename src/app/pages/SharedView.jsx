@@ -205,8 +205,7 @@ function SharedView() {
                             className='btn btn-warning btn-sm'
                             onClick={switchToDo}
                         >
-                             <i className="fas fa-exchange-alt me-1"></i>
-                             {toDoState ? 'View Collection' : 'View To-Do'}
+                             {toDoState ? <>View Collection<i className="fas fa-chevron-right ms-1"></i></> : <><i className="fas fa-chevron-left me-1"></i>View To-Do</>}
                         </button>
                     </div>
                 )}
@@ -228,8 +227,7 @@ function SharedView() {
                             className='btn btn-warning btn-sm'
                             onClick={switchToDo}
                         >
-                             <i className="fas fa-exchange-alt me-1"></i>
-                             {toDoState ? 'View Collection' : 'View To-Do'}
+                             {toDoState ? <>View Collection<i className="fas fa-chevron-right ms-1"></i></> : <><i className="fas fa-chevron-left me-1"></i>View To-Do</>}
                         </button>
                     )}
                 </div>

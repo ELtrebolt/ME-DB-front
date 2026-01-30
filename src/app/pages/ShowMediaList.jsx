@@ -366,7 +366,7 @@ function ShowMediaList({
           <div className='row d-md-none mb-3 align-items-center' style={{ margin: '0 -8px' }}>
             <div className='col-auto px-1'>
               <button className='btn btn-warning btn-xs' onClick={switchToDo} style={{ whiteSpace: 'nowrap' }}>
-                <i className="fas fa-exchange-alt me-1"></i>{toDoState ? 'Collection' : 'To-Do'}
+                {toDoState ? <>Collection<i className="fas fa-chevron-right ms-1"></i></> : <><i className="fas fa-chevron-left me-1"></i>To-Do</>}
               </button>
             </div>
             <div className='col text-center px-1' style={{ overflow: 'hidden', minWidth: 0 }}>
@@ -393,7 +393,7 @@ function ShowMediaList({
           </div>
 
           <div className='row align-items-center mb-3 d-none d-md-flex'>
-            <div className='col-md-2 text-center'><button className='btn btn-warning btn-lg' onClick={switchToDo}><i className="fas fa-exchange-alt me-2"></i>{toDoState ? toCapitalNotation('collection') : 'To-Do'}</button></div>
+            <div className='col-md-2 text-center'><button className='btn btn-warning btn-lg' onClick={switchToDo}>{toDoState ? <>{toCapitalNotation('collection')}<i className="fas fa-chevron-right ms-2"></i></> : <><i className="fas fa-chevron-left me-2"></i>To-Do</>}</button></div>
             <div className='col-md-8 text-center'>
               <h1 className='fw-light text-white mb-0' style={{ fontSize: 'clamp(28px, 4.5vw, 52px)' }}>{getTruncatedTitle(mediaType, toDoString)}</h1>
               {getCurrentDescription() && (

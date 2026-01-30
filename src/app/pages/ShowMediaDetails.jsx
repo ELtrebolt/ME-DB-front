@@ -377,7 +377,7 @@ function ShowMediaDetails({
           const maxAvailableWidth = cellWidth - cellPadding;
           
           // Set width to text width + some padding for the select dropdown arrow, but not exceeding cell width
-          const selectPadding = 40; // Space for dropdown arrow and some padding
+          const selectPadding = 56; // Space for dropdown arrow and some padding (wider on mobile so arrow doesn't overlap text)
           const calculatedWidth = Math.min(textWidth + selectPadding, maxAvailableWidth);
           
           setTierSelectWidth(`${Math.max(calculatedWidth, 60)}px`); // Minimum 60px
@@ -422,7 +422,7 @@ function ShowMediaDetails({
                 className='form-control form-control-sm' 
                 value={tempMedia[field] ? (typeof tempMedia[field] === 'string' ? tempMedia[field].split('T')[0] : new Date(tempMedia[field]).toISOString().split('T')[0]) : ''} 
                 onChange={(e) => handleFieldChange(field, e.target.value)}
-                style={{ width: 'auto', minWidth: '150px' }}
+                style={{ width: 'auto', minWidth: '150px', textAlign: 'left' }}
               />
             );
           } else if (field === 'tier') {
@@ -458,7 +458,7 @@ function ShowMediaDetails({
                 className='form-select form-select-sm' 
                 value={tempMedia[field] ? 'true' : 'false'} 
                 onChange={(e) => handleFieldChange(field, e.target.value)}
-                style={{ width: 'auto', minWidth: '120px' }}
+                style={{ width: 'auto', minWidth: '170px' }}
               >
                 <option value='true'>To-Do List</option>
                 <option value='false'>My Collection</option>
@@ -482,6 +482,7 @@ function ShowMediaDetails({
           );
         default:
           const isDescription = field === 'description';
+          const isTitle = field === 'title';
           if (isDescription) {
             return (
               <textarea
@@ -495,6 +496,24 @@ function ShowMediaDetails({
                   resize: 'vertical',
                   wordWrap: 'break-word',
                   overflowWrap: 'break-word'
+                }}
+              />
+            );
+          }
+          if (isTitle) {
+            return (
+              <textarea
+                className='form-control form-control-sm'
+                value={tempMedia[field] || ''}
+                onChange={(e) => handleFieldChange(field, e.target.value)}
+                rows={2}
+                style={{ 
+                  width: '100%',
+                  maxWidth: '100%',
+                  resize: 'vertical',
+                  wordWrap: 'break-word',
+                  overflowWrap: 'break-word',
+                  minWidth: 0
                 }}
               />
             );
@@ -521,7 +540,7 @@ function ShowMediaDetails({
           style={{ 
             cursor: 'pointer', 
             color: '#ffffff',
-            ...(field === 'description' ? { 
+            ...((field === 'description' || field === 'title') ? { 
               display: 'block',
               maxWidth: '100%',
               wordWrap: 'break-word',
@@ -579,6 +598,8 @@ function ShowMediaDetails({
           }
           .ShowMediaDetails table tbody tr td:nth-child(3) {
             width: 75% !important;
+            min-width: 0 !important;
+            overflow-wrap: break-word !important;
             padding-left: 0.5rem !important;
             padding-right: 0.75rem !important;
           }
