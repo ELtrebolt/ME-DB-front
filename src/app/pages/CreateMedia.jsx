@@ -433,7 +433,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
                           value={media.year.length === 4 ? media.year : media.year.split('-')[0]} 
                           onChange={onChange}
                           style={{
-                            fontSize: '0.75rem',
+                            fontSize: '16px',
                             padding: '0.2rem 0.4rem',
                             height: 'auto',
                             minHeight: '28px'
@@ -471,7 +471,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
                         value={media.tier}
                         onChange={onChange}
                         style={{
-                          fontSize: '0.75rem',
+                          fontSize: '16px',
                           padding: '0.2rem 0.4rem',
                           height: 'auto',
                           minHeight: '28px'

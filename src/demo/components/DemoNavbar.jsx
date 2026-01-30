@@ -59,7 +59,7 @@ const DemoNavbar = ({ user }) => {
       <div style={{
         maxWidth: '1280px',
         margin: '0 auto',
-        padding: '0 1rem'
+        padding: isMobile ? '0 0.5rem' : '0 1rem'
       }}>
         <div style={{
           display: 'flex',
@@ -68,7 +68,7 @@ const DemoNavbar = ({ user }) => {
           height: navbarHeight
         }}>
           {/* Logo/Brand */}
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
             <a href="/" style={{
               fontSize: logoFontSize,
               fontWeight: 'bold',
@@ -76,9 +76,10 @@ const DemoNavbar = ({ user }) => {
               textDecoration: 'none',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.5rem'
+              gap: isMobile ? '0.25rem' : '0.5rem',
+              whiteSpace: 'nowrap'
             }}>
-              <img src="/favicon.ico" alt="ME-DB" style={{ width: isMobile ? '24px' : '32px', height: isMobile ? '24px' : '32px' }} />
+              <img src="/favicon.ico" alt="ME-DB" style={{ width: isMobile ? '22px' : '32px', height: isMobile ? '22px' : '32px', flexShrink: 0 }} />
               ME-DB
             </a>
           </div>
@@ -88,15 +89,15 @@ const DemoNavbar = ({ user }) => {
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: theme.spacing.sm
+              gap: '2px'
             }}>
               {/* Mobile About Link */}
               <a href="/about" style={{
                 color: theme.components.navbar.colors.text.default,
                 textDecoration: 'none',
-                fontSize: theme.components.navbar.mobile.linkFontSize,
+                fontSize: '0.75rem',
                 transition: theme.components.navbar.linkTransition,
-                padding: `${theme.spacing.sm} ${theme.spacing.sm}`,
+                padding: '0.25rem 0.35rem',
                 whiteSpace: 'nowrap'
               }} onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover} onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}>
                 About
@@ -106,9 +107,9 @@ const DemoNavbar = ({ user }) => {
               <a href="/demo/stats" style={{
                 color: theme.components.navbar.colors.text.default,
                 textDecoration: 'none',
-                fontSize: theme.components.navbar.mobile.linkFontSize,
+                fontSize: '0.75rem',
                 transition: theme.components.navbar.linkTransition,
-                padding: `${theme.spacing.sm} ${theme.spacing.sm}`,
+                padding: '0.25rem 0.35rem',
                 whiteSpace: 'nowrap'
               }} onMouseEnter={(e) => e.target.style.color = theme.components.navbar.colors.text.hover} onMouseLeave={(e) => e.target.style.color = theme.components.navbar.colors.text.default}>
                 Stats
@@ -198,8 +199,8 @@ const DemoNavbar = ({ user }) => {
               {/* Mobile Sign In Button */}
               <button 
                 onClick={handleSignIn}
-                className="btn btn-warning btn-sm rounded-pill px-3 fw-bold"
-                style={{ fontSize: '0.75rem', whiteSpace: 'nowrap' }}
+                className="btn btn-warning btn-sm rounded-pill px-2 fw-bold"
+                style={{ fontSize: '0.7rem', whiteSpace: 'nowrap' }}
               >
                 {user ? 'Go to App' : 'Sign In'}
               </button>

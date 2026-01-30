@@ -1433,6 +1433,12 @@
     display: none !important;
   }
   
+  /* 16px prevents iOS auto-zoom when editing title/description/tier/date on mobile */
+  .ShowMediaDetails .form-control,
+  .ShowMediaDetails .form-select {
+    font-size: 16px !important;
+  }
+  
   /* Prevent TagMaker from overflowing table on mobile */
   .ShowMediaDetails .react-tags {
     max-width: 100% !important;

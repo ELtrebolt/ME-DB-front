@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Footer from '../Footer';
+import collectionGif from '../img/collection-gif.gif';
+import todoGif from '../img/todo-gif.gif';
 const constants = require('../../app/constants');
 const theme = require('../../styling/theme');
 
@@ -123,7 +125,7 @@ const IntroNavbar = () => {
         </button>
 
         {/* Center Links */}
-        <div className="collapse navbar-collapse justify-content-center" id="introNavbar" style={{ background: 'transparent', backgroundColor: 'transparent' }}>
+        <div className="collapse navbar-collapse justify-content-center" id="introNavbar">
           <ul className="navbar-nav gap-md-5" style={{ background: 'transparent' }}>
             {['About', 'Features', 'Why', 'FAQ'].map((item) => (
               <li className="nav-item" key={item}>
@@ -161,8 +163,20 @@ const IntroNavbar = () => {
           .hover-opacity:hover { opacity: 0.8; }
           .transition-colors { transition: color 0.2s ease; }
           
-          /* Desktop navbar - remove any box/background from inner elements only */
+          /* Desktop navbar - transparent inner elements, center nav above hero */
           @media (min-width: 768px) {
+            .navbar .container {
+              position: relative;
+              display: flex;
+              flex-wrap: wrap;
+              justify-content: space-between;
+              align-items: center;
+            }
+            #introNavbar {
+              position: absolute;
+              left: 50%;
+              transform: translateX(-50%);
+            }
             #introNavbar,
             #introNavbar *,
             .navbar-collapse,
@@ -179,30 +193,32 @@ const IntroNavbar = () => {
             }
           }
           
-          /* Mobile navbar: horizontal row instead of vertical dropdown */
+          /* Mobile navbar: horizontal row with navy bg (same as hero) */
           @media (max-width: 767.98px) {
             #introNavbar {
               position: absolute;
               top: 100%;
               left: 0;
               right: 0;
-              background-color: #3d4470;
-              padding: 0.5rem 0.75rem;
+              background-color: #1D2144 !important;
+              background: #1D2144 !important;
+              padding: 0.75rem 1rem;
               border-top: 1px solid rgba(255, 255, 255, 0.2);
               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+              z-index: 1030;
             }
             #introNavbar .navbar-nav {
               flex-direction: row !important;
               justify-content: center;
               flex-wrap: nowrap;
-              gap: 0 !important;
+              gap: 0.5rem !important;
             }
             #introNavbar .nav-item {
               flex: 0 0 auto;
             }
             #introNavbar .nav-link {
-              padding: 0.5rem 0.75rem !important;
-              font-size: 0.85rem !important;
+              padding: 0.75rem 1rem !important;
+              font-size: 0.9rem !important;
             }
             /* Mobile logo styling */
             .navbar-brand {
@@ -232,6 +248,147 @@ const Section = ({ id, className, children, style }) => (
     {children}
   </section>
 );
+
+const STANDARD_TYPES = [
+  { icon: '🍥', label: 'Anime', path: '/demo/anime/collection' },
+  { icon: '📺', label: 'TV Shows', path: '/demo/tv/collection' },
+  { icon: '🎥', label: 'Movies', path: '/demo/movies/collection' },
+  { icon: '🕹️', label: 'Video Games', path: '/demo/games/collection' }
+];
+
+const CUSTOM_TYPES_SETS = [
+  [
+    { icon: '✈️', label: 'Travel' },
+    { icon: '📚', label: 'Books' },
+    { icon: '🎨', label: 'Artists' },
+    { icon: '🎵', label: 'Concerts' }
+  ],
+  [
+    { icon: '🍽️', label: 'Cuisines' },
+    { icon: '🍿', label: 'Snacks' },
+    { icon: '🍷', label: 'Alcohol' },
+    { icon: '🎁', label: 'Gifts' }
+  ]
+];
+
+const AboutSection = () => {
+  const [customSetIndex, setCustomSetIndex] = useState(0);
+  const intervalRef = useRef(null);
+
+  const advanceCarousel = (direction) => {
+    setCustomSetIndex((prev) => (prev + direction + CUSTOM_TYPES_SETS.length) % CUSTOM_TYPES_SETS.length);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setCustomSetIndex((prev) => (prev + 1) % CUSTOM_TYPES_SETS.length);
+    }, 4000);
+  };
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      setCustomSetIndex((prev) => (prev + 1) % CUSTOM_TYPES_SETS.length);
+    }, 4000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
+
+  return (
+    <Section id="about" style={{ backgroundColor: theme.components.introPage.aboutBg }}>
+      <div className="container">
+        <FadeUp>
+          <div className="text-center mb-5">
+            <h2 className="display-5 fw-bold mb-4" style={{ color: theme.components.introPage.text.primary }}>How It Works</h2>
+            <p className="fs-4 d-none d-md-block" style={{ color: theme.components.introPage.text.secondary }}>
+              (1) Create your media &nbsp;&nbsp; (2) Drag and drop into tiers &nbsp;&nbsp; (3) Search and filter!
+            </p>
+            <div className="d-md-none fs-5" style={{ color: theme.components.introPage.text.secondary }}>
+              <p className="mb-2">(1) Create your media</p>
+              <p className="mb-2">(2) Drag and drop into tiers</p>
+              <p className="mb-0">(3) Search and filter!</p>
+            </div>
+          </div>
+        </FadeUp>
+
+        {/* Standard Types */}
+        <FadeUp delay={100}>
+          <p className="text-center fs-5 fw-semibold mb-3" style={{ color: theme.components.introPage.text.secondary }}>Standard Types</p>
+          <div className="row justify-content-center g-4 mt-2">
+            {STANDARD_TYPES.map((item, i) => (
+              <div key={i} className="col-6 col-md-3 text-center">
+                <div className="display-1 mb-3">{item.icon}</div>
+                <p className="fs-5 fw-medium mb-3" style={{ color: theme.components.introPage.text.primary }}>{item.label}</p>
+                <a
+                  href={item.path}
+                  className="btn btn-outline-light rounded-pill px-4"
+                  style={{ fontSize: '0.9rem', textDecoration: 'none' }}
+                >
+                  Try Demo
+                </a>
+              </div>
+            ))}
+          </div>
+        </FadeUp>
+
+        {/* Custom Types carousel */}
+        <FadeUp delay={200}>
+          <p className="text-center fs-5 fw-semibold mb-3 mt-5" style={{ color: theme.components.introPage.text.secondary }}>Custom Types</p>
+          <div className="about-custom-carousel position-relative overflow-hidden d-flex align-items-center">
+            <button
+              type="button"
+              className="about-carousel-btn position-absolute start-0 top-50 translate-middle-y border-0 rounded-circle d-flex align-items-center justify-content-center"
+              style={{ background: 'rgba(255,255,255,0.15)', color: theme.components.introPage.text.primary, width: 40, height: 40, zIndex: 2 }}
+              onClick={() => advanceCarousel(-1)}
+              aria-label="Previous custom types"
+            >
+              ←
+            </button>
+            <div className="position-relative flex-grow-1" style={{ minWidth: 0 }}>
+              {CUSTOM_TYPES_SETS.map((set, setIdx) => (
+                <div
+                  key={setIdx}
+                  className="row justify-content-center g-4 mt-2 position-absolute w-100 start-0 top-0"
+                  style={{
+                    opacity: customSetIndex === setIdx ? 1 : 0,
+                    visibility: customSetIndex === setIdx ? 'visible' : 'hidden',
+                    transform: `translateX(${customSetIndex === setIdx ? 0 : (setIdx < customSetIndex ? 30 : -30)}px)`,
+                    transition: 'opacity 500ms ease, transform 500ms ease, visibility 500ms ease',
+                    pointerEvents: customSetIndex === setIdx ? 'auto' : 'none',
+                    zIndex: customSetIndex === setIdx ? 1 : 0
+                  }}
+                >
+                  {set.map((item, i) => (
+                    <div key={i} className="col-6 col-md-3 text-center about-custom-item">
+                      <div className="about-custom-emoji mb-2">{item.icon}</div>
+                      <p className="fs-5 fw-medium mb-0 text-nowrap about-custom-label">{item.label}</p>
+                    </div>
+                  ))}
+                </div>
+              ))}
+              {/* Invisible spacer so container height = content (one slide); carousel expands to fit */}
+              <div className="row justify-content-center g-4 mt-2 about-custom-spacer" aria-hidden>
+                {CUSTOM_TYPES_SETS[0].map((item, i) => (
+                  <div key={i} className="col-6 col-md-3 text-center">
+                    <div className="about-custom-emoji mb-2">{item.icon}</div>
+                    <p className="fs-5 fw-medium mb-0 text-nowrap about-custom-label">{item.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <button
+              type="button"
+              className="about-carousel-btn position-absolute end-0 top-50 translate-middle-y border-0 rounded-circle d-flex align-items-center justify-content-center"
+              style={{ background: 'rgba(255,255,255,0.15)', color: theme.components.introPage.text.primary, width: 40, height: 40, zIndex: 2 }}
+              onClick={() => advanceCarousel(1)}
+              aria-label="Next custom types"
+            >
+              →
+            </button>
+          </div>
+        </FadeUp>
+      </div>
+    </Section>
+  );
+};
 
 const Intro = () => {
   usePoppinsFont();
@@ -302,48 +459,7 @@ const Intro = () => {
       </section>
 
       {/* 2. About Section - Darker Navy */}
-      <Section id="about" style={{ backgroundColor: theme.components.introPage.aboutBg }}>
-        <div className="container">
-          <FadeUp>
-            <div className="text-center mb-5">
-              <h2 className="display-5 fw-bold mb-4" style={{ color: theme.components.introPage.text.primary }}>What is ME-DB?</h2>
-              {/* Desktop: single line */}
-              <p className="fs-4 d-none d-md-block" style={{ color: theme.components.introPage.text.secondary }}>
-                (1) Create your media &nbsp;&nbsp; (2) Drag and drop into tiers &nbsp;&nbsp; (3) Search and filter!
-              </p>
-              {/* Mobile: separate lines */}
-              <div className="d-md-none fs-5" style={{ color: theme.components.introPage.text.secondary }}>
-                <p className="mb-2">(1) Create your media</p>
-                <p className="mb-2">(2) Drag and drop into tiers</p>
-                <p className="mb-0">(3) Search and filter!</p>
-              </div>
-            </div>
-          </FadeUp>
-          
-          <FadeUp delay={150}>
-            <div className="row justify-content-center g-4 mt-4">
-              {[
-                { icon: '🍥', label: 'Anime', path: '/demo/anime/collection' },
-                { icon: '📺', label: 'TV Shows', path: '/demo/tv/collection' },
-                { icon: '🎥', label: 'Movies', path: '/demo/movies/collection' },
-                { icon: '🕹️', label: 'Video Games', path: '/demo/games/collection' }
-              ].map((item, i) => (
-                <div key={i} className="col-6 col-md-3 text-center">
-                  <div className="display-1 mb-3">{item.icon}</div>
-                  <p className="fs-5 fw-medium mb-3" style={{ color: theme.components.introPage.text.primary }}>{item.label}</p>
-                  <a 
-                    href={item.path}
-                    className="btn btn-outline-light rounded-pill px-4"
-                    style={{ fontSize: '0.9rem', textDecoration: 'none' }}
-                  >
-                    Try Demo
-                  </a>
-                </div>
-              ))}
-            </div>
-          </FadeUp>
-        </div>
-      </Section>
+      <AboutSection />
 
       {/* 3. Features Section - Light Gray Background */}
       <Section id="features" style={{ backgroundColor: theme.components.introPage.lightBg }}>
@@ -357,7 +473,7 @@ const Intro = () => {
           
           <div className="row g-4 pt-4 justify-content-center">
             {[
-              { title: 'Tier Lists', icon: '📊', desc: 'Rank your favorites with S-F tier grading. Visualize your taste instantly.' },
+              { title: 'Tier Lists', icon: '📊', desc: 'Rank your favorites with tiered / grouped grading. Visualize your taste instantly.' },
               { title: 'Collection Tracking', icon: '📚', desc: 'Keep a comprehensive history of everything you have watched or played.' },
               { title: 'To-Do Lists', icon: '✅', desc: 'Never forget a recommendation again. Manage your backlog with ease.' },
               { title: 'Multi-Category', icon: '🎮', desc: 'Built for Anime, TV Shows, Movies, and Games out of the box.' },
@@ -387,12 +503,11 @@ const Intro = () => {
         <div className="container py-5">
           <div className="row align-items-center mb-5 pb-5">
             <FadeUp className="col-lg-6 order-lg-2" delay={150}>
-              <div className="p-5 rounded-3 text-center" style={{
-                backgroundColor: theme.components.introPage.cardDark.background, 
-                color: theme.components.introPage.text.secondary,
+              <div className="rounded-3 overflow-hidden" style={{
+                backgroundColor: theme.components.introPage.cardDark.background,
                 border: theme.components.introPage.cardDark.border
               }}>
-                [Placeholder for Screenshot: Tier List View]
+                <img src={collectionGif} alt="Collection / tier list view" className="w-100" style={{ display: 'block' }} />
               </div>
             </FadeUp>
             <FadeUp className="col-lg-6 order-lg-1">
@@ -401,14 +516,17 @@ const Intro = () => {
                 You finish a game or a series, and you want to record it. Not just that you did it, but how good it was. ME-DB gives you a permanent record of your entertainment journey.
               </p>
               <ul className="list-unstyled">
-                <li className="mb-3 d-flex align-items-center" style={{ color: theme.components.introPage.text.secondary }}>
-                  <span className="me-3" style={{ color: theme.colors.primary }}>✓</span> Track completion dates
+                <li className="mb-3 d-flex align-items-start" style={{ color: theme.components.introPage.text.secondary }}>
+                  <span className="me-3 flex-shrink-0" style={{ fontSize: '1.25rem' }} title="Favorites & ratings">⭐</span>
+                  <span>Remember your Favorites & Least Favorites, your Top 10 & Bottom 10, your High 5 & Low 5, and your Most Memorable & Most Utterly Regretted</span>
                 </li>
-                <li className="mb-3 d-flex align-items-center" style={{ color: theme.components.introPage.text.secondary }}>
-                  <span className="me-3" style={{ color: theme.colors.primary }}>✓</span> Rate with S-F tiers
+                <li className="mb-3 d-flex align-items-start" style={{ color: theme.components.introPage.text.secondary }}>
+                  <span className="me-3 flex-shrink-0" style={{ fontSize: '1.25rem' }} title="Have the answer">💬</span>
+                  <span>When someone asks "How would you rate this?" - you'll have the answer</span>
                 </li>
-                <li className="mb-3 d-flex align-items-center" style={{ color: theme.components.introPage.text.secondary }}>
-                  <span className="me-3" style={{ color: theme.colors.primary }}>✓</span> Add personal notes
+                <li className="mb-3 d-flex align-items-start" style={{ color: theme.components.introPage.text.secondary }}>
+                  <span className="me-3 flex-shrink-0" style={{ fontSize: '1.25rem' }} title="Remember & revisit">📚</span>
+                  <span>If you ever wonder "What thing that I've already tried should I do/get/eat/drink again?" - you'll probably have the answer already, but in case you wanted to remember it, welcome to ME-DB!</span>
                 </li>
               </ul>
             </FadeUp>
@@ -416,19 +534,32 @@ const Intro = () => {
 
           <div className="row align-items-center">
             <FadeUp className="col-lg-6">
-              <div className="p-5 rounded-3 text-center" style={{
-                backgroundColor: theme.components.introPage.cardDark.background, 
-                color: theme.components.introPage.text.secondary,
+              <div className="rounded-3 overflow-hidden" style={{
+                backgroundColor: theme.components.introPage.cardDark.background,
                 border: theme.components.introPage.cardDark.border
               }}>
-                [Placeholder for Screenshot: To-Do List]
+                <img src={todoGif} alt="To-Do list view" className="w-100" style={{ display: 'block' }} />
               </div>
             </FadeUp>
             <FadeUp className="col-lg-6" delay={150}>
               <h2 className="display-6 fw-bold mb-4" style={{ color: theme.components.introPage.text.primary }}>For the Planner</h2>
               <p className="lead mb-4" style={{ color: theme.components.introPage.text.secondary }}>
-                "We should watch that!" ...and then you forget. Add it to your ME-DB To-Do list immediately. Filter by genre, priority, or platform when you are ready to start something new.
+                "We should watch that!" ...and then you forget. Add it to your To-Do list immediately. Filter by genre, priority, or platform when you are ready to start something new.
               </p>
+              <ul className="list-unstyled">
+                <li className="mb-3 d-flex align-items-start" style={{ color: theme.components.introPage.text.secondary }}>
+                  <span className="me-3 flex-shrink-0" style={{ fontSize: '1.25rem' }} title="Lists">📋</span>
+                  <span>Remember your Bucket List, Recommendations List, Wish List, List Of All Your Greatest Hopes & Dreams, and List Of Things You'd Never Ever Dare Try</span>
+                </li>
+                <li className="mb-3 d-flex align-items-start" style={{ color: theme.components.introPage.text.secondary }}>
+                  <span className="me-3 flex-shrink-0" style={{ fontSize: '1.25rem' }} title="Suggest next">💡</span>
+                  <span>When someone asks "What should we try next?" - you'll have the answer</span>
+                </li>
+                <li className="mb-3 d-flex align-items-start" style={{ color: theme.components.introPage.text.secondary }}>
+                  <span className="me-3 flex-shrink-0" style={{ fontSize: '1.25rem' }} title="What to try next">🎯</span>
+                  <span>If you ever wonder "What new thing should I do/get/eat/drink next?" - you'll probably have the answer already, but in case you wanted to remember it, welcome to ME-DB!</span>
+                </li>
+              </ul>
             </FadeUp>
           </div>
         </div>
@@ -450,10 +581,10 @@ const Intro = () => {
                 overflow: 'hidden'
               }}>
                 {[
-                  { q: 'Is ME-DB free?', a: 'Yes, ME-DB is completely free to use for all standard features.' },
-                  { q: 'Can I import my data?', a: 'We are working on import tools for popular platforms. Currently you can add items manually.' },
-                  { q: 'Is there a mobile app?', a: 'No, ME-DB is a web-only app. You can add it to your home screen on iOS and Android for an app-like experience.' },
-                  { q: 'Is my data private?', a: 'Your data is private by default. You can choose to make individual lists public if you wish.' }
+                  { q: 'Is ME-DB free?', a: 'Yes, ME-DB is completely free to use for all features!' },
+                  { q: 'Can I import my data?', a: 'No, but please reach out if you have a request! Currently you must add items manually.' },
+                  { q: 'Is there a mobile app?', a: 'No, ME-DB is a web-only app. You can add it to your home screen on iOS by following this guide.' },
+                  { q: 'Is my data private?', a: 'Your data is private by default. You can choose to make your profile and individual lists public if you wish.' }
                 ].map((item, i) => (
                   <div className="accordion-item" key={i} style={{
                     backgroundColor: theme.components.introPage.accordionLight.itemBackground, 
@@ -513,6 +644,44 @@ const Intro = () => {
             margin-left: auto;
             margin-right: auto;
           }
+          /* Custom Types carousel: spacer reserves height so section expands to fit */
+          .about-custom-carousel {
+            min-height: 0;
+            padding-left: 48px;
+            padding-right: 48px;
+          }
+          .about-carousel-btn:hover {
+            background: rgba(255,255,255,0.25) !important;
+          }
+          @media (max-width: 767.98px) {
+            .about-custom-carousel {
+              padding-left: 40px;
+              padding-right: 40px;
+            }
+          }
+          .about-custom-spacer {
+            visibility: hidden;
+            pointer-events: none;
+          }
+          .about-custom-emoji {
+            font-size: 3rem;
+            line-height: 1.2;
+            overflow: visible;
+          }
+          @media (min-width: 768px) {
+            .about-custom-emoji {
+              font-size: 5rem;
+            }
+          }
+          .about-custom-label {
+            color: #e2e8f0 !important;
+          }
+          #about .about-custom-item {
+            flex-shrink: 0;
+          }
+          #about .about-custom-emoji {
+            flex-shrink: 0;
+          }
           
           /* Features section centering */
           #features .container {
@@ -533,9 +702,9 @@ const Intro = () => {
             text-align: left;
           }
           
-          /* FAQ section centering */
+          /* FAQ section - left aligned */
           #faq .container {
-            text-align: center;
+            text-align: left;
           }
           #faq .row {
             margin-left: auto;
@@ -543,6 +712,12 @@ const Intro = () => {
           }
           #faq .accordion {
             width: 100%;
+          }
+          #faq .accordion-button {
+            text-align: left !important;
+          }
+          #faq .accordion-body {
+            text-align: left !important;
           }
           
           /* Mobile styles */
@@ -575,25 +750,25 @@ const Intro = () => {
               text-align: center;
             }
             #hero .google-btn {
-              width: 300px !important;
-              min-width: 300px !important;
-              max-width: 300px !important;
-              height: 60px !important;
+              width: 260px !important;
+              min-width: 260px !important;
+              max-width: 260px !important;
+              height: 52px !important;
               border-radius: 8px !important;
             }
             #hero .google-btn .google-icon-wrapper {
-              width: 56px !important;
-              height: 56px !important;
+              width: 48px !important;
+              height: 48px !important;
               left: 2px !important;
               top: 2px !important;
               border-radius: 6px !important;
             }
             #hero .google-btn .google-icon {
-              width: 30px !important;
-              height: 30px !important;
+              width: 26px !important;
+              height: 26px !important;
             }
             #hero .google-btn .btn-text {
-              font-size: 18px !important;
+              font-size: 16px !important;
               left: 55% !important;
             }
             #hero .mb-5 {
@@ -624,15 +799,24 @@ const Intro = () => {
               text-align: left !important;
             }
             
-            /* FAQ section - keep accordion full width */
+            /* FAQ section - keep accordion full width, left aligned */
+            #faq .container {
+              text-align: left !important;
+            }
             #faq .col-lg-8 {
               width: 100% !important;
               max-width: 100% !important;
               padding-left: 0;
               padding-right: 0;
+              text-align: left !important;
+              align-items: flex-start !important;
             }
             #faq .accordion {
               width: 100% !important;
+            }
+            #faq .accordion-button,
+            #faq .accordion-body {
+              text-align: left !important;
             }
           }
         `}

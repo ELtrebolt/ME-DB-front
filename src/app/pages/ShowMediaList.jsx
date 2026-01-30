@@ -369,17 +369,17 @@ function ShowMediaList({
                 <i className="fas fa-exchange-alt me-1"></i>{toDoState ? 'Collection' : 'To-Do'}
               </button>
             </div>
-            <div className='col text-center px-1'>
+            <div className='col text-center px-1' style={{ overflow: 'hidden', minWidth: 0 }}>
               <h1 className='fw-light text-white mb-0' style={{ fontSize: 'clamp(16px, 4.5vw, 24px)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {getTruncatedTitle(mediaType, toDoString)}
               </h1>
               {getCurrentDescription() && (
-                <p className='text-white-50 mb-0 mt-1' style={{ fontSize: '0.7rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {renderDescriptionWithLink(getCurrentDescription(), 36)}
+                <p className='text-white-50 mb-0 mt-1' style={{ fontSize: '0.6rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {renderDescriptionWithLink(getCurrentDescription(), 22)}
                 </p>
               )}
             </div>
-            <div className='col-auto px-1'>
+            <div className='col-auto px-1 flex-shrink-0'>
               <div className="dropdown">
                 <button className="btn btn-warning btn-xs dropdown-toggle" data-bs-toggle="dropdown">Settings</button>
                 <ul className="dropdown-menu dropdown-menu-end">

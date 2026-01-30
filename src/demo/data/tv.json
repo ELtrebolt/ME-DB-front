@@ -1,62 +1,926 @@
 [
-  {"ID": "1", "mediaType": "tv", "title": "Breaking Bad", "tier": "S", "toDo": false, "year": "2013-01-01", "tags": ["TV-MA", "Crime", "Drama", "Thriller"], "description": "A chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine with a former student to secure his family's future.", "orderIndex": 0},
-  {"ID": "2", "mediaType": "tv", "title": "Planet Earth II", "tier": "S", "toDo": false, "year": "2016-01-01", "tags": ["TV-G", "Documentary", "Nature"], "description": "David Attenborough returns in this documentary series about animal habitats around the world, featuring stunning visuals of wildlife.", "orderIndex": 1},
-  {"ID": "3", "mediaType": "tv", "title": "Planet Earth", "tier": "S", "toDo": false, "year": "2006-01-01", "tags": ["TV-PG", "Documentary", "Nature"], "description": "Emmy Award-winning, 11 episodes, five years in the making, the most expensive nature documentary series ever commissioned.", "orderIndex": 2},
-  {"ID": "4", "mediaType": "tv", "title": "Band of Brothers", "tier": "S", "toDo": false, "year": "2001-01-01", "tags": ["TV-MA", "Action", "Drama", "History"], "description": "The story of Easy Company of the U.S. Army 101st Airborne Division and their mission in World War II Europe, from Operation Overlord to VJ Day.", "orderIndex": 3},
-  {"ID": "5", "mediaType": "tv", "title": "Chernobyl", "tier": "S", "toDo": false, "year": "2019-01-01", "tags": ["TV-MA", "Drama", "History", "Thriller"], "description": "In April 1986, an explosion at the Chernobyl nuclear power plant in Ukraine becomes one of the world's worst man-made catastrophes.", "orderIndex": 4},
-  {"ID": "6", "mediaType": "tv", "title": "The Wire", "tier": "A", "toDo": false, "year": "2008-01-01", "tags": ["TV-MA", "Crime", "Drama", "Thriller"], "description": "The Baltimore drug scene, as seen through the eyes of drug dealers and law enforcement.", "orderIndex": 0},
-  {"ID": "7", "mediaType": "tv", "title": "Avatar: The Last Airbender", "tier": "A", "toDo": false, "year": "2008-01-01", "tags": ["TV-Y7-FV", "Action", "Adventure", "Animation"], "description": "In a war-torn world of elemental magic, a young boy reawakens to undertake a dangerous mystic quest to fulfill his destiny as the Avatar.", "orderIndex": 1},
-  {"ID": "8", "mediaType": "tv", "title": "The Sopranos", "tier": "A", "toDo": false, "year": "2007-01-01", "tags": ["TV-MA", "Crime", "Drama"], "description": "New Jersey mob boss Tony Soprano deals with personal and professional issues in his home and business life that affect his mental state.", "orderIndex": 2},
-  {"ID": "9", "mediaType": "tv", "title": "Blue Planet II", "tier": "A", "toDo": false, "year": "2017-01-01", "tags": ["TV-G", "Documentary", "Nature"], "description": "David Attenborough returns to the world's oceans in this sequel to the acclaimed documentary Blue Planet.", "orderIndex": 3},
-  {"ID": "10", "mediaType": "tv", "title": "Cosmos: A Spacetime Odyssey", "tier": "A", "toDo": false, "year": "2014-01-01", "tags": ["TV-PG", "Documentary", "Science"], "description": "An exploration of our discovery of the laws of nature and coordinates in space and time.", "orderIndex": 4},
-  {"ID": "11", "mediaType": "tv", "title": "Cosmos", "tier": "B", "toDo": false, "year": "1980-01-01", "tags": ["TV-PG", "Documentary", "Science"], "description": "Astronomer Carl Sagan leads us on an engaging guided tour of the various elements and cosmological theories of the universe.", "orderIndex": 0},
-  {"ID": "12", "mediaType": "tv", "title": "Our Planet", "tier": "B", "toDo": false, "year": "2019-01-01", "tags": ["TV-PG", "Documentary", "Nature"], "description": "This groundbreaking series explores how climate change impacts all living creatures and the planet.", "orderIndex": 1},
-  {"ID": "13", "mediaType": "tv", "title": "Game of Thrones", "tier": "B", "toDo": false, "year": "2019-01-01", "tags": ["TV-MA", "Action", "Adventure", "Drama"], "description": "Nine noble families fight for control over the lands of Westeros, while an ancient enemy returns after being dormant for millennia.", "orderIndex": 2},
-  {"ID": "14", "mediaType": "tv", "title": "Bluey", "tier": "B", "toDo": false, "year": "2018-01-01", "tags": ["TV-Y", "Animation", "Comedy", "Family"], "description": "The slice-of-life adventures of a six-year-old Blue Heeler pup, Bluey, who lives with her dad, mum, and four-year-old sister, Bingo.", "orderIndex": 3},
-  {"ID": "15", "mediaType": "tv", "title": "The World at War", "tier": "B", "toDo": false, "year": "1974-01-01", "tags": ["TV-PG", "Documentary", "History", "War"], "description": "A documentary series chronicling the events of World War II through archival footage and interviews with key figures.", "orderIndex": 4},
-  {"ID": "16", "mediaType": "tv", "title": "Fullmetal Alchemist: Brotherhood", "tier": "C", "toDo": false, "year": "2010-01-01", "tags": ["TV-14", "Action", "Adventure", "Drama"], "description": "Two brothers search for a Philosopher's Stone after an attempt to revive their deceased mother goes awry and leaves them in damaged physical forms.", "orderIndex": 0},
-  {"ID": "17", "mediaType": "tv", "title": "Attack on Titan", "tier": "C", "toDo": false, "year": "2023-01-01", "tags": ["TV-MA", "Action", "Drama", "Fantasy"], "description": "After his hometown is destroyed, young Eren Jaeger vows to cleanse the earth of the giant humanoid Titans that have brought humanity to the brink of extinction.", "orderIndex": 1},
-  {"ID": "18", "mediaType": "tv", "title": "Life", "tier": "C", "toDo": false, "year": "2009-01-01", "tags": ["TV-G", "Documentary", "Nature"], "description": "David Attenborough's legendary BBC series about natural history, exploring the struggle for survival in the animal world.", "orderIndex": 2},
-  {"ID": "19", "mediaType": "tv", "title": "The Last Dance", "tier": "C", "toDo": false, "year": "2020-01-01", "tags": ["TV-MA", "Documentary", "Sports"], "description": "A ten-part documentary chronicling the untold story of Michael Jordan and the Chicago Bulls dynasty.", "orderIndex": 3},
-  {"ID": "20", "mediaType": "tv", "title": "The Twilight Zone", "tier": "C", "toDo": false, "year": "1959-01-01", "tags": ["TV-PG", "Drama", "Fantasy", "Horror"], "description": "Ordinary people find themselves in extraordinarily astounding situations, which they each try to solve in a remarkable way.", "orderIndex": 4},
-  {"ID": "21", "mediaType": "tv", "title": "The Vietnam War", "tier": "D", "toDo": false, "year": "2017-01-01", "tags": ["TV-MA", "Documentary", "History", "War"], "description": "An immersive documentary series from Ken Burns and Lynn Novick about one of the most consequential and divisive events in American history.", "orderIndex": 0},
-  {"ID": "22", "mediaType": "tv", "title": "Rick and Morty", "tier": "D", "toDo": false, "year": "2013-01-01", "tags": ["TV-MA", "Animation", "Adventure", "Comedy"], "description": "An animated series that follows the exploits of a super scientist and his not-so-bright grandson.", "orderIndex": 1},
-  {"ID": "23", "mediaType": "tv", "title": "Sherlock", "tier": "D", "toDo": false, "year": "2010-01-01", "tags": ["TV-14", "Crime", "Drama", "Mystery"], "description": "A modern update of Sir Arthur Conan Doyle's classic mystery series, relocating Sherlock Holmes and John Watson to 21st century London.", "orderIndex": 2},
-  {"ID": "24", "mediaType": "tv", "title": "Batman: The Animated Series", "tier": "D", "toDo": false, "year": "1992-01-01", "tags": ["TV-PG", "Action", "Animation", "Crime"], "description": "The Dark Knight battles crime in Gotham City with occasional help from Robin and Batgirl.", "orderIndex": 3},
-  {"ID": "25", "mediaType": "tv", "title": "Better Call Saul", "tier": "D", "toDo": false, "year": "2022-01-01", "tags": ["TV-MA", "Crime", "Drama"], "description": "The trials and tribulations of criminal lawyer Jimmy McGill in the years before his fateful run-in with Walter White.", "orderIndex": 4},
-  {"ID": "26", "mediaType": "tv", "title": "Arcane", "tier": "F", "toDo": false, "year": "2021-01-01", "tags": ["TV-14", "Action", "Adventure", "Animation"], "description": "Set in Utopian Piltover and the oppressed underground of Zaun, the story follows the origins of two iconic League of Legends champions.", "orderIndex": 0},
-  {"ID": "27", "mediaType": "tv", "title": "The Office", "tier": "F", "toDo": false, "year": "2013-01-01", "tags": ["TV-14", "Comedy"], "description": "A mockumentary on a group of typical office workers, where the workday consists of ego clashes, inappropriate behavior, and tedium.", "orderIndex": 1},
-  {"ID": "28", "mediaType": "tv", "title": "The Blue Planet", "tier": "F", "toDo": false, "year": "2001-01-01", "tags": ["TV-G", "Documentary", "Nature"], "description": "David Attenborough presents a natural history of the oceans, exploring the diversity of life in the world's seas.", "orderIndex": 2},
-  {"ID": "29", "mediaType": "tv", "title": "Clarkson's Farm", "tier": "F", "toDo": false, "year": "2021-01-01", "tags": ["TV-14", "Documentary", "Comedy", "Reality"], "description": "Jeremy Clarkson attempts to run a farm in the English countryside, with chaotic and comedic results.", "orderIndex": 3},
-  {"ID": "30", "mediaType": "tv", "title": "Dexter: Resurrection", "tier": "F", "toDo": false, "year": "2025-01-01", "tags": ["TV-MA", "Crime", "Drama", "Mystery"], "description": "Dexter Morgan returns in this revival series, continuing the story of the vigilante serial killer.", "orderIndex": 4},
-  {"ID": "31", "mediaType": "tv", "title": "Scam 1992: The Harshad Mehta Story", "tier": "S", "toDo": true, "year": "2020-01-01", "tags": ["TV-MA", "Crime", "Drama", "Thriller"], "description": "The rise and fall of stockbroker Harshad Mehta, who orchestrated one of India's largest securities scams in 1992.", "orderIndex": 0},
-  {"ID": "32", "mediaType": "tv", "title": "Hunter x Hunter", "tier": "S", "toDo": true, "year": "2011-01-01", "tags": ["TV-14", "Action", "Adventure", "Fantasy"], "description": "Gon Freecss aspires to become a Hunter, an exceptional being capable of greatness. With his friends and his potential, he seeks out his father.", "orderIndex": 1},
-  {"ID": "33", "mediaType": "tv", "title": "Frozen Planet", "tier": "S", "toDo": true, "year": "2011-01-01", "tags": ["TV-G", "Documentary", "Nature"], "description": "David Attenborough explores the wildlife and landscape of the Arctic and Antarctic in this BBC nature documentary series.", "orderIndex": 2},
-  {"ID": "34", "mediaType": "tv", "title": "Human Planet", "tier": "S", "toDo": true, "year": "2011-01-01", "tags": ["TV-PG", "Documentary", "Nature"], "description": "A documentary series exploring how humans have adapted to life in every environment on Earth.", "orderIndex": 3},
-  {"ID": "35", "mediaType": "tv", "title": "Only Fools and Horses", "tier": "S", "toDo": true, "year": "1981-01-01", "tags": ["TV-PG", "Comedy"], "description": "Two brothers from London's rough Peckham estate chase get-rich-quick schemes and dodgy deals in this beloved British sitcom.", "orderIndex": 4},
-  {"ID": "36", "mediaType": "tv", "title": "The Civil War", "tier": "A", "toDo": true, "year": "1990-01-01", "tags": ["TV-PG", "Documentary", "History", "War"], "description": "Ken Burns' landmark documentary series chronicling the American Civil War through archival photos, music, and firsthand accounts.", "orderIndex": 0},
-  {"ID": "37", "mediaType": "tv", "title": "Firefly", "tier": "A", "toDo": true, "year": "2002-01-01", "tags": ["TV-14", "Action", "Adventure", "Sci-Fi"], "description": "Five hundred years in the future, a renegade crew aboard a small spacecraft navigate the outer reaches of the galaxy.", "orderIndex": 1},
-  {"ID": "38", "mediaType": "tv", "title": "As If", "tier": "A", "toDo": true, "year": "2001-01-01", "tags": ["TV-14", "Comedy", "Drama"], "description": "A British teen drama following a group of friends navigating life, love, and adolescence in London.", "orderIndex": 2},
-  {"ID": "39", "mediaType": "tv", "title": "Death Note", "tier": "A", "toDo": true, "year": "2006-01-01", "tags": ["TV-14", "Crime", "Drama", "Mystery"], "description": "An intelligent high school student goes on a secret crusade to eliminate criminals from the world after discovering a notebook capable of killing anyone whose name is written into it.", "orderIndex": 3},
-  {"ID": "40", "mediaType": "tv", "title": "Gravity Falls", "tier": "A", "toDo": true, "year": "2012-01-01", "tags": ["TV-Y7", "Animation", "Adventure", "Comedy"], "description": "Twin siblings Dipper and Mabel spend the summer with their great-uncle in the mysterious town of Gravity Falls, where strange things abound.", "orderIndex": 4},
-  {"ID": "41", "mediaType": "tv", "title": "The Pitt", "tier": "B", "toDo": true, "year": "2024-01-01", "tags": ["TV-MA", "Drama"], "description": "A medical drama following the lives of doctors, nurses, and staff at a modern-day hospital.", "orderIndex": 0},
-  {"ID": "42", "mediaType": "tv", "title": "Frieren: Beyond Journey's End", "tier": "B", "toDo": true, "year": "2023-01-01", "tags": ["TV-14", "Adventure", "Drama", "Fantasy"], "description": "An elf and her friends defeat a demon king in a great war. But the war is over, and the elf must search for a new way of life.", "orderIndex": 1},
-  {"ID": "43", "mediaType": "tv", "title": "Seinfeld", "tier": "B", "toDo": true, "year": "1998-01-01", "tags": ["TV-PG", "Comedy"], "description": "The continuing misadventures of neurotic New York City stand-up comedian Jerry Seinfeld and his equally neurotic friends.", "orderIndex": 2},
-  {"ID": "44", "mediaType": "tv", "title": "Dekalog", "tier": "B", "toDo": true, "year": "1989-01-01", "tags": ["TV-MA", "Drama"], "description": "Krzysztof Kieślowski's ten-part series of moral tales, each loosely based on one of the Ten Commandments.", "orderIndex": 3},
-  {"ID": "45", "mediaType": "tv", "title": "The Beatles: Get Back", "tier": "B", "toDo": true, "year": "2021-01-01", "tags": ["TV-14", "Documentary", "Music"], "description": "Peter Jackson's documentary chronicling the making of the Beatles' Let It Be album and their final live performance.", "orderIndex": 4},
-  {"ID": "46", "mediaType": "tv", "title": "Taskmaster", "tier": "C", "toDo": true, "year": "2015-01-01", "tags": ["TV-14", "Comedy", "Game Show"], "description": "Comedians compete in bizarre tasks set by the Taskmaster, with Greg Davies judging and Alex Horne assisting.", "orderIndex": 0},
-  {"ID": "47", "mediaType": "tv", "title": "Nathan for You", "tier": "C", "toDo": true, "year": "2013-01-01", "tags": ["TV-14", "Comedy", "Reality"], "description": "Nathan Fielder uses his business degree to help struggling businesses with elaborate, often absurd marketing schemes.", "orderIndex": 1},
-  {"ID": "48", "mediaType": "tv", "title": "Cowboy Bebop", "tier": "C", "toDo": true, "year": "1998-01-01", "tags": ["TV-14", "Action", "Adventure", "Drama"], "description": "The futuristic misadventures and tragedies of an easygoing bounty hunter and his partners.", "orderIndex": 2},
-  {"ID": "49", "mediaType": "tv", "title": "True Detective", "tier": "C", "toDo": true, "year": "2014-01-01", "tags": ["TV-MA", "Crime", "Drama", "Mystery"], "description": "Police detectives navigate a series of high-profile cases while managing their personal and professional lives.", "orderIndex": 3},
-  {"ID": "50", "mediaType": "tv", "title": "Fargo", "tier": "C", "toDo": true, "year": "2014-01-01", "tags": ["TV-MA", "Crime", "Drama", "Thriller"], "description": "Various chronicles of deception, intrigue, and murder in and around frozen Minnesota. All of these tales mysteriously lead back to Fargo.", "orderIndex": 4},
-  {"ID": "51", "mediaType": "tv", "title": "Apocalypse: The Second World War", "tier": "D", "toDo": true, "year": "2009-01-01", "tags": ["TV-MA", "Documentary", "History", "War"], "description": "A French documentary series recounting World War II using restored and colorized archival footage.", "orderIndex": 0},
-  {"ID": "52", "mediaType": "tv", "title": "Persona", "tier": "D", "toDo": true, "year": "2018-01-01", "tags": ["TV-14", "Drama", "Mystery"], "description": "A drama exploring identity, secrets, and the masks people wear.", "orderIndex": 1},
-  {"ID": "53", "mediaType": "tv", "title": "Africa", "tier": "D", "toDo": true, "year": "2013-01-01", "tags": ["TV-PG", "Documentary", "Nature"], "description": "David Attenborough's BBC series exploring the wildlife and diverse ecosystems of the African continent.", "orderIndex": 2},
-  {"ID": "54", "mediaType": "tv", "title": "One Piece", "tier": "D", "toDo": true, "year": "1999-01-01", "tags": ["TV-14", "Action", "Adventure", "Comedy"], "description": "Monkey D. Luffy sets off on an adventure with his pirate crew in hopes of finding the greatest treasure ever, known as the One Piece.", "orderIndex": 3},
-  {"ID": "55", "mediaType": "tv", "title": "When They See Us", "tier": "D", "toDo": true, "year": "2019-01-01", "tags": ["TV-MA", "Crime", "Drama"], "description": "Ava DuVernay's limited series about the wrongful conviction of the Central Park Five.", "orderIndex": 4},
-  {"ID": "56", "mediaType": "tv", "title": "The West Wing", "tier": "F", "toDo": true, "year": "1999-01-01", "tags": ["TV-14", "Drama"], "description": "Behind the scenes of the fictional Bartlett administration as it navigates political and personal challenges.", "orderIndex": 0},
-  {"ID": "57", "mediaType": "tv", "title": "Friends", "tier": "F", "toDo": true, "year": "2004-01-01", "tags": ["TV-14", "Comedy", "Romance"], "description": "Follows the personal and professional lives of six twenty to thirty year-old friends living in the Manhattan borough of New York City.", "orderIndex": 1},
-  {"ID": "58", "mediaType": "tv", "title": "It's Always Sunny in Philadelphia", "tier": "F", "toDo": true, "year": "2005-01-01", "tags": ["TV-MA", "Comedy"], "description": "Five selfish friends run a struggling Irish bar in Philadelphia and get into absurd schemes and misadventures.", "orderIndex": 2},
-  {"ID": "59", "mediaType": "tv", "title": "Last Week Tonight with John Oliver", "tier": "F", "toDo": true, "year": "2014-01-01", "tags": ["TV-MA", "Comedy", "News", "Talk"], "description": "John Oliver offers a satirical look at the week in news, politics, and current events.", "orderIndex": 3},
-  {"ID": "60", "mediaType": "tv", "title": "TVF Pitchers", "tier": "F", "toDo": true, "year": "2015-01-01", "tags": ["TV-14", "Comedy", "Drama"], "description": "Indian web series following four friends who quit their jobs to start their own tech startup.", "orderIndex": 4}
+  {
+    "ID": "1",
+    "mediaType": "tv",
+    "title": "Breaking Bad",
+    "tier": "S",
+    "toDo": false,
+    "year": "2013-01-01",
+    "tags": [
+      "tv-ma",
+      "crime",
+      "drama",
+      "thriller"
+    ],
+    "description": "A chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine with a former student to secure his family's future.",
+    "orderIndex": 0
+  },
+  {
+    "ID": "2",
+    "mediaType": "tv",
+    "title": "Planet Earth II",
+    "tier": "S",
+    "toDo": false,
+    "year": "2016-01-01",
+    "tags": [
+      "tv-g",
+      "documentary",
+      "nature"
+    ],
+    "description": "David Attenborough returns in this documentary series about animal habitats around the world, featuring stunning visuals of wildlife.",
+    "orderIndex": 1
+  },
+  {
+    "ID": "3",
+    "mediaType": "tv",
+    "title": "Planet Earth",
+    "tier": "S",
+    "toDo": false,
+    "year": "2006-01-01",
+    "tags": [
+      "tv-pg",
+      "documentary",
+      "nature"
+    ],
+    "description": "Emmy Award-winning, 11 episodes, five years in the making, the most expensive nature documentary series ever commissioned.",
+    "orderIndex": 2
+  },
+  {
+    "ID": "4",
+    "mediaType": "tv",
+    "title": "Band of Brothers",
+    "tier": "S",
+    "toDo": false,
+    "year": "2001-01-01",
+    "tags": [
+      "tv-ma",
+      "action",
+      "drama",
+      "history"
+    ],
+    "description": "The story of Easy Company of the U.S. Army 101st Airborne Division and their mission in World War II Europe, from Operation Overlord to VJ Day.",
+    "orderIndex": 3
+  },
+  {
+    "ID": "5",
+    "mediaType": "tv",
+    "title": "Chernobyl",
+    "tier": "S",
+    "toDo": false,
+    "year": "2019-01-01",
+    "tags": [
+      "tv-ma",
+      "drama",
+      "history",
+      "thriller"
+    ],
+    "description": "In April 1986, an explosion at the Chernobyl nuclear power plant in Ukraine becomes one of the world's worst man-made catastrophes.",
+    "orderIndex": 4
+  },
+  {
+    "ID": "6",
+    "mediaType": "tv",
+    "title": "The Wire",
+    "tier": "A",
+    "toDo": false,
+    "year": "2008-01-01",
+    "tags": [
+      "tv-ma",
+      "crime",
+      "drama",
+      "thriller"
+    ],
+    "description": "The Baltimore drug scene, as seen through the eyes of drug dealers and law enforcement.",
+    "orderIndex": 0
+  },
+  {
+    "ID": "7",
+    "mediaType": "tv",
+    "title": "Avatar: The Last Airbender",
+    "tier": "A",
+    "toDo": false,
+    "year": "2008-01-01",
+    "tags": [
+      "tv-y7-fv",
+      "action",
+      "adventure",
+      "animation"
+    ],
+    "description": "In a war-torn world of elemental magic, a young boy reawakens to undertake a dangerous mystic quest to fulfill his destiny as the Avatar.",
+    "orderIndex": 1
+  },
+  {
+    "ID": "8",
+    "mediaType": "tv",
+    "title": "The Sopranos",
+    "tier": "A",
+    "toDo": false,
+    "year": "2007-01-01",
+    "tags": [
+      "tv-ma",
+      "crime",
+      "drama"
+    ],
+    "description": "New Jersey mob boss Tony Soprano deals with personal and professional issues in his home and business life that affect his mental state.",
+    "orderIndex": 2
+  },
+  {
+    "ID": "9",
+    "mediaType": "tv",
+    "title": "Blue Planet II",
+    "tier": "A",
+    "toDo": false,
+    "year": "2017-01-01",
+    "tags": [
+      "tv-g",
+      "documentary",
+      "nature"
+    ],
+    "description": "David Attenborough returns to the world's oceans in this sequel to the acclaimed documentary Blue Planet.",
+    "orderIndex": 3
+  },
+  {
+    "ID": "10",
+    "mediaType": "tv",
+    "title": "Cosmos: A Spacetime Odyssey",
+    "tier": "A",
+    "toDo": false,
+    "year": "2014-01-01",
+    "tags": [
+      "tv-pg",
+      "documentary",
+      "science"
+    ],
+    "description": "An exploration of our discovery of the laws of nature and coordinates in space and time.",
+    "orderIndex": 4
+  },
+  {
+    "ID": "11",
+    "mediaType": "tv",
+    "title": "Cosmos",
+    "tier": "B",
+    "toDo": false,
+    "year": "1980-01-01",
+    "tags": [
+      "tv-pg",
+      "documentary",
+      "science"
+    ],
+    "description": "Astronomer Carl Sagan leads us on an engaging guided tour of the various elements and cosmological theories of the universe.",
+    "orderIndex": 0
+  },
+  {
+    "ID": "12",
+    "mediaType": "tv",
+    "title": "Our Planet",
+    "tier": "B",
+    "toDo": false,
+    "year": "2019-01-01",
+    "tags": [
+      "tv-pg",
+      "documentary",
+      "nature"
+    ],
+    "description": "This groundbreaking series explores how climate change impacts all living creatures and the planet.",
+    "orderIndex": 1
+  },
+  {
+    "ID": "13",
+    "mediaType": "tv",
+    "title": "Game of Thrones",
+    "tier": "B",
+    "toDo": false,
+    "year": "2019-01-01",
+    "tags": [
+      "tv-ma",
+      "action",
+      "adventure",
+      "drama"
+    ],
+    "description": "Nine noble families fight for control over the lands of Westeros, while an ancient enemy returns after being dormant for millennia.",
+    "orderIndex": 2
+  },
+  {
+    "ID": "14",
+    "mediaType": "tv",
+    "title": "Bluey",
+    "tier": "B",
+    "toDo": false,
+    "year": "2018-01-01",
+    "tags": [
+      "tv-y",
+      "animation",
+      "comedy",
+      "family"
+    ],
+    "description": "The slice-of-life adventures of a six-year-old Blue Heeler pup, Bluey, who lives with her dad, mum, and four-year-old sister, Bingo.",
+    "orderIndex": 3
+  },
+  {
+    "ID": "15",
+    "mediaType": "tv",
+    "title": "The World at War",
+    "tier": "B",
+    "toDo": false,
+    "year": "1974-01-01",
+    "tags": [
+      "tv-pg",
+      "documentary",
+      "history",
+      "war"
+    ],
+    "description": "A documentary series chronicling the events of World War II through archival footage and interviews with key figures.",
+    "orderIndex": 4
+  },
+  {
+    "ID": "16",
+    "mediaType": "tv",
+    "title": "Fullmetal Alchemist: Brotherhood",
+    "tier": "C",
+    "toDo": false,
+    "year": "2010-01-01",
+    "tags": [
+      "tv-14",
+      "action",
+      "adventure",
+      "drama"
+    ],
+    "description": "Two brothers search for a Philosopher's Stone after an attempt to revive their deceased mother goes awry and leaves them in damaged physical forms.",
+    "orderIndex": 0
+  },
+  {
+    "ID": "17",
+    "mediaType": "tv",
+    "title": "Attack on Titan",
+    "tier": "C",
+    "toDo": false,
+    "year": "2023-01-01",
+    "tags": [
+      "tv-ma",
+      "action",
+      "drama",
+      "fantasy"
+    ],
+    "description": "After his hometown is destroyed, young Eren Jaeger vows to cleanse the earth of the giant humanoid Titans that have brought humanity to the brink of extinction.",
+    "orderIndex": 1
+  },
+  {
+    "ID": "18",
+    "mediaType": "tv",
+    "title": "Life",
+    "tier": "C",
+    "toDo": false,
+    "year": "2009-01-01",
+    "tags": [
+      "tv-g",
+      "documentary",
+      "nature"
+    ],
+    "description": "David Attenborough's legendary BBC series about natural history, exploring the struggle for survival in the animal world.",
+    "orderIndex": 2
+  },
+  {
+    "ID": "19",
+    "mediaType": "tv",
+    "title": "The Last Dance",
+    "tier": "C",
+    "toDo": false,
+    "year": "2020-01-01",
+    "tags": [
+      "tv-ma",
+      "documentary",
+      "sports"
+    ],
+    "description": "A ten-part documentary chronicling the untold story of Michael Jordan and the Chicago Bulls dynasty.",
+    "orderIndex": 3
+  },
+  {
+    "ID": "20",
+    "mediaType": "tv",
+    "title": "The Twilight Zone",
+    "tier": "C",
+    "toDo": false,
+    "year": "1959-01-01",
+    "tags": [
+      "tv-pg",
+      "drama",
+      "fantasy",
+      "horror"
+    ],
+    "description": "Ordinary people find themselves in extraordinarily astounding situations, which they each try to solve in a remarkable way.",
+    "orderIndex": 4
+  },
+  {
+    "ID": "21",
+    "mediaType": "tv",
+    "title": "The Vietnam War",
+    "tier": "D",
+    "toDo": false,
+    "year": "2017-01-01",
+    "tags": [
+      "tv-ma",
+      "documentary",
+      "history",
+      "war"
+    ],
+    "description": "An immersive documentary series from Ken Burns and Lynn Novick about one of the most consequential and divisive events in American history.",
+    "orderIndex": 0
+  },
+  {
+    "ID": "22",
+    "mediaType": "tv",
+    "title": "Rick and Morty",
+    "tier": "D",
+    "toDo": false,
+    "year": "2013-01-01",
+    "tags": [
+      "tv-ma",
+      "animation",
+      "adventure",
+      "comedy"
+    ],
+    "description": "An animated series that follows the exploits of a super scientist and his not-so-bright grandson.",
+    "orderIndex": 1
+  },
+  {
+    "ID": "23",
+    "mediaType": "tv",
+    "title": "Sherlock",
+    "tier": "D",
+    "toDo": false,
+    "year": "2010-01-01",
+    "tags": [
+      "tv-14",
+      "crime",
+      "drama",
+      "mystery"
+    ],
+    "description": "A modern update of Sir Arthur Conan Doyle's classic mystery series, relocating Sherlock Holmes and John Watson to 21st century London.",
+    "orderIndex": 2
+  },
+  {
+    "ID": "24",
+    "mediaType": "tv",
+    "title": "Batman: The Animated Series",
+    "tier": "D",
+    "toDo": false,
+    "year": "1992-01-01",
+    "tags": [
+      "tv-pg",
+      "action",
+      "animation",
+      "crime"
+    ],
+    "description": "The Dark Knight battles crime in Gotham City with occasional help from Robin and Batgirl.",
+    "orderIndex": 3
+  },
+  {
+    "ID": "25",
+    "mediaType": "tv",
+    "title": "Better Call Saul",
+    "tier": "D",
+    "toDo": false,
+    "year": "2022-01-01",
+    "tags": [
+      "tv-ma",
+      "crime",
+      "drama"
+    ],
+    "description": "The trials and tribulations of criminal lawyer Jimmy McGill in the years before his fateful run-in with Walter White.",
+    "orderIndex": 4
+  },
+  {
+    "ID": "26",
+    "mediaType": "tv",
+    "title": "Arcane",
+    "tier": "F",
+    "toDo": false,
+    "year": "2021-01-01",
+    "tags": [
+      "tv-14",
+      "action",
+      "adventure",
+      "animation"
+    ],
+    "description": "Set in Utopian Piltover and the oppressed underground of Zaun, the story follows the origins of two iconic League of Legends champions.",
+    "orderIndex": 0
+  },
+  {
+    "ID": "27",
+    "mediaType": "tv",
+    "title": "The Office",
+    "tier": "F",
+    "toDo": false,
+    "year": "2013-01-01",
+    "tags": [
+      "tv-14",
+      "comedy"
+    ],
+    "description": "A mockumentary on a group of typical office workers, where the workday consists of ego clashes, inappropriate behavior, and tedium.",
+    "orderIndex": 1
+  },
+  {
+    "ID": "28",
+    "mediaType": "tv",
+    "title": "The Blue Planet",
+    "tier": "F",
+    "toDo": false,
+    "year": "2001-01-01",
+    "tags": [
+      "tv-g",
+      "documentary",
+      "nature"
+    ],
+    "description": "David Attenborough presents a natural history of the oceans, exploring the diversity of life in the world's seas.",
+    "orderIndex": 2
+  },
+  {
+    "ID": "29",
+    "mediaType": "tv",
+    "title": "Clarkson's Farm",
+    "tier": "F",
+    "toDo": false,
+    "year": "2021-01-01",
+    "tags": [
+      "tv-14",
+      "documentary",
+      "comedy",
+      "reality"
+    ],
+    "description": "Jeremy Clarkson attempts to run a farm in the English countryside, with chaotic and comedic results.",
+    "orderIndex": 3
+  },
+  {
+    "ID": "30",
+    "mediaType": "tv",
+    "title": "Dexter: Resurrection",
+    "tier": "F",
+    "toDo": false,
+    "year": "2025-01-01",
+    "tags": [
+      "tv-ma",
+      "crime",
+      "drama",
+      "mystery"
+    ],
+    "description": "Dexter Morgan returns in this revival series, continuing the story of the vigilante serial killer.",
+    "orderIndex": 4
+  },
+  {
+    "ID": "31",
+    "mediaType": "tv",
+    "title": "Scam 1992: The Harshad Mehta Story",
+    "tier": "S",
+    "toDo": true,
+    "year": "2020-01-01",
+    "tags": [
+      "tv-ma",
+      "crime",
+      "drama",
+      "thriller"
+    ],
+    "description": "The rise and fall of stockbroker Harshad Mehta, who orchestrated one of India's largest securities scams in 1992.",
+    "orderIndex": 0
+  },
+  {
+    "ID": "32",
+    "mediaType": "tv",
+    "title": "Hunter x Hunter",
+    "tier": "S",
+    "toDo": true,
+    "year": "2011-01-01",
+    "tags": [
+      "tv-14",
+      "action",
+      "adventure",
+      "fantasy"
+    ],
+    "description": "Gon Freecss aspires to become a Hunter, an exceptional being capable of greatness. With his friends and his potential, he seeks out his father.",
+    "orderIndex": 1
+  },
+  {
+    "ID": "33",
+    "mediaType": "tv",
+    "title": "Frozen Planet",
+    "tier": "S",
+    "toDo": true,
+    "year": "2011-01-01",
+    "tags": [
+      "tv-g",
+      "documentary",
+      "nature"
+    ],
+    "description": "David Attenborough explores the wildlife and landscape of the Arctic and Antarctic in this BBC nature documentary series.",
+    "orderIndex": 2
+  },
+  {
+    "ID": "34",
+    "mediaType": "tv",
+    "title": "Human Planet",
+    "tier": "S",
+    "toDo": true,
+    "year": "2011-01-01",
+    "tags": [
+      "tv-pg",
+      "documentary",
+      "nature"
+    ],
+    "description": "A documentary series exploring how humans have adapted to life in every environment on Earth.",
+    "orderIndex": 3
+  },
+  {
+    "ID": "35",
+    "mediaType": "tv",
+    "title": "Only Fools and Horses",
+    "tier": "S",
+    "toDo": true,
+    "year": "1981-01-01",
+    "tags": [
+      "tv-pg",
+      "comedy"
+    ],
+    "description": "Two brothers from London's rough Peckham estate chase get-rich-quick schemes and dodgy deals in this beloved British sitcom.",
+    "orderIndex": 4
+  },
+  {
+    "ID": "36",
+    "mediaType": "tv",
+    "title": "The Civil War",
+    "tier": "A",
+    "toDo": true,
+    "year": "1990-01-01",
+    "tags": [
+      "tv-pg",
+      "documentary",
+      "history",
+      "war"
+    ],
+    "description": "Ken Burns' landmark documentary series chronicling the American Civil War through archival photos, music, and firsthand accounts.",
+    "orderIndex": 0
+  },
+  {
+    "ID": "37",
+    "mediaType": "tv",
+    "title": "Firefly",
+    "tier": "A",
+    "toDo": true,
+    "year": "2002-01-01",
+    "tags": [
+      "tv-14",
+      "action",
+      "adventure",
+      "sci-fi"
+    ],
+    "description": "Five hundred years in the future, a renegade crew aboard a small spacecraft navigate the outer reaches of the galaxy.",
+    "orderIndex": 1
+  },
+  {
+    "ID": "38",
+    "mediaType": "tv",
+    "title": "As If",
+    "tier": "A",
+    "toDo": true,
+    "year": "2001-01-01",
+    "tags": [
+      "tv-14",
+      "comedy",
+      "drama"
+    ],
+    "description": "A British teen drama following a group of friends navigating life, love, and adolescence in London.",
+    "orderIndex": 2
+  },
+  {
+    "ID": "39",
+    "mediaType": "tv",
+    "title": "Death Note",
+    "tier": "A",
+    "toDo": true,
+    "year": "2006-01-01",
+    "tags": [
+      "tv-14",
+      "crime",
+      "drama",
+      "mystery"
+    ],
+    "description": "An intelligent high school student goes on a secret crusade to eliminate criminals from the world after discovering a notebook capable of killing anyone whose name is written into it.",
+    "orderIndex": 3
+  },
+  {
+    "ID": "40",
+    "mediaType": "tv",
+    "title": "Gravity Falls",
+    "tier": "A",
+    "toDo": true,
+    "year": "2012-01-01",
+    "tags": [
+      "tv-y7",
+      "animation",
+      "adventure",
+      "comedy"
+    ],
+    "description": "Twin siblings Dipper and Mabel spend the summer with their great-uncle in the mysterious town of Gravity Falls, where strange things abound.",
+    "orderIndex": 4
+  },
+  {
+    "ID": "41",
+    "mediaType": "tv",
+    "title": "The Pitt",
+    "tier": "B",
+    "toDo": true,
+    "year": "2024-01-01",
+    "tags": [
+      "tv-ma",
+      "drama"
+    ],
+    "description": "A medical drama following the lives of doctors, nurses, and staff at a modern-day hospital.",
+    "orderIndex": 0
+  },
+  {
+    "ID": "42",
+    "mediaType": "tv",
+    "title": "Frieren: Beyond Journey's End",
+    "tier": "B",
+    "toDo": true,
+    "year": "2023-01-01",
+    "tags": [
+      "tv-14",
+      "adventure",
+      "drama",
+      "fantasy"
+    ],
+    "description": "An elf and her friends defeat a demon king in a great war. But the war is over, and the elf must search for a new way of life.",
+    "orderIndex": 1
+  },
+  {
+    "ID": "43",
+    "mediaType": "tv",
+    "title": "Seinfeld",
+    "tier": "B",
+    "toDo": true,
+    "year": "1998-01-01",
+    "tags": [
+      "tv-pg",
+      "comedy"
+    ],
+    "description": "The continuing misadventures of neurotic New York City stand-up comedian Jerry Seinfeld and his equally neurotic friends.",
+    "orderIndex": 2
+  },
+  {
+    "ID": "44",
+    "mediaType": "tv",
+    "title": "Dekalog",
+    "tier": "B",
+    "toDo": true,
+    "year": "1989-01-01",
+    "tags": [
+      "tv-ma",
+      "drama"
+    ],
+    "description": "Krzysztof Kieślowski's ten-part series of moral tales, each loosely based on one of the Ten Commandments.",
+    "orderIndex": 3
+  },
+  {
+    "ID": "45",
+    "mediaType": "tv",
+    "title": "The Beatles: Get Back",
+    "tier": "B",
+    "toDo": true,
+    "year": "2021-01-01",
+    "tags": [
+      "tv-14",
+      "documentary",
+      "music"
+    ],
+    "description": "Peter Jackson's documentary chronicling the making of the Beatles' Let It Be album and their final live performance.",
+    "orderIndex": 4
+  },
+  {
+    "ID": "46",
+    "mediaType": "tv",
+    "title": "Taskmaster",
+    "tier": "C",
+    "toDo": true,
+    "year": "2015-01-01",
+    "tags": [
+      "tv-14",
+      "comedy",
+      "game show"
+    ],
+    "description": "Comedians compete in bizarre tasks set by the Taskmaster, with Greg Davies judging and Alex Horne assisting.",
+    "orderIndex": 0
+  },
+  {
+    "ID": "47",
+    "mediaType": "tv",
+    "title": "Nathan for You",
+    "tier": "C",
+    "toDo": true,
+    "year": "2013-01-01",
+    "tags": [
+      "tv-14",
+      "comedy",
+      "reality"
+    ],
+    "description": "Nathan Fielder uses his business degree to help struggling businesses with elaborate, often absurd marketing schemes.",
+    "orderIndex": 1
+  },
+  {
+    "ID": "48",
+    "mediaType": "tv",
+    "title": "Cowboy Bebop",
+    "tier": "C",
+    "toDo": true,
+    "year": "1998-01-01",
+    "tags": [
+      "tv-14",
+      "action",
+      "adventure",
+      "drama"
+    ],
+    "description": "The futuristic misadventures and tragedies of an easygoing bounty hunter and his partners.",
+    "orderIndex": 2
+  },
+  {
+    "ID": "49",
+    "mediaType": "tv",
+    "title": "True Detective",
+    "tier": "C",
+    "toDo": true,
+    "year": "2014-01-01",
+    "tags": [
+      "tv-ma",
+      "crime",
+      "drama",
+      "mystery"
+    ],
+    "description": "Police detectives navigate a series of high-profile cases while managing their personal and professional lives.",
+    "orderIndex": 3
+  },
+  {
+    "ID": "50",
+    "mediaType": "tv",
+    "title": "Fargo",
+    "tier": "C",
+    "toDo": true,
+    "year": "2014-01-01",
+    "tags": [
+      "tv-ma",
+      "crime",
+      "drama",
+      "thriller"
+    ],
+    "description": "Various chronicles of deception, intrigue, and murder in and around frozen Minnesota. All of these tales mysteriously lead back to Fargo.",
+    "orderIndex": 4
+  },
+  {
+    "ID": "51",
+    "mediaType": "tv",
+    "title": "Apocalypse: The Second World War",
+    "tier": "D",
+    "toDo": true,
+    "year": "2009-01-01",
+    "tags": [
+      "tv-ma",
+      "documentary",
+      "history",
+      "war"
+    ],
+    "description": "A French documentary series recounting World War II using restored and colorized archival footage.",
+    "orderIndex": 0
+  },
+  {
+    "ID": "52",
+    "mediaType": "tv",
+    "title": "Persona",
+    "tier": "D",
+    "toDo": true,
+    "year": "2018-01-01",
+    "tags": [
+      "tv-14",
+      "drama",
+      "mystery"
+    ],
+    "description": "A drama exploring identity, secrets, and the masks people wear.",
+    "orderIndex": 1
+  },
+  {
+    "ID": "53",
+    "mediaType": "tv",
+    "title": "Africa",
+    "tier": "D",
+    "toDo": true,
+    "year": "2013-01-01",
+    "tags": [
+      "tv-pg",
+      "documentary",
+      "nature"
+    ],
+    "description": "David Attenborough's BBC series exploring the wildlife and diverse ecosystems of the African continent.",
+    "orderIndex": 2
+  },
+  {
+    "ID": "54",
+    "mediaType": "tv",
+    "title": "One Piece",
+    "tier": "D",
+    "toDo": true,
+    "year": "1999-01-01",
+    "tags": [
+      "tv-14",
+      "action",
+      "adventure",
+      "comedy"
+    ],
+    "description": "Monkey D. Luffy sets off on an adventure with his pirate crew in hopes of finding the greatest treasure ever, known as the One Piece.",
+    "orderIndex": 3
+  },
+  {
+    "ID": "55",
+    "mediaType": "tv",
+    "title": "When They See Us",
+    "tier": "D",
+    "toDo": true,
+    "year": "2019-01-01",
+    "tags": [
+      "tv-ma",
+      "crime",
+      "drama"
+    ],
+    "description": "Ava DuVernay's limited series about the wrongful conviction of the Central Park Five.",
+    "orderIndex": 4
+  },
+  {
+    "ID": "56",
+    "mediaType": "tv",
+    "title": "The West Wing",
+    "tier": "F",
+    "toDo": true,
+    "year": "1999-01-01",
+    "tags": [
+      "tv-14",
+      "drama"
+    ],
+    "description": "Behind the scenes of the fictional Bartlett administration as it navigates political and personal challenges.",
+    "orderIndex": 0
+  },
+  {
+    "ID": "57",
+    "mediaType": "tv",
+    "title": "Friends",
+    "tier": "F",
+    "toDo": true,
+    "year": "2004-01-01",
+    "tags": [
+      "tv-14",
+      "comedy",
+      "romance"
+    ],
+    "description": "Follows the personal and professional lives of six twenty to thirty year-old friends living in the Manhattan borough of New York City.",
+    "orderIndex": 1
+  },
+  {
+    "ID": "58",
+    "mediaType": "tv",
+    "title": "It's Always Sunny in Philadelphia",
+    "tier": "F",
+    "toDo": true,
+    "year": "2005-01-01",
+    "tags": [
+      "tv-ma",
+      "comedy"
+    ],
+    "description": "Five selfish friends run a struggling Irish bar in Philadelphia and get into absurd schemes and misadventures.",
+    "orderIndex": 2
+  },
+  {
+    "ID": "59",
+    "mediaType": "tv",
+    "title": "Last Week Tonight with John Oliver",
+    "tier": "F",
+    "toDo": true,
+    "year": "2014-01-01",
+    "tags": [
+      "tv-ma",
+      "comedy",
+      "news",
+      "talk"
+    ],
+    "description": "John Oliver offers a satirical look at the week in news, politics, and current events.",
+    "orderIndex": 3
+  },
+  {
+    "ID": "60",
+    "mediaType": "tv",
+    "title": "TVF Pitchers",
+    "tier": "F",
+    "toDo": true,
+    "year": "2015-01-01",
+    "tags": [
+      "tv-14",
+      "comedy",
+      "drama"
+    ],
+    "description": "Indian web series following four friends who quit their jobs to start their own tech startup.",
+    "orderIndex": 4
+  }
 ]

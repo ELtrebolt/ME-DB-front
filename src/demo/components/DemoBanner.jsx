@@ -57,20 +57,21 @@ const DemoBanner = ({ storageAvailable = true }) => {
       ...stickyStyles,
       backgroundColor: '#ffc107',
       color: '#1f2937',
-      padding: '6px 12px',
+      padding: isMobile ? '5px 8px' : '6px 12px',
       textAlign: 'center',
-      fontSize: '0.75rem',
+      fontSize: isMobile ? '0.65rem' : '0.75rem',
       fontWeight: 500,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '6px',
-      whiteSpace: 'nowrap'
+      gap: isMobile ? '4px' : '6px',
+      whiteSpace: isMobile ? 'normal' : 'nowrap',
+      lineHeight: 1.25
     }}>
       <svg 
         xmlns="http://www.w3.org/2000/svg" 
-        width="14" 
-        height="14" 
+        width={isMobile ? 12 : 14} 
+        height={isMobile ? 12 : 14} 
         viewBox="0 0 24 24" 
         fill="none" 
         stroke="currentColor" 
