@@ -4,10 +4,10 @@ import LegalPageLayout from '../components/LegalPageLayout';
 const Terms = () => {
   return (
     <LegalPageLayout title="Terms of Service">
-      <div className="mb-4">
+                <div className="mb-4">
                   <h5 className="fw-bold mb-3">Acceptance of Terms</h5>
                   <p className="mb-0">
-                    By accessing or using ME-DB, you agree to be bound by these Terms of Service. If you do not agree to these terms, you may not use the service.
+                    By accessing or using ME-DB, you agree to be bound by these Terms of Service and our <a href="/privacy">Privacy Policy</a>. If you do not agree to these terms, you may not use the service.
                   </p>
                 </div>
 
@@ -78,13 +78,6 @@ const Terms = () => {
                 </div>
 
                 <div className="mb-4">
-                  <h5 className="fw-bold mb-3">Intellectual Property</h5>
-                  <p className="mb-0">
-                    The ME-DB service, including its design, features, and functionality, is owned by us and protected by intellectual property laws. You may not copy, modify, or create derivative works of the service without our permission.
-                  </p>
-                </div>
-
-                <div className="mb-4">
                   <h5 className="fw-bold mb-3">Limitation of Liability</h5>
                   <p className="mb-0">
                     To the maximum extent permitted by law, we are not liable for any indirect, incidental, special, consequential, or punitive damages, including loss of data, profits, or business opportunities, resulting from your use of the service.
@@ -100,7 +93,6 @@ const Terms = () => {
                     <li>Violate these Terms of Service</li>
                     <li>Engage in fraudulent, abusive, or illegal activity</li>
                     <li>Infringe on the rights of others</li>
-                    <li>Fail to pay any fees (if applicable in the future)</li>
                   </ul>
                   <p className="mb-0">
                     You may delete your account at any time by contacting us at <a href="mailto:leeep.dev@gmail.com">leeep.dev@gmail.com</a>.

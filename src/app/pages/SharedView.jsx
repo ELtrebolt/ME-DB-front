@@ -11,6 +11,33 @@ import TierTitle from "../components/TierTitle";
 const constants = require('../constants');
 const theme = require('../../styling/theme');
 
+/**
+ * Renders description text; if it matches "text = url", the url is shown as a blue clickable link.
+ */
+function renderDescriptionWithLink(description, maxLen) {
+  if (!description) return null;
+  const truncated = maxLen && description.length > maxLen
+    ? description.substring(0, maxLen) + '...'
+    : description;
+  const eqIndex = truncated.indexOf(' = ');
+  if (eqIndex !== -1) {
+    const afterEq = truncated.slice(eqIndex + 3);
+    if (afterEq.length > 0 && !afterEq.includes('...')) {
+      const text = truncated.slice(0, eqIndex);
+      const href = afterEq.startsWith('http') ? afterEq : 'https://' + afterEq;
+      return (
+        <>
+          {text}{' '}
+          <a href={href} className="text-warning text-decoration-underline fw-semibold" target="_blank" rel="noopener noreferrer">
+            {afterEq}
+          </a>
+        </>
+      );
+    }
+  }
+  return truncated;
+}
+
 function SharedView() {
   const { token, username, mediaType: urlMediaType } = useParams();
   
@@ -27,6 +54,8 @@ function SharedView() {
   const [tierTitles, setTierTitles] = useState({});
   const [collectionTierTitles, setCollectionTierTitles] = useState({});
   const [todoTierTitles, setTodoTierTitles] = useState({});
+  const [collectionDescription, setCollectionDescription] = useState('');
+  const [todoDescription, setTodoDescription] = useState('');
   
   // View State
   const [toDoState, setToDoState] = useState(false);
@@ -98,6 +127,10 @@ function SharedView() {
           setTierTitles(initialToDo ? todoTitles : collTitles);
           setToDoState(initialToDo);
           
+          // Set descriptions if they exist
+          setCollectionDescription(res.data.collectionDescription || '');
+          setTodoDescription(res.data.todoDescription || '');
+          
           // Process into tiers (like ShowMediaList does on fetch)
           const { tiersObj, tags } = processMediaIntoTiers(res.data.media, initialToDo);
           setTierData(tiersObj);
@@ -160,6 +193,7 @@ function SharedView() {
   if (error) return <div className="text-danger text-center pt-5"><h3>{error}</h3></div>;
 
   const showSwitch = shareConfig.collection && shareConfig.todo;
+  const currentDescription = toDoState ? todoDescription : collectionDescription;
 
   return (
     <div 
@@ -216,6 +250,11 @@ function SharedView() {
                     }}>
                         <Link to={`/user/${username}`} className="profile-link" style={{color: theme.colors.primary, textDecoration: 'none'}}><i className="fas fa-user me-1" style={{fontSize: '0.8em'}}></i>{ownerName}</Link> - {toCapitalNotation(mediaType)} {toDoState ? 'To-Do' : 'Collection'}
                     </h1>
+                    {currentDescription && (
+                      <p className='text-white-50 mb-0 mt-1' style={{ fontSize: '0.7rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {renderDescriptionWithLink(currentDescription, 40)}
+                      </p>
+                    )}
                 </div>
             </div>
 
@@ -238,6 +277,11 @@ function SharedView() {
                     }}>
                         <Link to={`/user/${username}`} className="profile-link" style={{color: theme.colors.primary, textDecoration: 'none'}}><i className="fas fa-user me-2"></i>{ownerName}</Link> - {toCapitalNotation(mediaType)} {toDoState ? 'To-Do' : 'Collection'}
                     </h1>
+                    {currentDescription && (
+                      <p className='text-white-50 mb-0 mt-1' style={{ fontSize: '0.85rem' }}>
+                        {renderDescriptionWithLink(currentDescription, 120)}
+                      </p>
+                    )}
                 </div>
                 <div className='col-3 d-flex justify-content-end'>
                     {/* Placeholder for balance */}

@@ -1,70 +1,72 @@
-# Getting Started with Create React App
+# ME-DB Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Single-page application for managing personal media collections (movies, TV, games, anime). Users can add items, tag and tier them, view stats, and share lists. Includes a landing site and a demo mode that runs without a backend.
 
-## Available Scripts
+**Live:** [me-db.onrender.com](https://me-db.onrender.com)
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## Table of Contents
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- [Highlights](#highlights)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Run Locally](#run-locally)
+- [Credits](#credits)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## Highlights
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Landing vs app vs demo:** Clear separation of public marketing, authenticated app, and backend-free demo.
+- **Reusable UI:** Shared components under `app/components/ui`, modals, filters, and stats charts.
+- **Theming:** Central `styling/theme.js` driving CSS variables for layout and colors.
+- **Demo mode:** Full list/detail/create/stats flow using static JSON; useful for portfolios and testing without API.
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Tech Stack
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+| Area | Choices |
+|------|--------|
+| Framework | React 18 (Create React App) |
+| Routing | React Router v6 |
+| UI | Bootstrap 5, custom theme (CSS variables) |
+| Data viz | Chart.js + react-chartjs-2 |
+| Drag & drop | @dnd-kit (sortable lists) |
+| HTTP | Axios (with credentials) |
+| Icons | Font Awesome |
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## Project Structure
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```
+src/
+├── app/           # Authenticated app: list, details, create, stats, profile, friends, shared views
+├── landing/       # Public pages: intro, about, privacy, terms
+├── demo/          # Demo mode: same flows with local JSON data (no backend)
+└── styling/       # Global CSS, theme (colors, card layout)
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Run Locally
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+**Prerequisites:** Node 20.x
 
-## Learn More
+```bash
+npm install
+npm start
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Runs at [http://localhost:3000](http://localhost:3000). For full features (auth, persistence), the backend must be running and configured (see repo root or backend README).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+**Other commands:** `npm run build` (production build), `npm test` (Jest + React Testing Library).
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Credits
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- **Favicon:** Emoji graphic from [Twemoji](https://github.com/twitter/twemoji) by Twitter, Inc. and contributors. Used under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+- **Icons:** [Font Awesome](https://fontawesome.com/) (Free).

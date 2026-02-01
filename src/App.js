@@ -122,7 +122,7 @@ const App = () => {
 function AppContent({ user, setUserChanged, newTypes, selectedTags, setSelectedTags, filteredData, setFilteredData }) {
   const location = useLocation();
   const isDemoRoute = location.pathname.startsWith('/demo');
-  const isPublicPage = ['/about', '/privacy', '/terms'].includes(location.pathname);
+  const isPublicPage = ['/about'].includes(location.pathname);
   
   // Determine which navbar to show:
   // - Demo routes: DemoNavbar (without sign-in, handled by DemoLayout)

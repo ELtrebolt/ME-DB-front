@@ -392,7 +392,23 @@ const AboutSection = () => {
 
 const Intro = () => {
   usePoppinsFont();
-  
+
+  // Scroll to hash section when navigating from another page (e.g. /privacy -> /#about)
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+      const scrollToHash = () => {
+        const element = document.getElementById(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      };
+      // Delay to ensure DOM is fully rendered
+      const timeoutId = setTimeout(scrollToHash, 100);
+      return () => clearTimeout(timeoutId);
+    }
+  }, []);
+
   return (
     <div style={{ backgroundColor: theme.components.introPage.heroBg, fontFamily: "'Poppins', sans-serif" }}>
       <IntroNavbar />
@@ -473,11 +489,11 @@ const Intro = () => {
           
           <div className="row g-4 pt-4 justify-content-center">
             {[
-              { title: 'Tier Lists', icon: '📊', desc: 'Rank your favorites with tiered / grouped grading. Visualize your taste instantly.' },
-              { title: 'Collection Tracking', icon: '📚', desc: 'Keep a comprehensive history of everything you have watched or played.' },
+              { title: 'Tier Lists', icon: '📊', desc: 'Visualize your tastes instantly from top to bottom with grouped grading levels.' },
+              { title: 'Collection Tracking', icon: '📚', desc: 'Keep a comprehensive history of everything you have done, watched, or played.' },
               { title: 'To-Do Lists', icon: '✅', desc: 'Never forget a recommendation again. Manage your backlog with ease.' },
-              { title: 'Multi-Category', icon: '🎮', desc: 'Built for Anime, TV Shows, Movies, and Games out of the box.' },
-              { title: 'Custom Types', icon: '✨', desc: 'Create your own categories for Books, Manga, Podcasts, or anything else.' },
+              { title: 'Multi-Category', icon: '🎮', desc: 'Built for ranking Anime, TV Shows, Movies, and Games out of the box.' },
+              { title: 'Custom Types', icon: '✨', desc: 'Create your own categories for Food, Travel, Manga, Podcasts, or anything else.' },
               { title: 'Statistics', icon: '📈', desc: 'Get insights into your habits and ratings distribution.' }
             ].map((feature, i) => (
               <FadeUp key={i} delay={i * 100} className="col-md-4">
@@ -526,7 +542,7 @@ const Intro = () => {
                 </li>
                 <li className="mb-3 d-flex align-items-start" style={{ color: theme.components.introPage.text.secondary }}>
                   <span className="me-3 flex-shrink-0" style={{ fontSize: '1.25rem' }} title="Remember & revisit">📚</span>
-                  <span>If you ever wonder "What thing that I've already tried should I do/get/eat/drink again?" - you'll probably have the answer already, but in case you wanted to remember it, welcome to ME-DB!</span>
+                  <span>If you ever wonder "What thing should I do/get again?" - you'll probably have the answer already, but in case you wanted to remember it, welcome to ME-DB!</span>
                 </li>
               </ul>
             </FadeUp>
@@ -557,7 +573,7 @@ const Intro = () => {
                 </li>
                 <li className="mb-3 d-flex align-items-start" style={{ color: theme.components.introPage.text.secondary }}>
                   <span className="me-3 flex-shrink-0" style={{ fontSize: '1.25rem' }} title="What to try next">🎯</span>
-                  <span>If you ever wonder "What new thing should I do/get/eat/drink next?" - you'll probably have the answer already, but in case you wanted to remember it, welcome to ME-DB!</span>
+                  <span>If you ever wonder "What new thing should I do/get next?" - you'll probably have the answer already, but in case you wanted to remember it, welcome to ME-DB!</span>
                 </li>
               </ul>
             </FadeUp>
