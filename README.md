@@ -1,8 +1,8 @@
 # ME-DB Frontend
 
-Single-page application for managing personal media collections (movies, TV, games, anime). Users can add items, tag and tier them, view stats, and share lists. Includes a landing site and a demo mode that runs without a backend.
+Full-stack web application for managing personal media collections (movies, TV, games, anime). Users can add items, tag and tier them, view stats, and share lists. Includes a landing site and a demo mode that runs without a backend.
 
-**Live:** [me-db.onrender.com](https://me-db.onrender.com)
+**Check it out live:** [me-db.app](https://me-db.app)
 
 ---
 
