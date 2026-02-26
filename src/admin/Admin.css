@@ -1,0 +1,234 @@
+.admin-dashboard {
+  min-height: 100vh;
+  background-color: #2c3e50;
+  color: #ffffff;
+  padding: 32px 24px;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.admin-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  color: #ffc107;
+}
+
+.admin-range-select {
+  background-color: #34495e;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.admin-range-select:focus {
+  border-color: #ffc107;
+}
+
+.admin-stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.admin-stat-card {
+  background-color: #34495e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 20px 24px;
+  text-align: center;
+}
+
+.admin-stat-card .stat-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9ca3af;
+  margin-bottom: 8px;
+}
+
+.admin-stat-card .stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffc107;
+  line-height: 1.1;
+}
+
+.admin-charts {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.admin-chart-block {
+  background-color: #34495e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 24px;
+}
+
+.admin-chart-block h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 20px;
+}
+
+.admin-chart-wrapper {
+  height: 260px;
+  position: relative;
+}
+
+.admin-users-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.admin-users-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.admin-users-header h2 {
+  margin-bottom: 0;
+}
+
+.admin-users-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-users-page-info {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.admin-users-loading {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+}
+
+.admin-users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.admin-users-table th,
+.admin-users-table td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-users-table th {
+  color: #9ca3af;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+}
+
+.admin-users-table td {
+  color: #e5e7eb;
+}
+
+.admin-users-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.admin-users-table th:first-child,
+.admin-users-table td:first-child {
+  width: 48px;
+  color: #9ca3af;
+}
+
+.admin-sort-col {
+  cursor: pointer;
+  user-select: none;
+}
+
+.admin-sort-col:hover {
+  color: #ffc107;
+}
+
+.admin-sort-icon {
+  margin-left: 4px;
+  font-size: 0.7rem;
+  color: #ffc107;
+}
+
+.admin-sort-icon.inactive {
+  color: #6b7280;
+}
+
+.admin-no-email {
+  color: #6b7280;
+}
+
+.admin-total-records {
+  text-align: right;
+  padding-right: 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+td.admin-total-records {
+  color: #ffc107;
+}
+
+.admin-page-btn {
+  background-color: #34495e;
+  color: #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.admin-page-btn:hover:not(:disabled) {
+  background-color: rgba(255, 193, 7, 0.15);
+  border-color: #ffc107;
+  color: #ffc107;
+}
+
+.admin-page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.admin-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #2c3e50;
+}
+
+.admin-loading-text {
+  color: #9ca3af;
+  margin-top: 12px;
+}

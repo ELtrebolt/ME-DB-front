@@ -17,6 +17,7 @@ import Logout from "./app/pages/Logout";
 import Stats from './app/pages/Stats';
 import Profile from './app/pages/Profile';
 import Friends from './app/pages/Friends';
+import Admin from './admin/Admin';
 // Demo Pages
 import DemoNavbar from "./demo/components/DemoNavbar";
 import DemoBanner from "./demo/components/DemoBanner";
@@ -29,6 +30,8 @@ import { useEffect, useState, useMemo, useRef } from "react";
 import axios from 'axios';
 const constants = require('./app/constants');
 const theme = require('./styling/theme');
+
+const ADMIN_EMAILS = (process.env.REACT_APP_ADMIN_EMAILS || '').split(',').map(e => e.trim()).filter(Boolean);
 
 const App = () => {
   axios.defaults.withCredentials = true;
@@ -135,7 +138,7 @@ function AppContent({ user, setUserChanged, newTypes, selectedTags, setSelectedT
   return (
     <div>
       {showNormalNavbar && (
-        <Navbar user={user} setUserChanged={setUserChanged} newTypes={newTypes}/>
+        <Navbar user={user} setUserChanged={setUserChanged} newTypes={newTypes} isAdmin={ADMIN_EMAILS.includes(user?.email)}/>
       )}
       {showDemoNavbarWithSignIn && (
         <DemoNavbar user={user} />
@@ -148,6 +151,7 @@ function AppContent({ user, setUserChanged, newTypes, selectedTags, setSelectedT
             <Route path='/stats' element={user ? <Stats user={user}/> : <Navigate to="/"/>} />
             <Route path='/profile' element={user ? <Profile user={user} setUserChanged={setUserChanged}/> : <Navigate to="/"/>} />
             <Route path='/friends' element={user ? <Friends user={user} setUserChanged={setUserChanged}/> : <Navigate to="/"/>} />
+            <Route path='/admin' element={user && ADMIN_EMAILS.includes(user.email) ? <Admin user={user}/> : <Navigate to="/"/>} />
             <Route path='/user/:username' element={<Profile />} />
             <Route path='/user/:username/:mediaType' element={<SharedView />} />
             <Route path='/user/:username/:mediaType/:id' element={<SharedMediaDetails />} />
