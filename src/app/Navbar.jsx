@@ -7,7 +7,7 @@ import { useClickOutside } from './hooks/useClickOutside';
 const constants = require('./constants');
 const theme = require('../styling/theme');
 
-const NavbarFunction = ({user, setUserChanged, newTypes}) => {
+const NavbarFunction = ({user, setUserChanged, newTypes, isAdmin}) => {
   const [showModal, setShowModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const navigate = useNavigate();
@@ -61,10 +61,11 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
   // Calculate dynamic width for mobile profile dropdown
   const calculateProfileDropdownWidth = useCallback(() => {
     const labels = ['Export All Data', 'Import New List', 'View Profile', 'Switch Account', 'Logout'];
+    if (isAdmin) labels.push('Admin Board');
     const longestLabel = labels.reduce((a, b) => a.length > b.length ? a : b);
     const estimatedWidth = longestLabel.length * 6 + 24;
     return Math.max(estimatedWidth, 100);
-  }, []);
+  }, [isAdmin]);
 
   // Calculate dynamic width for mobile media dropdown
   const calculateMediaDropdownWidth = useCallback(() => {
@@ -98,10 +99,11 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
   // Calculate dynamic width for desktop profile dropdown
   const calculateDesktopProfileDropdownWidth = useCallback(() => {
     const labels = ['Export All Data', 'Import New List', 'View Profile', 'Switch Google Account', 'Logout'];
+    if (isAdmin) labels.push('Admin Board');
     const longestLabel = labels.reduce((a, b) => a.length > b.length ? a : b);
     const estimatedWidth = longestLabel.length * 7 + 32;
     return Math.max(estimatedWidth, 120);
-  }, []);
+  }, [isAdmin]);
 
   const showNewTypeModal = () => setShowModal(true);
 
@@ -456,6 +458,41 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer'
+                    }} className="navbar-dropdown-item" onClick={() => {
+                      setIsUserMenuOpen(false);
+                      navigate('/profile');
+                    }}>
+                      View Profile
+                    </button>
+                    {isAdmin && (
+                      <button style={{
+                        display: 'block',
+                        width: '100%',
+                        textAlign: 'left',
+                        padding: '0.375rem 0.75rem',
+                        fontSize: theme.components.navbar.mobile.dropdownItemFontSize,
+                        color: theme.components.navbar.colors.dropdownItemText,
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer'
+                      }} className="navbar-dropdown-item" onClick={() => {
+                        setIsUserMenuOpen(false);
+                        navigate('/admin');
+                      }}>
+                        Admin Board
+                      </button>
+                    )}
+                    <hr style={{ margin: '0.125rem 0', border: 'none', borderTop: `${theme.components.navbar.hr.thickness} solid ${theme.components.navbar.hr.color}` }} />
+                    <button style={{
+                      display: 'block',
+                      width: '100%',
+                      textAlign: 'left',
+                      padding: '0.375rem 0.75rem',
+                      fontSize: theme.components.navbar.mobile.dropdownItemFontSize,
+                      color: theme.components.navbar.colors.dropdownItemText,
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer'
                     }} className="navbar-dropdown-item" onClick={exportAllData}>
                       Export All Data
                     </button>
@@ -472,22 +509,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                     }} className="navbar-dropdown-item" onClick={() => setShowImportModal(true)}>
                       Import New List
                     </button>
-                    <button style={{
-                      display: 'block',
-                      width: '100%',
-                      textAlign: 'left',
-                      padding: '0.375rem 0.75rem',
-                      fontSize: theme.components.navbar.mobile.dropdownItemFontSize,
-                      color: theme.components.navbar.colors.dropdownItemText,
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer'
-                    }} className="navbar-dropdown-item" onClick={() => {
-                      setIsUserMenuOpen(false);
-                      navigate('/profile');
-                    }}>
-                      View Profile
-                    </button>
+                    <hr style={{ margin: '0.125rem 0', border: 'none', borderTop: `${theme.components.navbar.hr.thickness} solid ${theme.components.navbar.hr.color}` }} />
                     <button style={{
                       display: 'block',
                       width: '100%',
@@ -499,18 +521,8 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                       border: 'none',
                       cursor: 'pointer'
                     }} className="navbar-dropdown-item" onClick={switchGoogleAccount}>
-                      Switch Account
+                      Switch Google Account
                     </button>
-                    <a href="/about" style={{
-                      display: 'block',
-                      padding: '0.375rem 0.75rem',
-                      fontSize: theme.components.navbar.mobile.dropdownItemFontSize,
-                      color: theme.components.navbar.colors.dropdownItemText,
-                      textDecoration: 'none'
-                    }} className="navbar-dropdown-item">
-                      About
-                    </a>
-                    <hr style={{ margin: '0.125rem 0', border: 'none', borderTop: `${theme.components.navbar.hr.thickness} solid ${theme.components.navbar.hr.color}` }} />
                     <a href="/logout" style={{
                       display: 'block',
                       padding: '0.375rem 0.75rem',
@@ -776,8 +788,43 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                         background: 'none',
                         border: 'none',
                         cursor: 'pointer'
+                      }} className="navbar-dropdown-item" onClick={() => {
+                        setIsUserMenuOpen(false);
+                        navigate('/profile');
+                      }}>
+                        View Profile
+                      </button>
+                      {isAdmin && (
+                        <button style={{
+                          display: 'block',
+                          width: '100%',
+                          textAlign: 'left',
+                          padding: theme.components.navbar.desktop.dropdownPaddingLarge,
+                          fontSize: theme.components.navbar.desktop.dropdownItemFontSize,
+                          color: theme.components.navbar.colors.dropdownItemText,
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer'
+                        }} className="navbar-dropdown-item" onClick={() => {
+                          setIsUserMenuOpen(false);
+                          navigate('/admin');
+                        }}>
+                          Admin Board
+                        </button>
+                      )}
+                      <hr style={{ margin: '0.125rem 0', border: 'none', borderTop: `${theme.components.navbar.hr.thickness} solid ${theme.components.navbar.hr.color}` }} />
+                      <button style={{
+                        display: 'block',
+                        width: '100%',
+                        textAlign: 'left',
+                        padding: theme.components.navbar.desktop.dropdownPaddingLarge,
+                        fontSize: theme.components.navbar.desktop.dropdownItemFontSize,
+                        color: theme.components.navbar.colors.dropdownItemText,
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer'
                       }} className="navbar-dropdown-item" onClick={exportAllData}>
-                Export All Data
+                        Export All Data
                       </button>
                       <button style={{
                         display: 'block',
@@ -790,24 +837,9 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                         border: 'none',
                         cursor: 'pointer'
                       }} className="navbar-dropdown-item" onClick={() => setShowImportModal(true)}>
-                Import New List
+                        Import New List
                       </button>
-                      <button style={{
-                        display: 'block',
-                        width: '100%',
-                        textAlign: 'left',
-                        padding: theme.components.navbar.desktop.dropdownPaddingLarge,
-                        fontSize: theme.components.navbar.desktop.dropdownItemFontSize,
-                        color: theme.components.navbar.colors.dropdownItemText,
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer'
-                      }} className="navbar-dropdown-item" onClick={() => {
-                        setIsUserMenuOpen(false);
-                        navigate('/profile');
-                      }}>
-                View Profile
-                      </button>
+                      <hr style={{ margin: '0.125rem 0', border: 'none', borderTop: `${theme.components.navbar.hr.thickness} solid ${theme.components.navbar.hr.color}` }} />
                       <button style={{
                         display: 'block',
                         width: '100%',
@@ -819,9 +851,8 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                         border: 'none',
                         cursor: 'pointer'
                       }} className="navbar-dropdown-item" onClick={switchGoogleAccount}>
-                Switch Google Account
+                        Switch Google Account
                       </button>
-                      <hr style={{ margin: '0.125rem 0', border: 'none', borderTop: `${theme.components.navbar.hr.thickness} solid ${theme.components.navbar.hr.color}` }} />
                       <a href="/logout" style={{
                         display: 'block',
                         padding: theme.components.navbar.desktop.dropdownPaddingLarge,
@@ -829,7 +860,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes}) => {
                         color: theme.components.navbar.colors.dropdownItemText,
                         textDecoration: 'none'
                       }} className="navbar-dropdown-item">
-                Logout
+                        Logout
                       </a>
                     </div>
                   )}
