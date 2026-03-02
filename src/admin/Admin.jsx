@@ -80,6 +80,29 @@ function formatDate(iso) {
   return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
+function ChartBlock({ title, entries, xKey, yTitle, color }) {
+  const [open, setOpen] = useState(true);
+  const hasData = entries.length > 0;
+
+  return (
+    <div className="admin-chart-block">
+      <button className="admin-chart-header" onClick={() => setOpen(o => !o)}>
+        <h2>{title}</h2>
+        <span className={`admin-chart-toggle${open ? '' : ' admin-chart-toggle--closed'}`}>▾</span>
+      </button>
+      {open && (
+        hasData ? (
+          <div className="admin-chart-wrapper">
+            <Line data={buildLineData(title, entries, xKey, color)} options={buildLineOptions(yTitle)} />
+          </div>
+        ) : (
+          <div className="admin-chart-empty">No data for this range</div>
+        )
+      )}
+    </div>
+  );
+}
+
 function UsersTable() {
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState('lastActiveAt');
@@ -151,6 +174,7 @@ function UsersTable() {
           </div>
         </div>
       ) : (
+        <div className="admin-table-scroll">
         <table className="admin-users-table">
           <thead>
             <tr>
@@ -190,6 +214,7 @@ function UsersTable() {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </div>
   );
@@ -249,10 +274,6 @@ const Admin = () => {
     );
   }
 
-  const dauData = buildLineData('Daily Active Users', stats.dailyActiveUsers, 'date', LINE_COLOR);
-  const mauData = buildLineData('Monthly Active Users', stats.monthlyActiveUsers, 'month', '#4ECDC4');
-  const signupsData = buildLineData('New Signups', stats.newSignupsPerDay, 'date', '#74b9ff');
-
   const avgDAU = avg(stats.dailyActiveUsers);
   const avgMAU = avg(stats.monthlyActiveUsers);
   const totalSignups = stats.newSignupsPerDay.reduce((s, d) => s + d.count, 0);
@@ -294,26 +315,27 @@ const Admin = () => {
       <div className="admin-charts">
         <UsersTable />
 
-        <div className="admin-chart-block">
-          <h2>Daily Active Users</h2>
-          <div className="admin-chart-wrapper">
-            <Line data={dauData} options={buildLineOptions('Users')} />
-          </div>
-        </div>
-
-        <div className="admin-chart-block">
-          <h2>Monthly Active Users</h2>
-          <div className="admin-chart-wrapper">
-            <Line data={mauData} options={buildLineOptions('Users')} />
-          </div>
-        </div>
-
-        <div className="admin-chart-block">
-          <h2>New Signups Per Day</h2>
-          <div className="admin-chart-wrapper">
-            <Line data={signupsData} options={buildLineOptions('Signups')} />
-          </div>
-        </div>
+        <ChartBlock
+          title="Daily Active Users"
+          entries={stats.dailyActiveUsers}
+          xKey="date"
+          yTitle="Users"
+          color={LINE_COLOR}
+        />
+        <ChartBlock
+          title="Monthly Active Users"
+          entries={stats.monthlyActiveUsers}
+          xKey="month"
+          yTitle="Users"
+          color="#4ECDC4"
+        />
+        <ChartBlock
+          title="New Signups Per Day"
+          entries={stats.newSignupsPerDay}
+          xKey="date"
+          yTitle="Signups"
+          color="#74b9ff"
+        />
       </div>
     </div>
   );
