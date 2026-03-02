@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Route, Routes, Navigate, useParams, useLocation } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 
 // Components
 import Navbar from "./app/Navbar";
@@ -114,9 +115,11 @@ const App = () => {
   if(!isLoading)
   {
     return (
-      <Router>
-        <AppContent user={user} setUserChanged={setUserChanged} newTypes={newTypes} selectedTags={selectedTags} setSelectedTags={setSelectedTags} filteredData={filteredData} setFilteredData={setFilteredData} />
-      </Router>
+      <HelmetProvider>
+        <Router>
+          <AppContent user={user} setUserChanged={setUserChanged} newTypes={newTypes} selectedTags={selectedTags} setSelectedTags={setSelectedTags} filteredData={filteredData} setFilteredData={setFilteredData} />
+        </Router>
+      </HelmetProvider>
     );
   }
 };
