@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
+import PageMeta from '../components/ui/PageMeta';
 
 import CardsContainer from "../components/CardsContainer";
 import FiltersBar from "../components/filters/FiltersBar";
@@ -211,6 +212,7 @@ function SharedView() {
           }
         }}
     >
+      <PageMeta title={ownerName && mediaType ? `${ownerName}'s ${toCapitalNotation(mediaType)}` : 'Shared List'} />
       <style>{`
         .profile-link {
           transition: all 0.3s ease;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import axios from 'axios';
 import ShowMediaDetails from './ShowMediaDetails';
 
@@ -50,24 +51,26 @@ const mockUser = {
 
 function renderDetails(urlPath = '/anime/collection/42', props = {}) {
   return render(
-    <MemoryRouter initialEntries={[urlPath]}>
-      <Routes>
-        <Route
-          path="/:mediaType/:group/:id"
-          element={
-            <ShowMediaDetails
-              user={mockUser}
-              newType={false}
-              filteredData={{ S: [mockMedia] }}
-              dataSource="api"
-              basePath=""
-              {...props}
-            />
-          }
-        />
-        <Route path="/:mediaType/:group" element={<div data-testid="list-page" />} />
-      </Routes>
-    </MemoryRouter>
+    <HelmetProvider>
+      <MemoryRouter initialEntries={[urlPath]}>
+        <Routes>
+          <Route
+            path="/:mediaType/:group/:id"
+            element={
+              <ShowMediaDetails
+                user={mockUser}
+                newType={false}
+                filteredData={{ S: [mockMedia] }}
+                dataSource="api"
+                basePath=""
+                {...props}
+              />
+            }
+          />
+          <Route path="/:mediaType/:group" element={<div data-testid="list-page" />} />
+        </Routes>
+      </MemoryRouter>
+    </HelmetProvider>
   );
 }
 

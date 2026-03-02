@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import PageMeta from '../../app/components/ui/PageMeta';
 import Footer from '../Footer';
 import collectionMp4 from '../img/collection.mp4';
 import todoMp4 from '../img/todo.mp4';
@@ -411,6 +412,7 @@ const Intro = () => {
 
   return (
     <div style={{ backgroundColor: theme.components.introPage.heroBg, fontFamily: "'Poppins', sans-serif" }}>
+      <PageMeta title="ME-DB – Track Anime, Movies, TV &amp; Games" noSuffix description="ME-DB – track and organize your anime, movies, TV shows, and games in one place." />
       <IntroNavbar />
       
       {/* 1. Hero Section - Dark Navy */}

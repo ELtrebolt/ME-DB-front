@@ -1,10 +1,12 @@
 import React from 'react';
+import PageMeta from '../../app/components/ui/PageMeta';
 const theme = require('../../styling/theme');
 
 const About = (props) => {
 
   return (
     <div className="container-fluid min-vh-100 px-0" style={{backgroundColor: theme.colors.background.primary}}>
+      <PageMeta title="About" description="Learn about ME-DB and the story behind the app." />
       <div className="py-5 about-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 1rem' }}>
         <div className="text-white">
             <div className="text-center mb-5">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import PageMeta from '../app/components/ui/PageMeta';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -280,6 +281,7 @@ const Admin = () => {
 
   return (
     <div className="admin-dashboard">
+      <PageMeta title="Admin" />
       <div className="admin-header">
         <h1>Admin Dashboard</h1>
         <select

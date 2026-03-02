@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import axios from 'axios';
 import CreateMedia from './CreateMedia';
 
@@ -17,24 +18,26 @@ const mockUser = {
 // Helper: render CreateMedia at /anime/collection/create
 function renderCreateMedia(props = {}) {
   return render(
-    <MemoryRouter initialEntries={['/anime/collection/create']}>
-      <Routes>
-        <Route
-          path="/:mediaType/:group/create"
-          element={
-            <CreateMedia
-              user={mockUser}
-              toDo={false}
-              newType={false}
-              selectedTags={[]}
-              dataSource="api"
-              basePath=""
-              {...props}
-            />
-          }
-        />
-      </Routes>
-    </MemoryRouter>
+    <HelmetProvider>
+      <MemoryRouter initialEntries={['/anime/collection/create']}>
+        <Routes>
+          <Route
+            path="/:mediaType/:group/create"
+            element={
+              <CreateMedia
+                user={mockUser}
+                toDo={false}
+                newType={false}
+                selectedTags={[]}
+                dataSource="api"
+                basePath=""
+                {...props}
+              />
+            }
+          />
+        </Routes>
+      </MemoryRouter>
+    </HelmetProvider>
   );
 }
 

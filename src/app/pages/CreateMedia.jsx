@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import PageMeta from '../components/ui/PageMeta';
 import TagMaker from "../components/TagMaker";
 import { toCapitalNotation } from "../helpers";
 const constants = require('../constants');
@@ -204,6 +205,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
   
   return (
     <div className='CreateMedia' style={{backgroundColor: theme.colors.background.primary, minHeight: '100vh', color: 'white'}}>
+      <PageMeta title={`Add ${toCapitalNotation(mediaType)}`} />
       <div className={containerClass || 'py-2 py-md-3'} style={containerStyle}>
         {/* Mobile layout - only visible on mobile */}
         <div className='row mb-2 d-md-none align-items-center'>

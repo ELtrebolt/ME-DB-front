@@ -1,9 +1,12 @@
 import React from 'react';
+import PageMeta from '../../app/components/ui/PageMeta';
 import LegalPageLayout from '../components/LegalPageLayout';
 
 const Privacy = () => {
   return (
-    <LegalPageLayout title="Privacy Policy" lastUpdated="January 31, 2026">
+    <>
+      <PageMeta title="Privacy Policy" />
+      <LegalPageLayout title="Privacy Policy" lastUpdated="January 31, 2026">
       <div className="mb-4">
         <h5 className="fw-bold mb-3">Information We Collect</h5>
         <p className="mb-3">
@@ -128,6 +131,7 @@ const Privacy = () => {
       </div>
 
     </LegalPageLayout>
+    </>
   );
 };
 
