@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import PageMeta from '../components/ui/PageMeta';
 const constants = require('../constants');
 const theme = require('../../styling/theme');
 
@@ -357,6 +358,7 @@ function Friends({ user, setUserChanged }) {
       paddingTop: '2rem',
       paddingBottom: '3rem'
     }}>
+      <PageMeta title="Friends" />
       <div className="container" style={{ maxWidth: '800px' }}>
         <h1 style={{
           fontSize: '1.75rem',

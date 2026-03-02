@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import PageMeta from '../components/ui/PageMeta';
 import { toCapitalNotation } from "../helpers";
 const constants = require('../constants');
 const theme = require('../../styling/theme');
@@ -72,6 +73,7 @@ function SharedMediaDetails() {
   
   return (
     <div className='SharedMediaDetails min-vh-100' style={{backgroundColor: theme.colors.background.primary, color: 'white'}}>
+      <PageMeta title={media.title ? `${media.title} – Shared` : `${toCapitalNotation(mediaType)} – Shared`} />
       <style>{`
         @media (min-width: 768px) {
           .SharedMediaDetails table {

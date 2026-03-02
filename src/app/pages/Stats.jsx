@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import PageMeta from '../components/ui/PageMeta';
 import TypeDistributionChart from '../components/stats/TypeDistributionChart';
 import YearDistributionChart from '../components/stats/YearDistributionChart';
 import TierDistributionChart from '../components/stats/TierDistributionChart';
@@ -115,6 +116,7 @@ const Stats = ({ user, dataSource = 'api', onCalculateStats }) => {
 
   return (
     <div className="container-fluid min-vh-100" style={{backgroundColor: theme.colors.background.primary}}>
+      <PageMeta title="Stats" />
       <div className="container py-5">
         <div className="text-center mb-5">
           <h1 className="display-4 fw-bold mb-3 text-white">{constants.statsPage.title}</h1>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 
+import PageMeta from '../components/ui/PageMeta';
 import CardsContainer from "../components/CardsContainer";
 import FiltersBar from "../components/filters/FiltersBar";
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, KeyboardSensor, DragOverlay } from '@dnd-kit/core';
@@ -361,6 +362,7 @@ function ShowMediaList({
 
   return (
     <>
+      <PageMeta title={`${toCapitalNotation(mediaType)} ${toDoState ? 'To-Do' : 'Collection'}`} />
       <div className='ShowMediaList' style={{backgroundColor: theme.colors.background.primary}} {...swipeHandlers} onTouchStart={swipeHandlers.onTouchStart} onMouseDown={swipeHandlers.onMouseDown}>
         <div className='container pt-4'>
           <div className='row d-md-none mb-3 align-items-center' style={{ margin: '0 -8px' }}>

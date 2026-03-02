@@ -1,67 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://me-db.onrender.com/</loc>
+    <loc>https://me-db.app/</loc>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://me-db.onrender.com/about</loc>
+    <loc>https://me-db.app/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://me-db.onrender.com/privacy</loc>
+    <loc>https://me-db.app/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://me-db.onrender.com/terms</loc>
+    <loc>https://me-db.app/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://me-db.onrender.com/demo/anime/collection</loc>
+    <loc>https://me-db.app/demo/anime/collection</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://me-db.onrender.com/demo/anime/to-do</loc>
+    <loc>https://me-db.app/demo/anime/to-do</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://me-db.onrender.com/demo/movies/collection</loc>
+    <loc>https://me-db.app/demo/movies/collection</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://me-db.onrender.com/demo/movies/to-do</loc>
+    <loc>https://me-db.app/demo/movies/to-do</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://me-db.onrender.com/demo/tv/collection</loc>
+    <loc>https://me-db.app/demo/tv/collection</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://me-db.onrender.com/demo/tv/to-do</loc>
+    <loc>https://me-db.app/demo/tv/to-do</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://me-db.onrender.com/demo/games/collection</loc>
+    <loc>https://me-db.app/demo/games/collection</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://me-db.onrender.com/demo/games/to-do</loc>
+    <loc>https://me-db.app/demo/games/to-do</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://me-db.onrender.com/demo/stats</loc>
+    <loc>https://me-db.app/demo/stats</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

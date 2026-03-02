@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import PageMeta from '../components/ui/PageMeta';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, KeyboardSensor } from '@dnd-kit/core';
 import { arrayMove, SortableContext, rectSortingStrategy, useSortable, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -539,6 +540,7 @@ function Profile({ user: currentUser, setUserChanged }) {
       paddingTop: '2rem',
       paddingBottom: '3rem'
     }}>
+      <PageMeta title={username ? `${username}'s Profile` : 'Profile'} />
       <div className="container" style={{ maxWidth: '800px' }}>
         {/* Profile Header */}
         <div style={{

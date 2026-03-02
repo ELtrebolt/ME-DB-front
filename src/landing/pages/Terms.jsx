@@ -1,9 +1,12 @@
 import React from 'react';
+import PageMeta from '../../app/components/ui/PageMeta';
 import LegalPageLayout from '../components/LegalPageLayout';
 
 const Terms = () => {
   return (
-    <LegalPageLayout title="Terms of Service">
+    <>
+      <PageMeta title="Terms of Service" />
+      <LegalPageLayout title="Terms of Service">
                 <div className="mb-4">
                   <h5 className="fw-bold mb-3">Acceptance of Terms</h5>
                   <p className="mb-0">
@@ -107,6 +110,7 @@ const Terms = () => {
                 </div>
 
     </LegalPageLayout>
+    </>
   );
 };
 

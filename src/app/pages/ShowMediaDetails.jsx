@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import PageMeta from '../components/ui/PageMeta';
 import DeleteModal from "../components/modals/DeleteModal";
 import TagMaker from "../components/TagMaker";
 import useSwipe from "../hooks/useSwipe.tsx";
@@ -569,6 +570,7 @@ function ShowMediaDetails({
   
   return (
     <div className='ShowMediaDetails min-vh-100' style={{backgroundColor: theme.colors.background.primary, color: 'white'}} {...swipeHandlers}>
+      <PageMeta title={media.title || toCapitalNotation(mediaType)} />
       <style>{`
         @media (min-width: 768px) {
           .ShowMediaDetails table {
