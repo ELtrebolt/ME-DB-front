@@ -410,8 +410,6 @@ const NavbarFunction = ({user, setUserChanged, newTypes, isAdmin}) => {
                       display: 'block'
                     }}
                     onError={(e) => {
-                      console.log('Profile picture failed to load:', user.profilePic);
-                      // Replace image with username text
                       const parent = e.target.parentElement;
                       if (parent && !parent.querySelector('.username-fallback')) {
                         e.target.style.display = 'none';
@@ -426,9 +424,6 @@ const NavbarFunction = ({user, setUserChanged, newTypes, isAdmin}) => {
                         span.style.whiteSpace = 'nowrap';
                         parent.insertBefore(span, parent.lastChild);
                       }
-                    }}
-                    onLoad={() => {
-                      console.log('Profile picture loaded successfully:', user.profilePic);
                     }}
                   />
                 </button>
@@ -740,8 +735,6 @@ const NavbarFunction = ({user, setUserChanged, newTypes, isAdmin}) => {
                         objectFit: 'cover'
                       }}
                       onError={(e) => {
-                        console.log('Profile picture failed to load:', user.profilePic);
-                        // Replace image with username text
                         const parent = e.target.parentElement;
                         if (parent && !parent.querySelector('.username-fallback')) {
                           e.target.style.display = 'none';

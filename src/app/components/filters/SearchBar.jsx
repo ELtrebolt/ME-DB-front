@@ -30,7 +30,6 @@ const SearchBar = ({mediaType, allMedia, searchQuery, setSearchQuery, setSearchC
 
   const onDelete = useCallback(
     (media) => {
-      // console.log("Deleting Selection");
     }, []
   )
   

@@ -12,14 +12,12 @@ const Function = ({suggestedTags, selected, setSelected, setSearchChanged, tagLo
       const newSelected = [...selected, newTag];
       setSelected(newSelected);
       setSearchChanged(true);
-      console.log("Added filter tag:", newTag.label);
     },
     [selected, setSelected, setSearchChanged]
   )
 
   const onDelete = useCallback(
     (tagIndex) => {
-      console.log("Deleting filter tag:", selected[tagIndex].label);
       const newSelected = selected.filter((_, i) => i !== tagIndex);
       setSelected(newSelected);
       setSearchChanged(true);

@@ -37,14 +37,6 @@ function TierTitle({title, mediaType, group, tier, setUserChanged, newType, read
     // Otherwise, use API (app mode)
     const groupKey = group === 'to-do' ? 'todo' : 'collection';
     
-    console.log('TierTitle: Updating tier title:', {
-      mediaType,
-      groupKey,
-      tier,
-      newTitle: editedText,
-      newType: newType || 'default'
-    });
-    
     axios
       .put(constants['SERVER_URL'] + `/api/user/${mediaType}/${groupKey}/${tier}`, { 
         newTitle: editedText, 
@@ -54,10 +46,10 @@ function TierTitle({title, mediaType, group, tier, setUserChanged, newType, read
         setText(editedText);
         setIsEditing(false);
         if (setUserChanged) setUserChanged(true);
-        console.log('TierTitle: Successfully updated tier title');
       })
       .catch((error) => {
-        console.log('Error in TierTitle:', error.response?.data || error.message);
+
+
       });
   };
 
@@ -149,8 +141,6 @@ function TierTitle({title, mediaType, group, tier, setUserChanged, newType, read
                 if (currentTags) {
                   createURL += `&tags=${currentTags}`;
                 }
-                
-                console.log('TierTitle: Create URL:', createURL);
                 
                 // Navigate using React Router
                 navigate(createURL);
