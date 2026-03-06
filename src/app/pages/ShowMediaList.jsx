@@ -285,7 +285,7 @@ function ShowMediaList({
         if (dataSource === 'demo' && onMoveToTier) {
           onMoveToTier(activeId, targetTier, updatedTargetTier.length - 1);
         } else if (dataSource === 'api') {
-          axios.put(constants['SERVER_URL'] + `/api/media/${mediaType}/${activeId}`, { tier: targetTier }).catch(err => console.log(err));
+          axios.put(constants['SERVER_URL'] + `/api/media/${mediaType}/${activeId}`, { tier: targetTier }).catch(() => {});
         }
       }
       return;
@@ -316,7 +316,7 @@ function ShowMediaList({
       if (dataSource === 'demo' && onReorderInTier) {
         onReorderInTier(sourceTier, toDoState, updatedList.map(m => m.ID));
       } else if (dataSource === 'api') {
-        axios.put(constants['SERVER_URL'] + `/api/media/${mediaType}/${toDoString}/${sourceTier}/reorder`, { orderedIds: updatedList.map(m => m.ID) }).catch(err => console.log(err));
+        axios.put(constants['SERVER_URL'] + `/api/media/${mediaType}/${toDoString}/${sourceTier}/reorder`, { orderedIds: updatedList.map(m => m.ID) }).catch(() => {});
       }
     } else {
       const fromList = [...(localByTier[sourceTier] || [])];
@@ -331,7 +331,7 @@ function ShowMediaList({
       if (dataSource === 'demo' && onMoveToTier) {
         onMoveToTier(activeId, destTier, destIndex);
       } else if (dataSource === 'api') {
-        axios.put(constants['SERVER_URL'] + `/api/media/${mediaType}/${activeId}`, { tier: destTier, orderIndex: destIndex }).catch(err => console.log(err));
+        axios.put(constants['SERVER_URL'] + `/api/media/${mediaType}/${activeId}`, { tier: destTier, orderIndex: destIndex }).catch(() => {});
       }
     }
   };

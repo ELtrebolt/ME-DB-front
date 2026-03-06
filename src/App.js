@@ -159,7 +159,6 @@ function AppContent({ user, setUserChanged, newTypes, selectedTags, setSelectedT
             <Route path='/user/:username/:mediaType' element={<SharedView />} />
             <Route path='/user/:username/:mediaType/:id' element={<SharedMediaDetails />} />
             <Route path='/logout' element={<Logout/>} />
-            <Route path='/shared/:token' element={<SharedView/>} />
 
             <Route path='/:mediaType/collection/create' element={<RestrictMediaType user={user} n={3} setUserChanged={setUserChanged} newTypes={newTypes} selectedTags={selectedTags} setSelectedTags={setSelectedTags}/>} />
             <Route path='/:mediaType/to-do/create' element={<RestrictMediaType user={user} n={4} setUserChanged={setUserChanged} newTypes={newTypes} selectedTags={selectedTags} setSelectedTags={setSelectedTags}/>} />

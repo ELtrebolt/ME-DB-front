@@ -40,7 +40,7 @@ function renderDescriptionWithLink(description, maxLen) {
 }
 
 function SharedView() {
-  const { token, username, mediaType: urlMediaType } = useParams();
+  const { username, mediaType: urlMediaType } = useParams();
   
   const [firstLoad, setFirstLoad] = useState(true);
   const [error, setError] = useState(null);
@@ -99,9 +99,7 @@ function SharedView() {
   useEffect(() => {
     if (!firstLoad) return;
     
-    const fetchUrl = (username && urlMediaType) 
-      ? `${constants['SERVER_URL']}/api/share/user/${username}/${urlMediaType}`
-      : `${constants['SERVER_URL']}/api/share/${token}`;
+    const fetchUrl = `${constants['SERVER_URL']}/api/share/user/${username}/${urlMediaType}`;
 
     axios.get(fetchUrl)
       .then(res => {
@@ -147,7 +145,7 @@ function SharedView() {
         setError(err.response?.data?.error || 'Link invalid or expired');
         setFirstLoad(false);
       });
-  }, [firstLoad, token, username, urlMediaType]);
+  }, [firstLoad, username, urlMediaType]);
 
   // Apply filters when tierData or filter state changes (matching ShowMediaList)
   useEffect(() => {

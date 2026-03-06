@@ -114,7 +114,6 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
     
     // Validate title field
     if (!media.title.trim()) {
-      console.log("Title is required!");
       setTitleError(true);
       
       // Focus on the title input
@@ -171,11 +170,9 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
     }
     
     // Otherwise, use API (app mode)
-    console.log("Attempt to Create:", media)
     axios
       .post(constants['SERVER_URL'] + '/api/media', {media: media, newType: newType})
       .then((res) => {
-        console.log("Create Media success!")
         setMedia({
           title: '',
           toDo: '',
@@ -186,12 +183,10 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
         navigate(-1);
       })
       .catch((err) => {
-        console.log(err);
         window.alert("Create Failed :(")
       });
   };
 
-  // console.log("Media", media);
   const years = Array.from({ length: constants.currentYear - 1969 }, (_, index) => constants.currentYear - index);
   const tiers = constants.STANDARD_TIERS;
   const tiersName = toDo ? "todoTiers" : "collectionTiers"
@@ -273,11 +268,6 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
                   }
                 }
                 
-                console.log('=== Go Back Button Click ===');
-                console.log('CreateMedia: Media type:', mediaType);
-                console.log('CreateMedia: From parameter:', fromParam);
-                console.log('CreateMedia: Going back to:', toDo ? 'to-do' : 'collection');
-                console.log('CreateMedia: Target URL:', targetURL);
                 navigate(targetURL);
               }}
             >

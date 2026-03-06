@@ -26,7 +26,8 @@ export const useMediaData = (mediaType, dataSource = 'api') => {
         setApiUniqueTags(res.data.uniqueTags);
       }
     } catch (err) {
-      console.log('Error fetching tags:', err);
+
+
     }
   }, [mediaType]);
 

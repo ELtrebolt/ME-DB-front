@@ -51,7 +51,7 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hid
 
   const onDelete = useCallback(
     (tagIndex) => {
-      console.log("Deleting tag:", selected[tagIndex].label);
+
       const newSelected = selected.filter((_, i) => i !== tagIndex);
       setSelected(newSelected);
       setMedia({ ...media, tags: newSelected.map(item => item.label) });

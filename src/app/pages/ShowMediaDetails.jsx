@@ -80,7 +80,6 @@ function ShowMediaDetails({
           if(!res.data) {
             navigate('/404')
           } else {
-            console.log("Details GET /api/media/type/id", res.data)
             setMedia(res.data);
             setTempMedia(res.data); // Initialize temp media for editing
             
@@ -94,9 +93,7 @@ function ShowMediaDetails({
             setLoaded(true);
           }
         })
-        .catch((err) => {
-          console.log('Error from ShowMediaDetails');
-        });
+        .catch(() => {});
       }
     }
   }, [loaded, mediaType, group, navigate, mediaList, dataSource, onGetMediaById, propMediaList]);
@@ -192,15 +189,12 @@ function ShowMediaDetails({
           const finalUrl = currentSearch ? `${backUrl}${currentSearch}` : backUrl;
           navigate(finalUrl);
         })
-        .catch((err) => {
-          console.log('Error from ShowMediaDetails_deleteClick:', err);
-        });
+        .catch(() => {});
     }
   };
 
   function onDuplicateClick() {
     if (!media.title) {
-      console.log('Media not loaded yet');
       return;
     }
     // Show confirmation modal first
@@ -209,7 +203,6 @@ function ShowMediaDetails({
 
   function handleConfirmDuplicate() {
     if (!media.title) {
-      console.log('Media not loaded yet');
       return;
     }
 
@@ -243,12 +236,10 @@ function ShowMediaDetails({
     axios
       .post(constants['SERVER_URL'] + '/api/media', duplicateData)
       .then((res) => {
-        console.log('Media duplicated successfully:', res.data);
         setDuplicateId(res.data.ID);
         setShowDuplicateModal(true);
       })
       .catch((err) => {
-        console.log('Error from ShowMediaDetails_duplicateClick:', err);
         window.alert('Failed to duplicate media');
       });
   }
