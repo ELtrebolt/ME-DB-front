@@ -65,13 +65,13 @@
       "last 1 safari version"
     ]
   },
-  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "description": "ME-DB frontend: media lists, tiers, sharing, and user dashboard.",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ELtrebolt/ME-DB-front.git"
   },
-  "author": "",
+  "author": "ELtrebolt",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/ELtrebolt/ME-DB-front/issues"

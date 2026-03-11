@@ -29,6 +29,7 @@ import DemoStats from "./demo/pages/DemoStats";
 // Other
 import { useEffect, useState, useMemo, useRef } from "react";
 import axios from 'axios';
+import { toast } from 'react-toastify';
 const constants = require('./app/constants');
 const theme = require('./styling/theme');
 
@@ -252,6 +253,7 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
         })
         .catch((err) => {
           console.error('Error fetching media data:', err.response?.status, err.message);
+          toast.error('Could not load media. Please try again.');
         });
       }
     }

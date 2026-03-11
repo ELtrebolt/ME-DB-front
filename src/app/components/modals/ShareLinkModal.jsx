@@ -50,7 +50,10 @@ function ShareLinkModal({
               setShareConfig({ collection: !toDoState, todo: toDoState });
             }
           })
-          .catch(err => console.error('Error checking share status:', err));
+          .catch(err => {
+            console.error('Error checking share status:', err);
+            toast.error('Could not load share status.');
+          });
       }
     }
   }, [show, mediaType, toDoState, initialShareData]);
@@ -69,7 +72,6 @@ function ShareLinkModal({
       }
     })
     .catch(err => {
-      console.error(err);
       setIsGeneratingLink(false);
       toast.error('Error generating link');
     });
@@ -88,7 +90,6 @@ function ShareLinkModal({
           }
       })
       .catch(err => {
-          console.error(err);
           toast.error('Error revoking link');
       });
   }
