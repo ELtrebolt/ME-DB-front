@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 
 import PageMeta from '../components/ui/PageMeta';
@@ -248,7 +249,7 @@ function ShowMediaList({
           navigate('/');
         })
         .catch(err => {
-          window.alert('Error deleting media type');
+          toast.error('Error deleting media type');
           console.error(err);
         });
     }
@@ -285,7 +286,9 @@ function ShowMediaList({
         if (dataSource === 'demo' && onMoveToTier) {
           onMoveToTier(activeId, targetTier, updatedTargetTier.length - 1);
         } else if (dataSource === 'api') {
-          axios.put(constants['SERVER_URL'] + `/api/media/${mediaType}/${activeId}`, { tier: targetTier }).catch(() => {});
+          axios
+            .put(constants['SERVER_URL'] + `/api/media/${mediaType}/${activeId}`, { tier: targetTier })
+            .catch(() => toast.error('Failed to save changes. Please try again.'));
         }
       }
       return;
@@ -316,7 +319,9 @@ function ShowMediaList({
       if (dataSource === 'demo' && onReorderInTier) {
         onReorderInTier(sourceTier, toDoState, updatedList.map(m => m.ID));
       } else if (dataSource === 'api') {
-        axios.put(constants['SERVER_URL'] + `/api/media/${mediaType}/${toDoString}/${sourceTier}/reorder`, { orderedIds: updatedList.map(m => m.ID) }).catch(() => {});
+        axios
+          .put(constants['SERVER_URL'] + `/api/media/${mediaType}/${toDoString}/${sourceTier}/reorder`, { orderedIds: updatedList.map(m => m.ID) })
+          .catch(() => toast.error('Failed to save order. Please try again.'));
       }
     } else {
       const fromList = [...(localByTier[sourceTier] || [])];
@@ -331,7 +336,9 @@ function ShowMediaList({
       if (dataSource === 'demo' && onMoveToTier) {
         onMoveToTier(activeId, destTier, destIndex);
       } else if (dataSource === 'api') {
-        axios.put(constants['SERVER_URL'] + `/api/media/${mediaType}/${activeId}`, { tier: destTier, orderIndex: destIndex }).catch(() => {});
+        axios
+          .put(constants['SERVER_URL'] + `/api/media/${mediaType}/${activeId}`, { tier: destTier, orderIndex: destIndex })
+          .catch(() => toast.error('Failed to save changes. Please try again.'));
       }
     }
   };

@@ -3,6 +3,7 @@ import NewTypeModal from "./components/modals/NewTypeModal";
 import ImportModal from "./components/modals/ImportModal";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { useClickOutside } from './hooks/useClickOutside';
 const constants = require('./constants');
 const theme = require('../styling/theme');
@@ -133,9 +134,9 @@ const NavbarFunction = ({user, setUserChanged, newTypes, isAdmin}) => {
   const onCreateNewType = (newName) => {
     newName = newName.trim().toLowerCase().replace(/ /g, '-');
     if(user.newTypes[newName]) {
-      window.alert('Type Already Exists');
+      toast.error('Type already exists');
     } else if(Object.keys(user.newTypes).length === constants.maxCustomTypes) {
-      window.alert(`Maximum custom types reached (${constants.maxCustomTypes})`);
+      toast.error(`Maximum custom types reached (${constants.maxCustomTypes})`);
     } else {
       axios
         .put(constants['SERVER_URL'] + `/api/user/newTypes`, {newType: newName})
@@ -144,7 +145,7 @@ const NavbarFunction = ({user, setUserChanged, newTypes, isAdmin}) => {
           setPendingNewType(newName);
           setUserChanged(true);
         })
-        .catch(() => window.alert("Error on Create New Type"));
+        .catch(() => toast.error("Error creating new type"));
     }
   };
 
@@ -163,11 +164,11 @@ const NavbarFunction = ({user, setUserChanged, newTypes, isAdmin}) => {
         link.click();
         document.body.removeChild(link);
       } else {
-        window.alert('Failed to export data');
+        toast.error('Failed to export data');
       }
     } catch (error) {
       console.error('Export error:', error);
-      window.alert('Error exporting data');
+      toast.error('Error exporting data');
     }
   };
 

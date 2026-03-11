@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import PageMeta from '../components/ui/PageMeta';
 import DeleteModal from "../components/modals/DeleteModal";
 import TagMaker from "../components/TagMaker";
@@ -93,7 +94,15 @@ function ShowMediaDetails({
             setLoaded(true);
           }
         })
-        .catch(() => {});
+        .catch((err) => {
+          const status = err?.response?.status;
+          if (status === 404) {
+            navigate('/404');
+            return;
+          }
+          toast.error(err?.response?.data?.message || 'Could not load media.');
+          setLoaded(true);
+        });
       }
     }
   }, [loaded, mediaType, group, navigate, mediaList, dataSource, onGetMediaById, propMediaList]);
@@ -161,6 +170,7 @@ function ShowMediaDetails({
       })
       .catch((err) => {
         setTempMedia(media);
+        toast.error(err?.response?.data?.message || 'Failed to save changes.');
       });
   };
 
@@ -189,7 +199,9 @@ function ShowMediaDetails({
           const finalUrl = currentSearch ? `${backUrl}${currentSearch}` : backUrl;
           navigate(finalUrl);
         })
-        .catch(() => {});
+        .catch((err) => {
+          toast.error(err?.response?.data?.message || 'Failed to delete.');
+        });
     }
   };
 
@@ -228,7 +240,7 @@ function ShowMediaDetails({
         setDuplicateId(created.ID);
         setShowDuplicateModal(true);
       } else {
-        window.alert('Failed to duplicate media');
+        toast.error('Failed to duplicate media');
       }
       return;
     }
@@ -240,7 +252,7 @@ function ShowMediaDetails({
         setShowDuplicateModal(true);
       })
       .catch((err) => {
-        window.alert('Failed to duplicate media');
+        toast.error('Failed to duplicate media');
       });
   }
 

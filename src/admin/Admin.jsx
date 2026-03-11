@@ -110,15 +110,23 @@ function UsersTable() {
   const [order, setOrder] = useState('desc');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [usersError, setUsersError] = useState('');
 
   useEffect(() => {
     setLoading(true);
+    setUsersError('');
     axios.get(
       `${constants.SERVER_URL}/api/admin/users?page=${page}&sort=${sort}&order=${order}`,
       { withCredentials: true }
     )
-      .then(res => { if (res.data.success) setData(res.data); })
-      .catch(() => {})
+      .then(res => {
+        if (res.data.success) {
+          setData(res.data);
+        } else {
+          setUsersError(res.data.message || 'Failed to load users. Try again.');
+        }
+      })
+      .catch(() => setUsersError('Failed to load users. Try again.'))
       .finally(() => setLoading(false));
   }, [page, sort, order]);
 
@@ -168,6 +176,11 @@ function UsersTable() {
           </button>
         </div>
       </div>
+      {!loading && usersError && (
+        <div className="admin-error" role="alert">
+          {usersError}
+        </div>
+      )}
       {loading ? (
         <div className="admin-users-loading">
           <div className="spinner-border spinner-border-sm text-warning" role="status">
