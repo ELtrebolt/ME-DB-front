@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import PageMeta from '../components/ui/PageMeta';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, KeyboardSensor } from '@dnd-kit/core';
 import { arrayMove, SortableContext, rectSortingStrategy, useSortable, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
@@ -79,7 +80,7 @@ function Profile({ user: currentUser, setUserChanged }) {
       }
     } catch (err) {
       console.error('Error updating visibility:', err);
-      window.alert('Failed to update visibility');
+      toast.error('Failed to update visibility');
     } finally {
       setIsUpdatingVisibility(false);
     }
@@ -146,11 +147,11 @@ function Profile({ user: currentUser, setUserChanged }) {
       }
 
       if (response && !response.data.success) {
-        window.alert(response.data.message || 'Action failed');
+        toast.error(response.data.message || 'Action failed');
       }
     } catch (err) {
       console.error(`Error ${action}ing friend:`, err);
-      window.alert(err.response?.data?.message || `Failed to ${action} friend`);
+      toast.error(err.response?.data?.message || `Failed to ${action} friend`);
     } finally {
       setIsUpdatingFriendship(false);
     }

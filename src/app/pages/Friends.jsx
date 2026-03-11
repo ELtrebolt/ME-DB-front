@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import PageMeta from '../components/ui/PageMeta';
 const constants = require('../constants');
 const theme = require('../../styling/theme');
@@ -56,7 +57,7 @@ function Friends({ user, setUserChanged }) {
       }
     } catch (err) {
       console.error('Error accepting friend request:', err);
-      window.alert(err.response?.data?.message || 'Failed to accept friend request');
+      toast.error(err.response?.data?.message || 'Failed to accept friend request');
     }
   };
 
@@ -73,7 +74,7 @@ function Friends({ user, setUserChanged }) {
       }
     } catch (err) {
       console.error('Error rejecting friend request:', err);
-      window.alert(err.response?.data?.message || 'Failed to reject friend request');
+      toast.error(err.response?.data?.message || 'Failed to reject friend request');
     }
   };
 
@@ -94,7 +95,7 @@ function Friends({ user, setUserChanged }) {
       }
     } catch (err) {
       console.error('Error removing friend:', err);
-      window.alert(err.response?.data?.message || 'Failed to remove friend');
+      toast.error(err.response?.data?.message || 'Failed to remove friend');
     }
   };
 

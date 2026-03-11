@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { toCapitalNotation } from '../../helpers';
 import Modal from './Modal';
 const constants = require('../../constants');
@@ -70,7 +71,7 @@ function ShareLinkModal({
     .catch(err => {
       console.error(err);
       setIsGeneratingLink(false);
-      window.alert('Error generating link');
+      toast.error('Error generating link');
     });
   }
 
@@ -88,7 +89,7 @@ function ShareLinkModal({
       })
       .catch(err => {
           console.error(err);
-          window.alert('Error revoking link');
+          toast.error('Error revoking link');
       });
   }
 

@@ -1,8 +1,16 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import ShareLinkModal from './ShareLinkModal';
+import { toast } from 'react-toastify';
 
 jest.mock('axios');
+jest.mock('react-toastify', () => ({
+  toast: {
+    error: jest.fn(),
+    success: jest.fn(),
+  },
+  ToastContainer: () => null,
+}));
 
 const defaultProps = {
   show: true,
@@ -26,7 +34,7 @@ beforeEach(() => {
     configurable: true,
   });
   window.confirm = jest.fn(() => true);
-  window.alert = jest.fn();
+  toast.error.mockClear();
 });
 
 describe('ShareLinkModal', () => {

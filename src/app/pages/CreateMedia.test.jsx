@@ -4,8 +4,16 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import axios from 'axios';
 import CreateMedia from './CreateMedia';
+import { toast } from 'react-toastify';
 
 jest.mock('axios');
+jest.mock('react-toastify', () => ({
+  toast: {
+    error: jest.fn(),
+    success: jest.fn(),
+  },
+  ToastContainer: () => null,
+}));
 jest.mock('../components/TagMaker', () => () => <div data-testid="mock-tag-maker" />);
 
 const mockUser = {
@@ -44,7 +52,7 @@ function renderCreateMedia(props = {}) {
 beforeEach(() => {
   jest.clearAllMocks();
   axios.post.mockResolvedValue({ data: {} });
-  window.alert = jest.fn();
+  toast.error.mockClear();
 });
 
 describe('CreateMedia', () => {

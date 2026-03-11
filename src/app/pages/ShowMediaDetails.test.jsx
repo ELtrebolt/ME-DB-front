@@ -4,8 +4,16 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import axios from 'axios';
 import ShowMediaDetails from './ShowMediaDetails';
+import { toast } from 'react-toastify';
 
 jest.mock('axios');
+jest.mock('react-toastify', () => ({
+  toast: {
+    error: jest.fn(),
+    success: jest.fn(),
+  },
+  ToastContainer: () => null,
+}));
 
 // DeleteModal manages its own show/hide via internal state.
 // Use require inside the factory (variables must be prefixed with 'mock' to be allowed by Jest).
@@ -79,7 +87,7 @@ beforeEach(() => {
   axios.get.mockResolvedValue({ data: mockMedia });
   axios.put.mockResolvedValue({ data: mockMedia });
   axios.delete.mockResolvedValue({ data: { toDo: false } });
-  window.alert = jest.fn();
+  toast.error.mockClear();
 });
 
 describe('ShowMediaDetails', () => {

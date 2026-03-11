@@ -1,8 +1,16 @@
 import { renderWithRouter, screen, fireEvent, waitFor } from '../test-utils';
 import axios from 'axios';
 import Navbar from './Navbar';
+import { toast } from 'react-toastify';
 
 jest.mock('axios');
+jest.mock('react-toastify', () => ({
+  toast: {
+    error: jest.fn(),
+    success: jest.fn(),
+  },
+  ToastContainer: () => null,
+}));
 jest.mock('./components/modals/NewTypeModal', () => ({ show }) =>
   show ? <div data-testid="mock-new-type-modal" /> : null
 );
@@ -30,7 +38,6 @@ beforeEach(() => {
   jest.useFakeTimers();
   axios.get.mockResolvedValue({ data: { success: true, incoming: [] } });
   axios.put.mockResolvedValue({});
-  window.alert = jest.fn();
 });
 
 afterEach(() => {
@@ -138,6 +145,6 @@ describe('Navbar', () => {
     // Modal is mocked, so simulate the onSaveClick by accessing internal state is not possible
     // Instead test by calling the handler directly through the modal interaction stub
     // This test verifies the alert path exists — covered indirectly by the component
-    expect(window.alert).not.toHaveBeenCalled(); // sanity — no alert yet
+    expect(toast.error).not.toHaveBeenCalled(); // sanity — no toast yet
   });
 });
