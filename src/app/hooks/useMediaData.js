@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import { api as axios } from '../api';
 import { useDemoData } from '../../demo/hooks/useDemoData';
 
 const constants = require('../constants');

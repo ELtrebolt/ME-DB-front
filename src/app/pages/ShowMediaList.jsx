@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import { api as axios } from '../api';
+import { toast } from 'sonner';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 
 import PageMeta from '../components/ui/PageMeta';

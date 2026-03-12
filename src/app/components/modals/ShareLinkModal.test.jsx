@@ -1,15 +1,15 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import axios from 'axios';
+import { api as axios } from '../../api';
 import ShareLinkModal from './ShareLinkModal';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
-jest.mock('axios');
-jest.mock('react-toastify', () => ({
+jest.mock('../../api', () => ({
+  api: { get: jest.fn(), post: jest.fn(), put: jest.fn(), delete: jest.fn() },
+}));
+jest.mock('sonner', () => ({
   toast: {
     error: jest.fn(),
-    success: jest.fn(),
   },
-  ToastContainer: () => null,
 }));
 
 const defaultProps = {

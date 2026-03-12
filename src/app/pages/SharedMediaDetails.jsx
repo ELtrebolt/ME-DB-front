@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import { api as axios } from '../api';
 import PageMeta from '../components/ui/PageMeta';
 import { toCapitalNotation } from "../helpers";
 const constants = require('../constants');

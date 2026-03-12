@@ -73,7 +73,7 @@ describe('EditListModal', () => {
     const { container } = render(<EditListModal {...defaultProps} isHomePage={false} />);
     const row = screen.getByText('Set as Home Page').closest('div[style]');
     // Initially unchecked
-    expect(container.querySelector('i.far.fa-square')).toBeInTheDocument();
+    expect(container.querySelector('i.fas.fa-square')).toBeInTheDocument();
     fireEvent.click(row);
     expect(container.querySelector('i.fas.fa-check-square')).toBeInTheDocument();
   });

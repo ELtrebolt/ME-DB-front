@@ -1,9 +1,11 @@
 import { MemoryRouter } from 'react-router-dom';
 import { renderWithRouter, screen, fireEvent, waitFor } from '../../test-utils';
-import axios from 'axios';
+import { api as axios } from '../api';
 import TierTitle from './TierTitle';
 
-jest.mock('axios');
+jest.mock('../api', () => ({
+  api: { get: jest.fn(), post: jest.fn(), put: jest.fn(), delete: jest.fn() },
+}));
 
 const defaultProps = {
   title: 'S Tier',
@@ -16,7 +18,6 @@ const defaultProps = {
 };
 
 beforeEach(() => {
-  axios.defaults = {};
   axios.put.mockResolvedValue({});
   jest.clearAllMocks();
 });

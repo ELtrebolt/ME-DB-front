@@ -1,8 +1,10 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import axios from 'axios';
+import { api as axios } from '../api';
 import { useMediaData } from './useMediaData';
 
-jest.mock('axios');
+jest.mock('../api', () => ({
+  api: { get: jest.fn(), post: jest.fn(), put: jest.fn(), delete: jest.fn() },
+}));
 
 jest.mock('../../demo/hooks/useDemoData', () => ({
   useDemoData: () => ({
@@ -22,7 +24,6 @@ jest.mock('../../demo/hooks/useDemoData', () => ({
 }));
 
 beforeEach(() => {
-  axios.defaults = {};
   axios.get.mockResolvedValue({ data: { uniqueTags: ['action', 'romance'] } });
 });
 

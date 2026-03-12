@@ -63,7 +63,7 @@ function EditListModal({ show, setShow, onSave, currentDescription, isHomePage =
           onClick={() => setSetAsHome(!setAsHome)}
         >
           <i 
-            className={`${setAsHome ? 'fas fa-check-square' : 'far fa-square'} me-2`}
+            className={`${setAsHome ? 'fas fa-check-square' : 'fas fa-square'} me-2`}
             style={{ 
               fontSize: '1.25rem', 
               color: setAsHome ? '#28a745' : '#6c757d'

@@ -2,17 +2,17 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import axios from 'axios';
+import { api as axios } from '../api';
 import CreateMedia from './CreateMedia';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
-jest.mock('axios');
-jest.mock('react-toastify', () => ({
+jest.mock('../api', () => ({
+  api: { get: jest.fn(), post: jest.fn(), put: jest.fn(), delete: jest.fn() },
+}));
+jest.mock('sonner', () => ({
   toast: {
     error: jest.fn(),
-    success: jest.fn(),
   },
-  ToastContainer: () => null,
 }));
 jest.mock('../components/TagMaker', () => () => <div data-testid="mock-tag-maker" />);
 

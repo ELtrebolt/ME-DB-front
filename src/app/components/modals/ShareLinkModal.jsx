@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import { api as axios } from '../../api';
+import { toast } from 'sonner';
 import { toCapitalNotation } from '../../helpers';
 import Modal from './Modal';
 const constants = require('../../constants');

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { api as axios } from '../api';
 import { useParams, Link } from 'react-router-dom';
 import PageMeta from '../components/ui/PageMeta';
 

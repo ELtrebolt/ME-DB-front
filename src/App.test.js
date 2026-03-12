@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react';
-import axios from 'axios';
+import { api as axios } from './app/api';
 import App from './App';
 
-jest.mock('axios');
+jest.mock('./app/api', () => ({
+  api: { get: jest.fn(), post: jest.fn(), put: jest.fn(), delete: jest.fn() },
+}));
 
 beforeAll(() => {
   global.IntersectionObserver = class {
@@ -13,7 +15,6 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  axios.defaults = { withCredentials: false };
   axios.get.mockRejectedValue({ response: { status: 401 } });
 });
 

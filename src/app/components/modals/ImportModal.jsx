@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { api as axios } from '../../api';
 import Modal from './Modal';
 const constants = require('../../constants');
 
