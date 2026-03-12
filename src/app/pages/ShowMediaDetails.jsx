@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import { api as axios } from '../api';
+import { toast } from 'sonner';
 import PageMeta from '../components/ui/PageMeta';
 import DeleteModal from "../components/modals/DeleteModal";
 import TagMaker from "../components/TagMaker";

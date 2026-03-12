@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import { api as axios } from '../../api';
+import { toast } from 'sonner';
 import { toCapitalNotation } from '../../helpers';
 import Modal from './Modal';
 const constants = require('../../constants');
@@ -50,7 +50,10 @@ function ShareLinkModal({
               setShareConfig({ collection: !toDoState, todo: toDoState });
             }
           })
-          .catch(err => console.error('Error checking share status:', err));
+          .catch(err => {
+            console.error('Error checking share status:', err);
+            toast.error('Could not load share status.');
+          });
       }
     }
   }, [show, mediaType, toDoState, initialShareData]);
@@ -69,7 +72,6 @@ function ShareLinkModal({
       }
     })
     .catch(err => {
-      console.error(err);
       setIsGeneratingLink(false);
       toast.error('Error generating link');
     });
@@ -88,7 +90,6 @@ function ShareLinkModal({
           }
       })
       .catch(err => {
-          console.error(err);
           toast.error('Error revoking link');
       });
   }

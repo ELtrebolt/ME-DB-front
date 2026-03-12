@@ -1,9 +1,11 @@
 import { renderWithRouter, screen, waitFor } from '../../test-utils';
 import { Routes, Route } from 'react-router-dom';
-import axios from 'axios';
+import { api as axios } from '../api';
 import ShowMediaList from './ShowMediaList';
 
-jest.mock('axios');
+jest.mock('../api', () => ({
+  api: { get: jest.fn(), post: jest.fn(), put: jest.fn(), delete: jest.fn() },
+}));
 
 // Mock DnD kit so jsdom pointer-event limitations don't affect tests
 jest.mock('@dnd-kit/core', () => ({
@@ -77,7 +79,6 @@ function renderShowMediaList(props = {}) {
 }
 
 beforeEach(() => {
-  axios.defaults = {};
   axios.get.mockResolvedValue({ data: { media: [], uniqueTags: [] } });
 });
 

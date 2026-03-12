@@ -1,41 +1,40 @@
 import { BrowserRouter as Router, Route, Routes, Navigate, useParams, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-
+import { lazy, Suspense, useEffect, useState, useMemo, useRef } from 'react';
+import { api as axios } from './app/api';
+import { toast } from 'sonner';
 // Components
 import Navbar from "./app/Navbar";
-// Pages
-import CreateMedia from './app/pages/CreateMedia';
+// Pages — kept in main bundle (primary landing page for logged-in users)
 import ShowMediaList from './app/pages/ShowMediaList';
-import ShowMediaDetails from './app/pages/ShowMediaDetails';
-import SharedView from './app/pages/SharedView';
-import SharedMediaDetails from './app/pages/SharedMediaDetails';
 import About from "./landing/pages/About";
-import Intro from "./landing/pages/Intro";
 import Privacy from "./landing/pages/Privacy";
 import Terms from "./landing/pages/Terms";
 import NotFound from "./landing/pages/NotFound";
 import Logout from "./app/pages/Logout";
-import Stats from './app/pages/Stats';
-import Profile from './app/pages/Profile';
-import Friends from './app/pages/Friends';
-import Admin from './admin/Admin';
-// Demo Pages
+// Demo Components — kept in main bundle (used on every demo route)
 import DemoNavbar from "./demo/components/DemoNavbar";
 import DemoBanner from "./demo/components/DemoBanner";
-import DemoShowMediaList from "./demo/pages/DemoShowMediaList";
-import DemoShowMediaDetails from "./demo/pages/DemoShowMediaDetails";
-import DemoCreateMedia from "./demo/pages/DemoCreateMedia";
-import DemoStats from "./demo/pages/DemoStats";
-// Other
-import { useEffect, useState, useMemo, useRef } from "react";
-import axios from 'axios';
+// Lazy-loaded pages — excluded from main bundle
+const Stats = lazy(() => import('./app/pages/Stats'));
+const Admin = lazy(() => import('./admin/Admin'));
+const Intro = lazy(() => import('./landing/pages/Intro'));
+const Profile = lazy(() => import('./app/pages/Profile'));
+const ShowMediaDetails = lazy(() => import('./app/pages/ShowMediaDetails'));
+const CreateMedia = lazy(() => import('./app/pages/CreateMedia'));
+const Friends = lazy(() => import('./app/pages/Friends'));
+const SharedView = lazy(() => import('./app/pages/SharedView'));
+const SharedMediaDetails = lazy(() => import('./app/pages/SharedMediaDetails'));
+const DemoStats = lazy(() => import('./demo/pages/DemoStats'));
+const DemoShowMediaList = lazy(() => import('./demo/pages/DemoShowMediaList'));
+const DemoShowMediaDetails = lazy(() => import('./demo/pages/DemoShowMediaDetails'));
+const DemoCreateMedia = lazy(() => import('./demo/pages/DemoCreateMedia'));
 const constants = require('./app/constants');
 const theme = require('./styling/theme');
 
 const ADMIN_EMAILS = (process.env.REACT_APP_ADMIN_EMAILS || '').split(',').map(e => e.trim()).filter(Boolean);
 
 const App = () => {
-  axios.defaults.withCredentials = true;
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userChanged, setUserChanged] = useState(false);
@@ -146,6 +145,7 @@ function AppContent({ user, setUserChanged, newTypes, selectedTags, setSelectedT
       {showDemoNavbarWithSignIn && (
         <DemoNavbar user={user} />
       )}
+      <Suspense fallback={<div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}><div className="spinner-border text-secondary" role="status" /></div>}>
       <Routes>
             <Route path='/' element={user ? <Navigate to={user.customizations?.homePage ? `/${user.customizations.homePage}` : "/anime/collection"}/> : <Intro />} />
             <Route path='/about' element={<About/>} />
@@ -180,6 +180,7 @@ function AppContent({ user, setUserChanged, newTypes, selectedTags, setSelectedT
             <Route path='/404' element={<NotFound/>} />
             <Route path="/*" element={<NotFound />} />
           </Routes>
+      </Suspense>
         </div>
   );
 }
@@ -252,6 +253,7 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
         })
         .catch((err) => {
           console.error('Error fetching media data:', err.response?.status, err.message);
+          toast.error('Could not load media. Please try again.');
         });
       }
     }

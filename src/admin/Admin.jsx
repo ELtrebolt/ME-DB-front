@@ -1,30 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { api as axios } from '../app/api';
 import PageMeta from '../app/components/ui/PageMeta';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import '../app/components/stats/chartConfig';
 import './Admin.css';
 
 const constants = require('../app/constants');
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
 
 const LINE_COLOR = '#ffc107';
 const GRID_COLOR = 'rgba(229, 231, 235, 0.15)';

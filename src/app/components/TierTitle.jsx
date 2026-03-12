@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { api as axios } from '../api';
+import { toast } from 'sonner';
 import { useNavigate, useLocation } from 'react-router-dom';
 const constants = require('../constants');
 
@@ -48,8 +49,9 @@ function TierTitle({title, mediaType, group, tier, setUserChanged, newType, read
         if (setUserChanged) setUserChanged(true);
       })
       .catch((error) => {
-
-
+        toast.error(error?.response?.data?.message || 'Failed to save tier title.');
+        setEditedText(text);
+        setIsEditing(false);
       });
   };
 

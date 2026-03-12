@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import { api as axios } from '../api';
+import { toast } from 'sonner';
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 
 import PageMeta from '../components/ui/PageMeta';
@@ -139,7 +139,11 @@ function ShowMediaList({
           setSearchChanged(true);
         })
         .catch((err) => {
-          if (err.response && err.response.status === 401) navigate('/');
+          if (err.response && err.response.status === 401) {
+            navigate('/');
+          } else {
+            toast.error('Could not load list. Please try again.');
+          }
         });
       }
     }
@@ -220,7 +224,10 @@ function ShowMediaList({
       
       Promise.all(requests)
         .then(() => setUserChanged(true))
-        .catch(err => console.error('Error saving list settings:', err));
+        .catch(err => {
+          console.error('Error saving list settings:', err);
+          toast.error('Failed to save list settings. Please try again.');
+        });
     }
   }
 
@@ -347,7 +354,10 @@ function ShowMediaList({
     if (dataSource === 'api' && user && mediaType) {
       axios.get(constants['SERVER_URL'] + `/api/share/status/${mediaType}`)
         .then(res => setExistingShareData(res.data.exists ? res.data : null))
-        .catch(err => console.error(err));
+        .catch(err => {
+          console.error(err);
+          toast.error('Could not load share status.');
+        });
     }
   }, [user, mediaType, showShareModal, toDoString, dataSource]);
 

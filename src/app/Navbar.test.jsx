@@ -1,15 +1,15 @@
 import { renderWithRouter, screen, fireEvent, waitFor } from '../test-utils';
-import axios from 'axios';
+import { api as axios } from './api';
 import Navbar from './Navbar';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
-jest.mock('axios');
-jest.mock('react-toastify', () => ({
+jest.mock('./api', () => ({
+  api: { get: jest.fn(), post: jest.fn(), put: jest.fn(), delete: jest.fn() },
+}));
+jest.mock('sonner', () => ({
   toast: {
     error: jest.fn(),
-    success: jest.fn(),
   },
-  ToastContainer: () => null,
 }));
 jest.mock('./components/modals/NewTypeModal', () => ({ show }) =>
   show ? <div data-testid="mock-new-type-modal" /> : null
