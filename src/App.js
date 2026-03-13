@@ -5,17 +5,18 @@ import { api as axios } from './app/api';
 import { toast } from 'sonner';
 // Components
 import Navbar from "./app/Navbar";
-// Pages — kept in main bundle (primary landing page for logged-in users)
-import ShowMediaList from './app/pages/ShowMediaList';
+// Pages — kept in main bundle (used on every public route)
+
 import About from "./landing/pages/About";
 import Privacy from "./landing/pages/Privacy";
 import Terms from "./landing/pages/Terms";
 import NotFound from "./landing/pages/NotFound";
 import Logout from "./app/pages/Logout";
-// Demo Components — kept in main bundle (used on every demo route)
-import DemoNavbar from "./demo/components/DemoNavbar";
-import DemoBanner from "./demo/components/DemoBanner";
+// Demo Components — lazy-loaded (only needed on /demo routes and unauthenticated public pages)
+const DemoNavbar = lazy(() => import('./demo/components/DemoNavbar'));
+const DemoBanner = lazy(() => import('./demo/components/DemoBanner'));
 // Lazy-loaded pages — excluded from main bundle
+const ShowMediaList = lazy(() => import('./app/pages/ShowMediaList'));
 const Stats = lazy(() => import('./app/pages/Stats'));
 const Admin = lazy(() => import('./admin/Admin'));
 const Intro = lazy(() => import('./landing/pages/Intro'));
@@ -75,6 +76,13 @@ const App = () => {
     };
     getUser();
   }, [user, userChanged]);
+
+  // Preload ShowMediaList chunk as soon as the user is confirmed logged in
+  useEffect(() => {
+    if (user) {
+      import('./app/pages/ShowMediaList');
+    }
+  }, [user]);
 
   // Set CSS variables from theme
   useEffect(() => {
@@ -143,7 +151,9 @@ function AppContent({ user, setUserChanged, newTypes, selectedTags, setSelectedT
         <Navbar user={user} setUserChanged={setUserChanged} newTypes={newTypes} isAdmin={ADMIN_EMAILS.includes(user?.email)}/>
       )}
       {showDemoNavbarWithSignIn && (
-        <DemoNavbar user={user} />
+        <Suspense fallback={null}>
+          <DemoNavbar user={user} />
+        </Suspense>
       )}
       <Suspense fallback={<div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}><div className="spinner-border text-secondary" role="status" /></div>}>
       <Routes>

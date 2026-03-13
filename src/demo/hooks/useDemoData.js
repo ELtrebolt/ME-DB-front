@@ -1,24 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createEmptyTiersObject } from '../../app/helpers';
 
-// Import sample data
-import animeData from '../data/anime.json';
-import tvData from '../data/tv.json';
-import moviesData from '../data/movies.json';
-import gamesData from '../data/games.json';
-
 const STORAGE_KEY_PREFIX = 'demo_';
 export const VERSION_KEY = 'demo_version';
 // Increment this version when you update the default JSON data files
 // This will cause all users to get fresh data AND descriptions on their next visit
 export const DEMO_VERSION = '1.0';
 
-const defaultData = {
-  anime: animeData,
-  tv: tvData,
-  movies: moviesData,
-  games: gamesData
-};
+const MEDIA_TYPES = ['anime', 'tv', 'movies', 'games'];
+
+/**
+ * Dynamically import a single media type's default JSON data.
+ * Webpack splits each JSON into its own chunk, so only the requested
+ * type is downloaded — not all four at once.
+ */
+const loadDefaultData = (mediaType) =>
+  import(`../data/${mediaType}.json`).then((m) => m.default);
 
 /**
  * Check if localStorage is available and working
@@ -87,7 +84,7 @@ const checkAndUpdateVersion = () => {
   
   if (storedVersion !== DEMO_VERSION) {
     // Version mismatch - clear all demo data
-    ['anime', 'tv', 'movies', 'games'].forEach(type => {
+    MEDIA_TYPES.forEach(type => {
       safeRemoveItem(`${STORAGE_KEY_PREFIX}${type}`);
     });
     // Update stored version
@@ -110,53 +107,50 @@ export const useDemoData = (mediaType) => {
 
   const storageKey = `${STORAGE_KEY_PREFIX}${mediaType}`;
 
-  // Initialize data from localStorage or default JSON
+  // Initialize data from localStorage or default JSON (loaded on demand)
   useEffect(() => {
-    if (!mediaType || !['anime', 'tv', 'movies', 'games'].includes(mediaType)) {
+    if (!mediaType || !MEDIA_TYPES.includes(mediaType)) {
       setLoading(false);
       return;
     }
 
-    // Check if localStorage is available
-    const available = isLocalStorageAvailable();
-    setStorageAvailable(available);
+    const loadData = async () => {
+      const available = isLocalStorageAvailable();
+      setStorageAvailable(available);
 
-    if (!available) {
-      // localStorage not available - use in-memory defaults only
-      console.warn('localStorage is not available. Demo changes will not persist.');
-      const initialData = defaultData[mediaType] || [];
-      setData(initialData);
-      updateUniqueTags(initialData);
-      setLoading(false);
-      return;
-    }
-
-    // Check version and reset if needed
-    checkAndUpdateVersion();
-
-    const storedData = safeGetItem(storageKey);
-    
-    if (storedData) {
-      try {
-        const parsedData = JSON.parse(storedData);
-        setData(parsedData);
-        updateUniqueTags(parsedData);
-      } catch (e) {
-        // If parse fails, use default data
-        const initialData = defaultData[mediaType] || [];
-        safeSetItem(storageKey, JSON.stringify(initialData));
-        setData(initialData);
-        updateUniqueTags(initialData);
+      if (!available) {
+        const defaultForType = await loadDefaultData(mediaType);
+        setData(defaultForType);
+        updateUniqueTags(defaultForType);
+        setLoading(false);
+        return;
       }
-    } else {
-      // First visit or data was reset - initialize from JSON
-      const initialData = defaultData[mediaType] || [];
-      safeSetItem(storageKey, JSON.stringify(initialData));
-      setData(initialData);
-      updateUniqueTags(initialData);
-    }
-    
-    setLoading(false);
+
+      checkAndUpdateVersion();
+
+      const storedData = safeGetItem(storageKey);
+      if (storedData) {
+        try {
+          const parsedData = JSON.parse(storedData);
+          setData(parsedData);
+          updateUniqueTags(parsedData);
+        } catch (e) {
+          const defaultForType = await loadDefaultData(mediaType);
+          safeSetItem(storageKey, JSON.stringify(defaultForType));
+          setData(defaultForType);
+          updateUniqueTags(defaultForType);
+        }
+      } else {
+        const defaultForType = await loadDefaultData(mediaType);
+        safeSetItem(storageKey, JSON.stringify(defaultForType));
+        setData(defaultForType);
+        updateUniqueTags(defaultForType);
+      }
+
+      setLoading(false);
+    };
+
+    loadData();
   }, [mediaType, storageKey]);
 
   // Update unique tags from data
@@ -315,36 +309,17 @@ export const useDemoData = (mediaType) => {
     return true;
   }, [data, saveToStorage]);
 
-  // Reset to default data
-  const resetToDefault = useCallback(() => {
-    const initialData = defaultData[mediaType] || [];
-    saveToStorage(initialData);
+  // Reset to default data (async — loads the JSON chunk on demand)
+  const resetToDefault = useCallback(async () => {
+    const defaultForType = await loadDefaultData(mediaType);
+    saveToStorage(defaultForType);
   }, [mediaType, saveToStorage]);
-
-  // Get all media across all types (for stats)
-  const getAllDemoData = useCallback(() => {
-    const allData = {};
-    ['anime', 'tv', 'movies', 'games'].forEach(type => {
-      const key = `${STORAGE_KEY_PREFIX}${type}`;
-      const stored = safeGetItem(key);
-      if (stored) {
-        try {
-          allData[type] = JSON.parse(stored);
-        } catch (e) {
-          allData[type] = defaultData[type] || [];
-        }
-      } else {
-        allData[type] = defaultData[type] || [];
-      }
-    });
-    return allData;
-  }, []);
 
   return {
     data,
     loading,
     uniqueTags,
-    storageAvailable, // New: indicates if changes will persist
+    storageAvailable,
     getMediaByToDo,
     getMediaByTier,
     getMediaById,
@@ -355,12 +330,12 @@ export const useDemoData = (mediaType) => {
     moveToTier,
     toggleToDo,
     resetToDefault,
-    getAllDemoData
   };
 };
 
 /**
- * Utility hook to get all demo data for stats
+ * Utility hook to get all demo data for stats.
+ * Loads each media type's JSON chunk in parallel only when not already in localStorage.
  */
 export const useAllDemoData = () => {
   const [allData, setAllData] = useState(null);
@@ -368,34 +343,36 @@ export const useAllDemoData = () => {
   const [storageAvailable, setStorageAvailable] = useState(true);
 
   useEffect(() => {
-    const loadAllData = () => {
-      // Check if localStorage is available
+    const loadAllData = async () => {
       const available = isLocalStorageAvailable();
       setStorageAvailable(available);
 
-      // Check version and reset if needed
       if (available) {
         checkAndUpdateVersion();
       }
 
       const data = {};
-      ['anime', 'tv', 'movies', 'games'].forEach(type => {
-        const key = `${STORAGE_KEY_PREFIX}${type}`;
-        const stored = available ? safeGetItem(key) : null;
-        if (stored) {
-          try {
-            data[type] = JSON.parse(stored);
-          } catch (e) {
-            data[type] = defaultData[type] || [];
+      await Promise.all(
+        MEDIA_TYPES.map(async (type) => {
+          const key = `${STORAGE_KEY_PREFIX}${type}`;
+          const stored = available ? safeGetItem(key) : null;
+          if (stored) {
+            try {
+              data[type] = JSON.parse(stored);
+            } catch (e) {
+              const defaultForType = await loadDefaultData(type);
+              data[type] = defaultForType;
+            }
+          } else {
+            const defaultForType = await loadDefaultData(type);
+            data[type] = defaultForType;
+            if (available) {
+              safeSetItem(key, JSON.stringify(defaultForType));
+            }
           }
-        } else {
-          // Initialize from default if not in storage
-          data[type] = defaultData[type] || [];
-          if (available) {
-            safeSetItem(key, JSON.stringify(data[type]));
-          }
-        }
-      });
+        })
+      );
+
       setAllData(data);
       setLoading(false);
     };
