@@ -262,6 +262,111 @@ td.admin-total-records {
   cursor: not-allowed;
 }
 
+/* ── Tabs ── */
+.admin-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.admin-tab {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: #9ca3af;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-tab--active {
+  background-color: #ffc107;
+  color: #2c3e50;
+  border-color: #ffc107;
+  font-weight: 600;
+}
+
+.admin-tab:hover:not(.admin-tab--active) {
+  border-color: #ffc107;
+  color: #ffc107;
+}
+
+/* ── Performance tab ── */
+.perf-stat-cards {
+  margin-bottom: 32px;
+}
+
+.perf-stat-unit {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+.perf-stat-samples {
+  color: #6b7280;
+}
+
+.perf-good {
+  color: #22c55e !important;
+}
+
+.perf-needs-improvement {
+  color: #f59e0b !important;
+}
+
+.perf-poor {
+  color: #ef4444 !important;
+}
+
+.perf-regressions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.perf-regression-card {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.perf-regression-route {
+  font-size: 0.8rem;
+  color: #e5e7eb;
+  font-family: monospace;
+  word-break: break-all;
+  margin-bottom: 4px;
+}
+
+.perf-regression-metric {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9ca3af;
+  margin-bottom: 6px;
+}
+
+.perf-regression-delta {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.perf-improved {
+  color: #22c55e;
+}
+
+.perf-regressed {
+  color: #ef4444;
+}
+
+.perf-regression-values {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
 .admin-empty {
   display: flex;
   align-items: center;
@@ -350,5 +455,19 @@ td.admin-total-records {
   .admin-page-btn {
     padding: 4px 10px;
     font-size: 0.9rem;
+  }
+
+  .admin-tabs {
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .admin-tab {
+    padding: 6px 14px;
+    font-size: 0.8rem;
+  }
+
+  .perf-regressions {
+    grid-template-columns: 1fr;
   }
 }

@@ -6,6 +6,12 @@ jest.mock('./app/api', () => ({
   api: { get: jest.fn(), post: jest.fn(), put: jest.fn(), delete: jest.fn() },
 }));
 
+// Make the landing page render synchronously in tests so we don't race Suspense/lazy loading.
+jest.mock('./landing/pages/Intro', () => {
+  const React = require('react');
+  return () => React.createElement('div', null, 'Sign in with Google');
+});
+
 beforeAll(() => {
   global.IntersectionObserver = class {
     observe() {}
