@@ -6,6 +6,7 @@ import "@fortawesome/fontawesome-free/css/fontawesome.min.css";
 import "@fortawesome/fontawesome-free/css/solid.min.css";
 import { Toaster } from 'sonner';
 import App from './App';
+import { initVitals } from './app/vitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -14,3 +15,5 @@ root.render(
     <Toaster position="top-center" duration={5000} />
   </React.StrictMode>
 );
+
+initVitals();
