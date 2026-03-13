@@ -40,7 +40,6 @@ explore(files, { noBorderChecks: true })
     console.log(`=== Your code: ${fmt(ownTotal)} (${pct(ownTotal)}) ===`);
     Object.entries(ownCode)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 15)
       .forEach(([src, size]) => console.log(`  ${fmt(size).padStart(9)}  ${src}`));
 
     console.log(`\n=== node_modules: ${fmt(depsTotal)} (${pct(depsTotal)}) ===`);

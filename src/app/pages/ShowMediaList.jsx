@@ -74,6 +74,21 @@ function ShowMediaList({
 
   const [tierData, setTierData] = useState(null);
   const [firstLoad, setFirstLoad] = useState(true);
+
+  // Preload the most likely next pages during browser idle time
+  useEffect(() => {
+    const preload = () => {
+      import('./ShowMediaDetails');
+      import('./CreateMedia');
+    };
+    if ('requestIdleCallback' in window) {
+      const id = requestIdleCallback(preload);
+      return () => cancelIdleCallback(id);
+    } else {
+      const id = setTimeout(preload, 300);
+      return () => clearTimeout(id);
+    }
+  }, []);
   const [toDoState, setToDoState] = useState(toDo);
   const [toDoString, setToDoString] = useState(toDo ? 'to-do' : 'collection');
   const [tierVariable, setTierVariable] = useState(toDo ? 'todoTiers' : 'collectionTiers');
