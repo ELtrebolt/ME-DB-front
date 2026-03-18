@@ -107,24 +107,35 @@ function FiltersBar({
     updateParam('endDate', endDate, '');
     updateParam('tagLogic', tagLogic, 'AND');
 
-    const currentTagsParam = urlParams.get('tags');
+    // Read current tags from repeated 'tag' params; fall back to legacy comma 'tags' param
+    const currentTagValues = urlParams.getAll('tag');
+    const legacyTagsParam = urlParams.get('tags');
+    const currentTagLabels = currentTagValues.length > 0
+      ? currentTagValues
+      : (legacyTagsParam ? legacyTagsParam.split(',').map(s => s.trim()).filter(Boolean) : []);
+
     if (selectedTags && selectedTags.length > 0) {
       hasHadTagsRef.current = true;
-      const tagLabels = selectedTags.map(tag => tag.label).join(',');
-      if (currentTagsParam !== tagLabels) {
-        urlParams.set('tags', tagLabels);
+      const selectedLabels = selectedTags.map(tag => tag.label);
+      const isSame = selectedLabels.length === currentTagLabels.length &&
+        selectedLabels.every((l, i) => l === currentTagLabels[i]);
+      if (!isSame) {
+        // Remove both old formats and write new repeated params
+        urlParams.delete('tags');
+        urlParams.delete('tag');
+        selectedLabels.forEach(label => urlParams.append('tag', label));
         changed = true;
         const pathParts = location.pathname.split('/');
         if (pathParts.length >= 3) urlParams.set('from', pathParts[2]);
       }
-    } else if (currentTagsParam) {
-      const tagLabels = currentTagsParam.split(',').map(s => s.trim()).filter(Boolean);
-      const shouldHydrate = tagLabels.length > 0 && setSelectedTags && !hasHadTagsRef.current;
+    } else if (currentTagLabels.length > 0) {
+      const shouldHydrate = setSelectedTags && !hasHadTagsRef.current;
       if (shouldHydrate) {
         // Hydrate from URL when landing with tags (e.g. "Go Back" from detail)
-        setSelectedTags(tagLabels.map(label => ({ label, value: label })));
+        setSelectedTags(currentTagLabels.map(label => ({ label, value: label })));
       } else {
         urlParams.delete('tags');
+        urlParams.delete('tag');
         urlParams.delete('from');
         changed = true;
       }
@@ -153,6 +164,7 @@ function FiltersBar({
     // Clear URL params
     const urlParams = new URLSearchParams(location.search);
     urlParams.delete('tags');
+    urlParams.delete('tag');
     urlParams.delete('tagLogic');
     urlParams.delete('timePeriod');
     urlParams.delete('startDate');

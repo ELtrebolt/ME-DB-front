@@ -1,6 +1,12 @@
-import { MemoryRouter } from 'react-router-dom';
-import { renderWithRouter, screen, fireEvent } from '../../../test-utils';
+import { render } from '@testing-library/react';
+import { MemoryRouter, useNavigate } from 'react-router-dom';
+import { renderWithRouter, screen, fireEvent, waitFor } from '../../../test-utils';
 import FiltersBar from './FiltersBar';
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: jest.fn(),
+}));
 
 // Mock all child filter components so FiltersBar logic is tested in isolation
 jest.mock('./TimeFilter', () => () => <div data-testid="mock-time-filter" />);
@@ -41,7 +47,15 @@ const defaultProps = {
   skipUrlSync: true,
 };
 
-beforeEach(() => jest.clearAllMocks());
+let mockNavigate;
+beforeEach(() => {
+  mockNavigate = jest.fn();
+  useNavigate.mockReturnValue(mockNavigate);
+  jest.clearAllMocks();
+  // clearAllMocks resets mock.calls but NOT mockReturnValue; re-set to ensure a fresh spy per test
+  mockNavigate = jest.fn();
+  useNavigate.mockReturnValue(mockNavigate);
+});
 
 describe('FiltersBar', () => {
   // ─── Render ────────────────────────────────────────────────────────────────
@@ -115,5 +129,81 @@ describe('FiltersBar', () => {
     expect(defaultProps.setSelectedTiers).toHaveBeenCalledWith(
       expect.arrayContaining(['S', 'A', 'B', 'C', 'D', 'F'])
     );
+  });
+
+  // ─── URL tag serialization ────────────────────────────────────────────────
+
+  describe('URL tag serialization', () => {
+    // Renders FiltersBar with skipUrlSync:false so the URL sync effect is active.
+    // First render skips (isFirstRender guard); rerender with new selectedTags triggers it.
+    function renderAndTriggerSync(initialSearch, rerenderTags) {
+      const initialEntry = `/anime/collection${initialSearch}`;
+      const props = { ...defaultProps, skipUrlSync: false, selectedTags: [] };
+
+      const { rerender } = render(
+        <MemoryRouter initialEntries={[initialEntry]}>
+          <FiltersBar {...props} />
+        </MemoryRouter>
+      );
+
+      rerender(
+        <MemoryRouter initialEntries={[initialEntry]}>
+          <FiltersBar {...props} selectedTags={rerenderTags} />
+        </MemoryRouter>
+      );
+
+      return mockNavigate;
+    }
+
+    test('writes tags as repeated tag= params, not comma-joined tags=', async () => {
+      const navigate = renderAndTriggerSync('', [
+        { label: 'action', value: 'action' },
+      ]);
+      await waitFor(() => expect(navigate).toHaveBeenCalled());
+      const [calledUrl] = navigate.mock.calls[0];
+      const search = calledUrl.includes('?') ? calledUrl.split('?')[1] : '';
+      const params = new URLSearchParams(search);
+      expect(params.getAll('tag')).toContain('action');
+      expect(params.get('tags')).toBeNull();
+    });
+
+    test('encodes a tag containing & correctly as a single tag= param', async () => {
+      const navigate = renderAndTriggerSync('', [
+        { label: 'rock & roll', value: 'rock & roll' },
+      ]);
+      await waitFor(() => expect(navigate).toHaveBeenCalled());
+      const [calledUrl] = navigate.mock.calls[0];
+      const search = calledUrl.includes('?') ? calledUrl.split('?')[1] : '';
+      const params = new URLSearchParams(search);
+      expect(params.getAll('tag')).toEqual(['rock & roll']);
+    });
+
+    test('preserves a tag containing a comma as a single tag= param', async () => {
+      const navigate = renderAndTriggerSync('', [
+        { label: 'sci-fi, action', value: 'sci-fi, action' },
+      ]);
+      await waitFor(() => expect(navigate).toHaveBeenCalled());
+      const [calledUrl] = navigate.mock.calls[0];
+      const search = calledUrl.includes('?') ? calledUrl.split('?')[1] : '';
+      const params = new URLSearchParams(search);
+      expect(params.getAll('tag')).toEqual(['sci-fi, action']);
+    });
+
+    test('clearFilters removes both tag= and tags= from the URL', async () => {
+      render(
+        <MemoryRouter initialEntries={['/anime/collection?tag=comedy&tags=old']}>
+          <FiltersBar
+            {...defaultProps}
+            skipUrlSync={false}
+            showExtraFilters={true}
+          />
+        </MemoryRouter>
+      );
+      fireEvent.click(screen.getByRole('button', { name: /clear filters/i }));
+      await waitFor(() => expect(mockNavigate).toHaveBeenCalled());
+      const [calledUrl] = mockNavigate.mock.calls[0];
+      expect(calledUrl).not.toMatch(/[?&]tag=/);
+      expect(calledUrl).not.toMatch(/[?&]tags=/);
+    });
   });
 });

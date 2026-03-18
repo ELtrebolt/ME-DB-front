@@ -1,10 +1,15 @@
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useNavigate } from 'react-router-dom';
 import { renderWithRouter, screen, fireEvent, waitFor } from '../../test-utils';
 import { api as axios } from '../api';
 import TierTitle from './TierTitle';
 
 jest.mock('../api', () => ({
   api: { get: jest.fn(), post: jest.fn(), put: jest.fn(), delete: jest.fn() },
+}));
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: jest.fn(),
 }));
 
 const defaultProps = {
@@ -17,9 +22,15 @@ const defaultProps = {
   readOnly: false,
 };
 
+let mockNavigate;
 beforeEach(() => {
+  mockNavigate = jest.fn();
+  useNavigate.mockReturnValue(mockNavigate);
   axios.put.mockResolvedValue({});
   jest.clearAllMocks();
+  // Re-set after clearAllMocks resets mock.calls
+  mockNavigate = jest.fn();
+  useNavigate.mockReturnValue(mockNavigate);
 });
 
 describe('TierTitle', () => {
@@ -158,5 +169,59 @@ describe('TierTitle', () => {
       </MemoryRouter>
     );
     expect(screen.getByText('S+ Tier')).toBeInTheDocument();
+  });
+
+  // ─── Create URL tag forwarding ────────────────────────────────────────────
+
+  describe('Create URL tag forwarding', () => {
+    function renderWithSearch(search) {
+      const initialEntry = `/anime/collection${search}`;
+      renderWithRouter(<TierTitle {...defaultProps} />, {
+        initialEntries: [initialEntry],
+      });
+      fireEvent.click(screen.getByTitle('Add New'));
+    }
+
+    function getNavigateUrl() {
+      expect(mockNavigate).toHaveBeenCalledTimes(1);
+      return mockNavigate.mock.calls[0][0];
+    }
+
+    test('when no tags in URL, create link contains only tier param', () => {
+      renderWithSearch('');
+      const url = getNavigateUrl();
+      const params = new URLSearchParams(url.split('?')[1] || '');
+      expect(params.get('tier')).toBe('S');
+      expect(params.getAll('tag')).toHaveLength(0);
+    });
+
+    test('forwards repeated tag= params from list URL to create URL', () => {
+      renderWithSearch('?tag=action&tag=drama');
+      const url = getNavigateUrl();
+      const params = new URLSearchParams(url.split('?')[1] || '');
+      expect(params.getAll('tag')).toEqual(['action', 'drama']);
+    });
+
+    test('forwards a tag containing & correctly via URL encoding', () => {
+      renderWithSearch('?tag=rock+%26+roll');
+      const url = getNavigateUrl();
+      const params = new URLSearchParams(url.split('?')[1] || '');
+      expect(params.getAll('tag')).toEqual(['rock & roll']);
+    });
+
+    test('converts legacy comma tags= param to repeated tag= params', () => {
+      renderWithSearch('?tags=comedy,action');
+      const url = getNavigateUrl();
+      const params = new URLSearchParams(url.split('?')[1] || '');
+      expect(params.getAll('tag')).toEqual(['comedy', 'action']);
+      expect(params.get('tags')).toBeNull();
+    });
+
+    test('forwards a plain tag with no special chars unchanged', () => {
+      renderWithSearch('?tag=sci-fi');
+      const url = getNavigateUrl();
+      const params = new URLSearchParams(url.split('?')[1] || '');
+      expect(params.getAll('tag')).toEqual(['sci-fi']);
+    });
   });
 });

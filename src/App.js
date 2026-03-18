@@ -42,9 +42,14 @@ const App = () => {
   const [newTypes, setNewTypes] = useState([]);
   const [selectedTags, setSelectedTags] = useState(() => {
     const params = new URLSearchParams(window.location.search);
-    const tagsParam = params.get('tags');
-    if (tagsParam) {
-      return tagsParam.split(',').map(label => ({ label, value: label }));
+    const tagValues = params.getAll('tag');
+    if (tagValues.length > 0) {
+      return tagValues.map(label => ({ label, value: label }));
+    }
+    // Legacy fallback: comma-joined 'tags' param
+    const legacyTags = params.get('tags');
+    if (legacyTags) {
+      return legacyTags.split(',').map(label => ({ label, value: label }));
     }
     return [];
   });
@@ -215,11 +220,14 @@ function RestrictMediaType({ user, n, setUserChanged, newTypes, selectedTags, se
     prevSearchRef.current = location.search;
 
     const urlParams = new URLSearchParams(location.search);
-    const tagsParam = urlParams.get('tags');
-    
-    if (tagsParam) {
+    const tagValues = urlParams.getAll('tag');
+    const legacyTagsParam = urlParams.get('tags');
+    const tagLabels = tagValues.length > 0
+      ? tagValues
+      : (legacyTagsParam ? legacyTagsParam.split(',').map(s => s.trim()).filter(Boolean) : []);
+
+    if (tagLabels.length > 0) {
       // URL has tags - set them (this is a navigation event)
-      const tagLabels = tagsParam.split(',');
       setSelectedTags(tagLabels.map(label => ({ label, value: label })));
     } else {
       // URL has no tags - only clear if we actually navigated away
