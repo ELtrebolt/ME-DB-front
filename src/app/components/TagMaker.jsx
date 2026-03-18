@@ -42,6 +42,11 @@ const TagMaker = ({mediaType, media, setMedia, alreadySelected, placeholder, hid
 
   const onAdd = useCallback(
     (newTag) => {
+      const normalizedNew = newTag.label.trim().toLowerCase();
+      const isDuplicate = selected.some(
+        t => t.label.trim().toLowerCase() === normalizedNew
+      );
+      if (isDuplicate) return;
       const newSelected = [...selected, newTag];
       setSelected(newSelected);
       setMedia({ ...media, tags: newSelected.map(item => item.label) });

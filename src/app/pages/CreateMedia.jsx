@@ -8,18 +8,44 @@ import { toCapitalNotation } from "../helpers";
 const constants = require('../constants');
 const theme = require('../../styling/theme');
 
+// Build a deterministic list URL preserving active filters from the current create-page URL.
+// Carries repeated 'tag' params, 'from', 'timePeriod', 'startDate', 'endDate', 'tagLogic'.
+function buildListURL(location, basePath, mediaType, toDo) {
+  const src = new URLSearchParams(location.search);
+  const dest = new URLSearchParams();
+  const tagValues = src.getAll('tag');
+  const legacyTags = src.get('tags');
+  if (tagValues.length > 0) {
+    tagValues.forEach(t => dest.append('tag', t));
+  } else if (legacyTags) {
+    legacyTags.split(',').map(s => s.trim()).filter(Boolean)
+      .forEach(t => dest.append('tag', t));
+  }
+  ['from', 'timePeriod', 'startDate', 'endDate', 'tagLogic'].forEach(key => {
+    const val = src.get(key);
+    if (val) dest.set(key, val);
+  });
+  const query = dest.toString();
+  const listPath = `${basePath}/${mediaType}/${toDo ? 'to-do' : 'collection'}`;
+  return query ? `${listPath}?${query}` : listPath;
+}
+
 const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', basePath = '', onCreateMedia, mediaTypeLoc: propMediaTypeLoc, useYearSelect = false}) => {
   
   const location = useLocation();
   
-  // Get selected tags from URL parameters
+  // Get selected tags from URL parameters (new repeated 'tag' params with legacy fallback)
   const getTagsFromURL = useCallback(() => {
     const urlParams = new URLSearchParams(location.search);
-    const tagsParam = urlParams.get('tags');
-    
-    if (tagsParam) {
-      const tagLabels = tagsParam.split(',');
-      return tagLabels.map(label => ({ label, value: label }));
+    const tagValues = urlParams.getAll('tag');
+    if (tagValues.length > 0) {
+      return tagValues.map(label => ({ label, value: label }));
+    }
+    // Legacy fallback: comma-joined 'tags' param
+    const legacyTags = urlParams.get('tags');
+    if (legacyTags) {
+      return legacyTags.split(',').map(s => s.trim()).filter(Boolean)
+        .map(label => ({ label, value: label }));
     }
     return [];
   }, [location.search]);
@@ -153,19 +179,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
       });
       
       if (newMedia) {
-        // Navigate back to list
-        const urlParams = new URLSearchParams(location.search);
-        const currentTags = urlParams.get('tags');
-        const fromParam = urlParams.get('from');
-        
-        let targetURL = `${basePath}/${mediaType}/${toDo ? 'to-do' : 'collection'}`;
-        if (currentTags) {
-          targetURL += `?tags=${currentTags}`;
-          if (fromParam) {
-            targetURL += `&from=${fromParam}`;
-          }
-        }
-        navigate(targetURL);
+        navigate(buildListURL(location, basePath, mediaType, toDo));
       }
       return;
     }
@@ -174,14 +188,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
     axios
       .post(constants['SERVER_URL'] + '/api/media', {media: media, newType: newType})
       .then((res) => {
-        setMedia({
-          title: '',
-          toDo: '',
-          tags: [],
-          description: ''
-        });
-        
-        navigate(-1);
+        navigate(buildListURL(location, basePath, mediaType, toDo));
       })
       .catch((err) => {
         toast.error("Create failed");
@@ -366,7 +373,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
                           <th scope='row' className='px-4 py-3 fw-semibold text-warning' style={{backgroundColor: theme.colors.background.dark}}>4</th>
                           <td className='px-4 py-3 fw-semibold text-white' style={{backgroundColor: theme.colors.background.dark}}>Tags (Optional)</td>
                           <td className='px-4 py-3' style={{backgroundColor: theme.colors.background.dark, overflow: 'visible'}}>
-                            <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={effectiveSelectedTags} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags} hideLabel={true} zIndex={10} dataSource={dataSource}></TagMaker>
+                            <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={media.tags.map((tag) => ({ label: tag, value: tag }))} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags} hideLabel={true} zIndex={10} dataSource={dataSource}></TagMaker>
                           </td>
                         </tr>
                         <tr style={{backgroundColor: theme.colors.background.dark}}>
@@ -483,7 +490,7 @@ const CreateMedia = ({user, toDo, newType, selectedTags, dataSource = 'api', bas
                     <div className="form-group mb-1">
                       <label className="form-label text-white fw-semibold mb-1" style={{fontSize: '0.75rem'}}><span className="text-warning">4.</span> Tags (Optional)</label>
                       <div style={{fontSize: '0.75rem'}}>
-                        <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={effectiveSelectedTags} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags} hideLabel={true} zIndex={10} dataSource={dataSource}></TagMaker>
+                        <TagMaker mediaType={mediaType} toDo={toDo} media={media} setMedia={setMedia} alreadySelected={media.tags.map((tag) => ({ label: tag, value: tag }))} placeholder={constants[mediaType] && constants[mediaType]?.tags ? constants[mediaType].tags : constants['other'].tags} hideLabel={true} zIndex={10} dataSource={dataSource}></TagMaker>
                       </div>
                     </div>
                     

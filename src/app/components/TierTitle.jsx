@@ -134,18 +134,22 @@ function TierTitle({title, mediaType, group, tier, setUserChanged, newType, read
               onClick={(e) => {
                 e.preventDefault();
                 
-                // Get current tags from URL
-                const urlParams = new URLSearchParams(location.search);
-                const currentTags = urlParams.get('tags');
-                
-                // Build the create URL with tier and tags
-                let createURL = `${basePath}/${mediaType}/${group}/create?tier=${tier}`;
-                if (currentTags) {
-                  createURL += `&tags=${currentTags}`;
+                // Build create URL using URLSearchParams so tag values are properly encoded
+                const currentParams = new URLSearchParams(location.search);
+                const createParams = new URLSearchParams();
+                createParams.set('tier', tier);
+                // Carry repeated 'tag' params; fall back to legacy comma 'tags' param
+                const tagValues = currentParams.getAll('tag');
+                if (tagValues.length > 0) {
+                  tagValues.forEach(t => createParams.append('tag', t));
+                } else {
+                  const legacyTags = currentParams.get('tags');
+                  if (legacyTags) {
+                    legacyTags.split(',').map(s => s.trim()).filter(Boolean)
+                      .forEach(t => createParams.append('tag', t));
+                  }
                 }
-                
-                // Navigate using React Router
-                navigate(createURL);
+                navigate(`${basePath}/${mediaType}/${group}/create?${createParams.toString()}`);
               }}
             >
               <span className='fs-5 fw-bold'>+</span>
