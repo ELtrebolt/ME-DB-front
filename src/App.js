@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes, Navigate, useParams, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import { lazy, Suspense, useEffect, useState, useMemo, useRef } from 'react';
+import { lazy, Suspense, useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { api as axios } from './app/api';
 import { toast } from 'sonner';
 // Components
@@ -136,11 +136,48 @@ const App = () => {
   }
 };
 
+function isListRoutePath(path) {
+  const parts = String(path || '').split('/').filter(Boolean);
+  if (parts.length !== 2) return false;
+  return parts[1] === 'collection' || parts[1] === 'to-do';
+}
+
 // Separate component to access useLocation inside Router
 function AppContent({ user, setUserChanged, newTypes, selectedTags, setSelectedTags, filteredData, setFilteredData }) {
   const location = useLocation();
   const isDemoRoute = location.pathname.startsWith('/demo');
   const isPublicPage = ['/about'].includes(location.pathname);
+
+  const getLastListPathKey = useCallback(() => {
+    const id = user?.username || user?.email || 'unknown_user';
+    return `me-db:lastListPath:${id}`;
+  }, [user?.username, user?.email]);
+
+  const getEffectiveHomePath = () => {
+    const homePage = user?.customizations?.homePage;
+    if (homePage) return `/${homePage}`;
+
+    // Only restore list pages (/:mediaType/collection or /:mediaType/to-do)
+    try {
+      const saved = localStorage.getItem(getLastListPathKey());
+      if (saved && isListRoutePath(saved)) return saved;
+    } catch (_) {
+      // ignore storage errors; we fall back below
+    }
+
+    return '/anime/collection';
+  };
+
+  // Persist last opened list route so the next app open returns to where user left off
+  useEffect(() => {
+    if (!user) return;
+    if (!isListRoutePath(location.pathname)) return;
+    try {
+      localStorage.setItem(getLastListPathKey(), location.pathname);
+    } catch (_) {
+      // ignore storage errors
+    }
+  }, [user, location.pathname, getLastListPathKey]);
   
   // Determine which navbar to show:
   // - Demo routes: DemoNavbar (without sign-in, handled by DemoLayout)
@@ -162,7 +199,7 @@ function AppContent({ user, setUserChanged, newTypes, selectedTags, setSelectedT
       )}
       <Suspense fallback={<div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}><div className="spinner-border text-secondary" role="status" /></div>}>
       <Routes>
-            <Route path='/' element={user ? <Navigate to={user.customizations?.homePage ? `/${user.customizations.homePage}` : "/anime/collection"}/> : <Intro />} />
+            <Route path='/' element={user ? <Navigate to={getEffectiveHomePath()} /> : <Intro />} />
             <Route path='/about' element={<About/>} />
             <Route path='/privacy' element={<Privacy/>} />
             <Route path='/terms' element={<Terms/>} />
