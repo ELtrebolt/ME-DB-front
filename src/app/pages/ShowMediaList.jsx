@@ -73,6 +73,8 @@ function ShowMediaList({
   const navigate = useNavigate();
 
   const [tierData, setTierData] = useState(null);
+  const [tierDataToDo, setTierDataToDo] = useState(null);
+  const [tierDataCollection, setTierDataCollection] = useState(null);
   const [firstLoad, setFirstLoad] = useState(true);
 
   // Preload the most likely next pages during browser idle time
@@ -110,6 +112,7 @@ function ShowMediaList({
   const [suggestedTags, setSuggestedTags] = useState([]);
   const [searchChanged, setSearchChanged] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const isSearchActive = searchQuery.trim() !== '';
   const [showExtraFilters, setShowExtraFilters] = useState(false);
 
   const tiers = constants.STANDARD_TIERS;
@@ -135,20 +138,45 @@ function ShowMediaList({
     if(firstLoad) {
       if (dataSource === 'demo' && onGetMediaByTier) {
         // Demo mode: use callback
-        const tiersObj = onGetMediaByTier(toDoState);
+        const todoTiersObj = onGetMediaByTier(true);
+        const collectionTiersObj = onGetMediaByTier(false);
+        setTierDataToDo(todoTiersObj);
+        setTierDataCollection(collectionTiersObj);
         setAllTags(demoUniqueTags.map((t, i) => ({ value: i, label: t })));
-        setTierData(tiersObj);
+        const merged = createEmptyTiersObject();
+        Object.keys(merged).forEach(tier => {
+          merged[tier] = [...(todoTiersObj[tier] || []), ...(collectionTiersObj[tier] || [])];
+        });
+        setTierData(merged);
         setSearchQuery('');
         setFirstLoad(false);
         setSearchChanged(true);
       } else if (dataSource === 'api') {
         // API mode: use axios
-        axios.get(constants['SERVER_URL'] + '/api/media/' + mediaType + '/' + toDoString)
-        .then((res) => {
-          const tiersObj = createEmptyTiersObject();
-          res.data.media.forEach(m => { if(tiersObj[m.tier]) tiersObj[m.tier].push(m); });
-          setAllTags(res.data.uniqueTags.map((t, i) => ({ value: i, label: t })));
-          setTierData(tiersObj);
+        Promise.all([
+          axios.get(constants['SERVER_URL'] + '/api/media/' + mediaType + '/to-do'),
+          axios.get(constants['SERVER_URL'] + '/api/media/' + mediaType + '/collection')
+        ])
+        .then(([todoRes, collectionRes]) => {
+          const todoTiersObj = createEmptyTiersObject();
+          const collectionTiersObj = createEmptyTiersObject();
+
+          (todoRes?.data?.media || []).forEach(m => { if(todoTiersObj[m.tier]) todoTiersObj[m.tier].push(m); });
+          (collectionRes?.data?.media || []).forEach(m => { if(collectionTiersObj[m.tier]) collectionTiersObj[m.tier].push(m); });
+
+          setTierDataToDo(todoTiersObj);
+          setTierDataCollection(collectionTiersObj);
+
+          const todoTags = todoRes?.data?.uniqueTags || [];
+          const collectionTags = collectionRes?.data?.uniqueTags || [];
+          const unionTags = Array.from(new Set([...todoTags, ...collectionTags]));
+          setAllTags(unionTags.map((t, i) => ({ value: i, label: t })));
+
+          const merged = createEmptyTiersObject();
+          Object.keys(merged).forEach(tier => {
+            merged[tier] = [...(todoTiersObj[tier] || []), ...(collectionTiersObj[tier] || [])];
+          });
+          setTierData(merged);
           setSearchQuery('');
           setFirstLoad(false);
           setSearchChanged(true);
@@ -167,16 +195,53 @@ function ShowMediaList({
   useEffect(() => {
     setFirstLoad(true);
     setTierData(null);
+    setTierDataToDo(null);
+    setTierDataCollection(null);
     setFilteredData(null);
   }, [mediaType, setFilteredData]);
 
   useEffect(() => {
-    if(tierData && (searchChanged === undefined || searchChanged === true)) {
-      const data = filterData(tierData, timePeriod, startDate, endDate, allTags, selectedTags, tagLogic, setSuggestedTags, setSearchChanged, searchQuery, searchScope, selectedTiers, sortOrder);
-      setFilteredData(data);
-      setLocalByTier(data);
+    if(tierData && tierDataToDo && tierDataCollection && (searchChanged === undefined || searchChanged === true)) {
+      // Display cards only come from the currently selected list type.
+      const displayTierData = toDoString === 'to-do' ? tierDataToDo : tierDataCollection;
+
+      const displayData = filterData(
+        displayTierData,
+        timePeriod,
+        startDate,
+        endDate,
+        allTags,
+        selectedTags,
+        tagLogic,
+        setSuggestedTags,
+        setSearchChanged,
+        searchQuery,
+        searchScope,
+        selectedTiers,
+        sortOrder
+      );
+
+      // Search dropdown suggestions should include both lists.
+      const mergedData = filterData(
+        tierData,
+        timePeriod,
+        startDate,
+        endDate,
+        allTags,
+        selectedTags,
+        tagLogic,
+        () => {},
+        () => {},
+        searchQuery,
+        searchScope,
+        selectedTiers,
+        sortOrder
+      );
+
+      setFilteredData(mergedData);
+      setLocalByTier(displayData);
     }
-  }, [tierData, searchChanged, timePeriod, startDate, endDate, allTags, selectedTags, tagLogic, searchQuery, searchScope, selectedTiers, sortOrder, setFilteredData]);
+  }, [tierData, tierDataToDo, tierDataCollection, toDoString, searchChanged, timePeriod, startDate, endDate, allTags, selectedTags, tagLogic, searchQuery, searchScope, selectedTiers, sortOrder, setFilteredData]);
 
   function switchToDo() {
     const newToDoState = !toDoState;
@@ -283,8 +348,12 @@ function ShowMediaList({
     disabled: activeId !== null 
   });
 
-  const onDragStart = (e) => setActiveId(e.active.id);
+  const onDragStart = (e) => {
+    if (isSearchActive) return;
+    setActiveId(e.active.id);
+  };
   const onDragEnd = (event) => {
+    if (isSearchActive) return; // Searching mixes todo+collection; don't reorder during search.
     const { active, over } = event;
     if (!active || !over || !localByTier) return;
     setActiveId(null);
