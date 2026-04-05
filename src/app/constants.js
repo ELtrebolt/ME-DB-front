@@ -187,12 +187,10 @@ const json = {
     ]
 };
 
-if(process.env.REACT_APP_STATUS === 'local')
-{
+if (process.env.REACT_APP_STATUS === 'local') {
     json['SERVER_URL'] = "http://localhost:8082";
-}
-else
-{
+} else {
     json['SERVER_URL'] = "https://api.me-db.app";  // Remove 'www.' to match backend
 }
-module.exports = json;
+
+export default json;

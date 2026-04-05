@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { api as axios } from '../../api';
 import Modal from './Modal';
-const constants = require('../../constants');
+import constants from '../../constants';
 
 function ImportModal({ show, setShow, user, onImportComplete }) {
   const [file, setFile] = useState(null);

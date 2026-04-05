@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-const constants = require('../constants');
+import constants from '../constants';
 
 const Logout = () => {
   useEffect(() => {

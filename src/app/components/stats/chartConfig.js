@@ -22,7 +22,7 @@ ChartJS.register(
   Legend
 );
 
-const constants = require('../../constants');
+import constants from '../../constants';
 
 /**
  * Get color for a media type

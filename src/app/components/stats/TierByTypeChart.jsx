@@ -2,7 +2,7 @@ import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import './chartConfig'; // Import to register Chart.js
 import { createBarChartOptions } from './chartConfig';
-const constants = require('../../constants');
+import constants from '../../constants';
 
 const TierByTypeChart = ({ data, customTypes, sortBy }) => {
   // If no data, show message

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Modal from './Modal';
 
-const constants = require('../../constants');
+import constants from '../../constants';
 
 function NewTypeModal({show, setShow, onSaveClick}) {
   const [newName, setNewName] = useState('');

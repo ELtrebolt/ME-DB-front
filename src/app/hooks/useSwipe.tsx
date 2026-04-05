@@ -1,22 +1,7 @@
 // https://stackoverflow.com/questions/70612769/how-do-i-recognize-swipe-events-in-react
-import {TouchEvent, useState} from "react";
+import { useState } from "react";
 
-interface SwipeInput {
-    onSwipedLeft: () => void
-    onSwipedRight: () => void
-    disabled?: boolean
-}
-
-interface SwipeOutput {
-    onTouchStart: (e: TouchEvent) => void
-    onTouchMove: (e: TouchEvent) => void
-    onTouchEnd: () => void
-    onMouseDown: (e: React.MouseEvent) => void
-    onMouseMove: (e: React.MouseEvent) => void
-    onMouseUp: () => void
-}
-
-function Swiper(input: SwipeInput): SwipeOutput {
+function Swiper(input) {
     const [touchStartX, setTouchStartX] = useState(0)
     const [touchEndX, setTouchEndX] = useState(0)
     const [touchStartY, setTouchStartY] = useState(0)
@@ -25,9 +10,9 @@ function Swiper(input: SwipeInput): SwipeOutput {
 
     const minSwipeDistance = 100;
 
-    const onTouchStart = (e: TouchEvent) => {
+    const onTouchStart = (e) => {
         // Don't start swipe detection on interactive elements
-        const target = e.target as HTMLElement;
+        const target = e.target;
         if (target.closest('button, a, input, select, textarea, .modal, .modal-dialog, .modal-content, .modal-header, .modal-body, .modal-footer, .btn-close')) {
             return;
         }
@@ -43,7 +28,7 @@ function Swiper(input: SwipeInput): SwipeOutput {
         setIsTracking(true);
     }
 
-    const onTouchMove = (e: TouchEvent) => {
+    const onTouchMove = (e) => {
         if (!isTracking) return;
         setTouchEndX(e.targetTouches[0].clientX);
         setTouchEndY(e.targetTouches[0].clientY);
@@ -76,9 +61,9 @@ function Swiper(input: SwipeInput): SwipeOutput {
     }
 
     // Mouse event handlers for desktop support
-    const onMouseDown = (e: React.MouseEvent) => {
+    const onMouseDown = (e) => {
         // Don't start swipe detection on interactive elements
-        const target = e.target as HTMLElement;
+        const target = e.target;
         if (target.closest('button, a, input, select, textarea, .modal, .modal-dialog, .modal-content, .modal-header, .modal-body, .modal-footer, .btn-close')) {
             return;
         }
@@ -94,7 +79,7 @@ function Swiper(input: SwipeInput): SwipeOutput {
         setIsTracking(true);
     }
 
-    const onMouseMove = (e: React.MouseEvent) => {
+    const onMouseMove = (e) => {
         if (!isTracking) return;
         setTouchEndX(e.clientX);
         setTouchEndY(e.clientY);

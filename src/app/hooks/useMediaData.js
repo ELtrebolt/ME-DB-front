@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { api as axios } from '../api';
 import { useDemoData } from '../../demo/hooks/useDemoData';
 
-const constants = require('../constants');
+import constants from '../constants';
 
 /**
  * Unified data hook that works with both API (app) and localStorage (demo) data sources

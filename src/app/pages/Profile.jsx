@@ -7,8 +7,8 @@ import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, Keyboa
 import { arrayMove, SortableContext, rectSortingStrategy, useSortable, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import ShareLinkModal from '../components/modals/ShareLinkModal';
-const constants = require('../constants');
-const theme = require('../../styling/theme');
+import constants from '../constants';
+import theme from '../../styling/theme';
 
 function Profile({ user: currentUser, setUserChanged }) {
   const navigate = useNavigate();

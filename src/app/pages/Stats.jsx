@@ -5,8 +5,8 @@ import TypeDistributionChart from '../components/stats/TypeDistributionChart';
 import YearDistributionChart from '../components/stats/YearDistributionChart';
 import TierDistributionChart from '../components/stats/TierDistributionChart';
 import TierByTypeChart from '../components/stats/TierByTypeChart';
-const constants = require('../constants');
-const theme = require('../../styling/theme');
+import constants from '../constants';
+import theme from '../../styling/theme';
 
 const Stats = ({ user, dataSource = 'api', onCalculateStats }) => {
   const [statsData, setStatsData] = useState(null);

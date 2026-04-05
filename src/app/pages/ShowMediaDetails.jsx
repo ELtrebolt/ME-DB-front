@@ -8,8 +8,8 @@ import TagMaker from "../components/TagMaker";
 import useSwipe from "../hooks/useSwipe.tsx";
 import DuplicateModal from "../components/modals/DuplicateModal";
 import { toCapitalNotation } from "../helpers";
-const constants = require('../constants');
-const theme = require('../../styling/theme');
+import constants from '../constants';
+import theme from '../../styling/theme';
 
 function ShowMediaDetails({
   user, 

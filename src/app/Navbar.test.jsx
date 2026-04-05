@@ -36,12 +36,14 @@ const defaultProps = {
 beforeEach(() => {
   jest.clearAllMocks();
   jest.useFakeTimers();
-  axios.get.mockResolvedValue({ data: { success: true, incoming: [] } });
+  // Keep the polling request pending by default so simple render tests do not
+  // finish with a late state update after the assertion has already passed.
+  axios.get.mockImplementation(() => new Promise(() => {}));
   axios.put.mockResolvedValue({});
 });
 
 afterEach(() => {
-  jest.runOnlyPendingTimers();
+  jest.clearAllTimers();
   jest.useRealTimers();
 });
 
@@ -69,6 +71,7 @@ describe('Navbar', () => {
   // ─── Friend requests polling ───────────────────────────────────────────────
 
   test('fetches friend requests on mount', async () => {
+    axios.get.mockResolvedValue({ data: { success: true, incoming: [] } });
     renderWithRouter(<Navbar {...defaultProps} />);
     await waitFor(() =>
       expect(axios.get).toHaveBeenCalledWith(
@@ -85,6 +88,7 @@ describe('Navbar', () => {
   });
 
   test('does not show badge when there are no friend requests', async () => {
+    axios.get.mockResolvedValue({ data: { success: true, incoming: [] } });
     renderWithRouter(<Navbar {...defaultProps} />);
     await waitFor(() =>
       expect(axios.get).toHaveBeenCalled()
@@ -94,6 +98,7 @@ describe('Navbar', () => {
   });
 
   test('re-fetches friend requests after 30 seconds', async () => {
+    axios.get.mockResolvedValue({ data: { success: true, incoming: [] } });
     renderWithRouter(<Navbar {...defaultProps} />);
     await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(1));
     jest.advanceTimersByTime(30000);

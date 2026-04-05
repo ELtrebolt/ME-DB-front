@@ -5,8 +5,8 @@ import { toast } from 'sonner';
 import PageMeta from '../components/ui/PageMeta';
 import TagMaker from "../components/TagMaker";
 import { toCapitalNotation } from "../helpers";
-const constants = require('../constants');
-const theme = require('../../styling/theme');
+import constants from '../constants';
+import theme from '../../styling/theme';
 
 // Build a deterministic list URL preserving active filters from the current create-page URL.
 // Carries repeated 'tag' params, 'from', 'timePeriod', 'startDate', 'endDate', 'tagLogic'.

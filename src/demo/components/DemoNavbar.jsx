@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useClickOutside } from '../../app/hooks/useClickOutside';
 import { calculateDropdownWidth } from '../../app/helpers';
-const theme = require('../../styling/theme');
-const constants = require('../../app/constants');
+import theme from '../../styling/theme';
+import constants from '../../app/constants';
 
 const DemoNavbar = ({ user }) => {
   const handleSignIn = () => {

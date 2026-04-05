@@ -2,7 +2,7 @@ const { explore } = require('source-map-explorer');
 const path = require('path');
 const fs = require('fs');
 
-const jsDir = path.join(__dirname, 'build', 'static', 'js');
+const jsDir = path.join(__dirname, 'dist', 'assets');
 const files = fs.readdirSync(jsDir)
   .filter(f => f.endsWith('.js') && !f.endsWith('.LICENSE.txt'))
   .map(f => path.join(jsDir, f));
