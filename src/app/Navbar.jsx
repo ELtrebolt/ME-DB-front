@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { api as axios } from './api';
 import { toast } from 'sonner';
 import { useClickOutside } from './hooks/useClickOutside';
-const constants = require('./constants');
-const theme = require('../styling/theme');
+import constants from './constants';
+import theme from '../styling/theme';
 
 const NavbarFunction = ({user, setUserChanged, newTypes, isAdmin}) => {
   const [showModal, setShowModal] = useState(false);

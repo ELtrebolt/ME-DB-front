@@ -29,13 +29,14 @@ Full-stack web application for managing personal media collections (movies, TV, 
 
 | Area | Choices |
 |------|--------|
-| Framework | React 18 (Create React App) |
+| Framework | React 18 + Vite |
 | Routing | React Router v6 |
 | UI | Bootstrap 5, custom theme (CSS variables) |
 | Data viz | Chart.js + react-chartjs-2 |
 | Drag & drop | @dnd-kit (sortable lists) |
 | HTTP | Axios (with credentials) |
 | Icons | Font Awesome |
+| Tests | Jest + React Testing Library |
 
 ---
 
@@ -53,7 +54,7 @@ src/
 
 ## Run Locally
 
-**Prerequisites:** Node 20.x
+**Prerequisites:** Node **20.19+** (Vite 7 requires `^20.19.0`; use `.nvmrc` with [nvm-windows](https://github.com/coreybutler/nvm-windows) if you use multiple Node versions)
 
 ```bash
 npm install
@@ -63,6 +64,8 @@ npm start
 Runs at [http://localhost:3000](http://localhost:3000). For full features (auth, persistence), the backend must be running and configured (see repo root or backend README).
 
 **Other commands:** `npm run build` (production build), `npm test` (Jest + React Testing Library).
+
+For dependency cleanup notes and the current Vite/Jest baseline, see `docs/dependency-maintenance.md`.
 
 ---
 

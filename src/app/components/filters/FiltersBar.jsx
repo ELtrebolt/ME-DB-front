@@ -6,7 +6,7 @@ import ExtraFilters from "./ExtraFilters";
 import SearchBar from "./SearchBar";
 import TagFilter from "./TagFilter";
 
-const constants = require('../../constants');
+import constants from '../../constants';
 
 /**
  * FiltersBar - A reusable filter component containing TimeFilter, SearchBar, TagFilter, and ExtraFilters

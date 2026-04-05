@@ -1,5 +1,5 @@
 import React from 'react';
-const theme = require('../../styling/theme');
+import theme from '../../styling/theme';
 
 const DemoBanner = ({ storageAvailable = true }) => {
   // Calculate navbar height for sticky positioning

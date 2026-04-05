@@ -3,7 +3,7 @@
  */
 
 import { matchSorter } from 'match-sorter';
-const constants = require('./constants');
+import constants from './constants';
 
 /**
  * Filters suggestions by label using match-sorter

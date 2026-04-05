@@ -526,5 +526,5 @@ const theme = {
 };
 
 // Export the theme object as default
-module.exports = theme;
+export default theme;
 

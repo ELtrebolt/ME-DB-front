@@ -3,8 +3,8 @@ import { api as axios } from '../api';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import PageMeta from '../components/ui/PageMeta';
-const constants = require('../constants');
-const theme = require('../../styling/theme');
+import constants from '../constants';
+import theme from '../../styling/theme';
 
 function Friends({ user, setUserChanged }) {
   const navigate = useNavigate();

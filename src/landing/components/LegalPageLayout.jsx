@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-const constants = require('../../app/constants');
-const theme = require('../../styling/theme');
+import constants from '../../app/constants';
+import theme from '../../styling/theme';
 
 const google = () => {
   window.open(constants['SERVER_URL'] + "/auth/google", "_self");

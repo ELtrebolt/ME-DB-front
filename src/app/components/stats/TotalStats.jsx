@@ -1,5 +1,5 @@
 import React from 'react';
-const constants = require('../../constants');
+import constants from '../../constants';
 
 const TotalStats = ({ totalRecords, totalCollection, totalToDo }) => {
   const statsConfig = [

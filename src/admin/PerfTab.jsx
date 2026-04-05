@@ -3,7 +3,7 @@ import { api as axios } from '../app/api';
 import { Bar } from 'react-chartjs-2';
 import { ChartBlock, GRID_COLOR, TICK_COLOR } from './Admin';
 
-const constants = require('../app/constants');
+import constants from '../app/constants';
 
 const METRIC_THRESHOLDS = {
   LCP: { good: 2500, poor: 4000, unit: 'ms' },

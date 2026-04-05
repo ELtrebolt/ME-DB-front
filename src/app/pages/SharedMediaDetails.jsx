@@ -3,8 +3,8 @@ import { Link, useParams, useLocation } from 'react-router-dom';
 import { api as axios } from '../api';
 import PageMeta from '../components/ui/PageMeta';
 import { toCapitalNotation } from "../helpers";
-const constants = require('../constants');
-const theme = require('../../styling/theme');
+import constants from '../constants';
+import theme from '../../styling/theme';
 
 /**
  * SharedMediaDetails - Read-only version of ShowMediaDetails for shared/public views

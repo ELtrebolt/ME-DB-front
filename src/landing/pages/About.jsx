@@ -1,6 +1,6 @@
 import React from 'react';
 import PageMeta from '../../app/components/ui/PageMeta';
-const theme = require('../../styling/theme');
+import theme from '../../styling/theme';
 
 const About = (props) => {
 

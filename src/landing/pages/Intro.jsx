@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PageMeta from '../../app/components/ui/PageMeta';
 import Footer from '../Footer';
-import collectionMp4 from '../img/collection.mp4';
-import todoMp4 from '../img/todo.mp4';
-const constants = require('../../app/constants');
-const theme = require('../../styling/theme');
+import constants from '../../app/constants';
+import theme from '../../styling/theme';
+
+const collectionMp4 = 'https://me-db.app/collection.mp4';
+const todoMp4 = 'https://me-db.app/todo.mp4';
 
 // Load Poppins font for landing page
 const usePoppinsFont = () => {

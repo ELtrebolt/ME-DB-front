@@ -30,8 +30,8 @@ const DemoStats = lazy(() => import('./demo/pages/DemoStats'));
 const DemoShowMediaList = lazy(() => import('./demo/pages/DemoShowMediaList'));
 const DemoShowMediaDetails = lazy(() => import('./demo/pages/DemoShowMediaDetails'));
 const DemoCreateMedia = lazy(() => import('./demo/pages/DemoCreateMedia'));
-const constants = require('./app/constants');
-const theme = require('./styling/theme');
+import constants from './app/constants';
+import theme from './styling/theme';
 
 const ADMIN_EMAILS = (process.env.REACT_APP_ADMIN_EMAILS || '').split(',').map(e => e.trim()).filter(Boolean);
 

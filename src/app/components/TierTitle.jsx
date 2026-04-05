@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { api as axios } from '../api';
 import { toast } from 'sonner';
 import { useNavigate, useLocation } from 'react-router-dom';
-const constants = require('../constants');
+import constants from '../constants';
 
 function TierTitle({title, mediaType, group, tier, setUserChanged, newType, readOnly, onSave, basePath = ''}) {
   // Initialize with title or tier as fallback to prevent undefined

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api as axios } from '../app/api';
 import { ChartBlock, LINE_COLOR } from './Admin';
 
-const constants = require('../app/constants');
+import constants from '../app/constants';
 
 function avg(arr) {
   if (!arr.length) return 0;

@@ -2,7 +2,7 @@ import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import './chartConfig'; // Import to register Chart.js
 import { getTypeColor, createBarChartOptions } from './chartConfig';
-const constants = require('../../constants');
+import constants from '../../constants';
 
 const TypeDistributionChart = ({ data, toDoData, collectionData, customTypes, showStandard, filter }) => {
   const standardTypes = constants.STANDARD_MEDIA_TYPES;

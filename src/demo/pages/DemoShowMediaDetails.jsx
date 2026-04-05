@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ShowMediaDetails from '../../app/pages/ShowMediaDetails';
 import { useDemoData } from "../hooks/useDemoData";
 import { useDemoTierTitles } from "../hooks/useDemoTierTitles";
-const constants = require('../../app/constants');
+import constants from '../../app/constants';
 const { STANDARD_TIERS } = constants;
 
 const DemoShowMediaDetails = () => {

@@ -16,8 +16,8 @@ import Modal from "../components/modals/Modal";
 import { filterData, toCapitalNotation, getTruncatedTitle, calculateDropdownWidth, createEmptyTiersObject } from "../helpers";
 import { useMediaData } from "../hooks/useMediaData";
 
-const constants = require('../constants');
-const theme = require('../../styling/theme');
+import constants from '../constants';
+import theme from '../../styling/theme';
 
 /**
  * Renders description text; if it matches "text = url", the url is shown as a blue clickable link.

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useDemoData } from "../hooks/useDemoData";
 import { useDemoTierTitles } from "../hooks/useDemoTierTitles";
 import CreateMedia from '../../app/pages/CreateMedia';
-const constants = require('../../app/constants');
+import constants from '../../app/constants';
 const { STANDARD_TIERS } = constants;
 
 /**

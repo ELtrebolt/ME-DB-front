@@ -3,7 +3,7 @@ import { api as axios } from '../../api';
 import { toast } from 'sonner';
 import { toCapitalNotation } from '../../helpers';
 import Modal from './Modal';
-const constants = require('../../constants');
+import constants from '../../constants';
 
 function ShareLinkModal({ 
   show, 

@@ -2,7 +2,7 @@ import { onLCP, onCLS, onINP, onTTFB } from 'web-vitals';
 
 const SAMPLE_RATE = 1.0;
 const ENDPOINT = '/api/admin/vitals';
-const constants = require('./constants');
+import constants from './constants';
 
 function shouldSample() {
   return Math.random() < SAMPLE_RATE;

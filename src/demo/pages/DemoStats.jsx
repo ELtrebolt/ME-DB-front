@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useAllDemoData } from "../hooks/useDemoData";
 import Stats from '../../app/pages/Stats';
-const constants = require('../../app/constants');
+import constants from '../../app/constants';
 
 const DemoStats = () => {
   const { allData, loading } = useAllDemoData();
