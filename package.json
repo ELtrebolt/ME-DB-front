@@ -24,6 +24,8 @@
     "start": "vite",
     "build": "vite build",
     "test": "jest",
+    "test:coverage": "jest --coverage --watchAll=false",
+    "test:e2e": "playwright test",
     "preview": "vite preview",
     "analyze": "vite build --sourcemap && node analyze.js"
   },
@@ -52,8 +54,9 @@
   },
   "homepage": "https://me-db.onrender.com",
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/core": "^7.28.4",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@playwright/test": "^1.49.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^15.0.0",
     "@vitejs/plugin-react": "^5.1.0",
