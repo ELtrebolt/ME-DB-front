@@ -141,7 +141,6 @@ function SharedView() {
         }
       })
       .catch(err => {
-        console.error(err);
         setError(err.response?.data?.error || 'Link invalid or expired');
         setFirstLoad(false);
       });
@@ -188,8 +187,8 @@ function SharedView() {
     onSwipedRight: onSwipeRight,
   });
 
-  if (firstLoad || !filteredData) return <div className="text-white text-center pt-5">Loading...</div>;
   if (error) return <div className="text-danger text-center pt-5"><h3>{error}</h3></div>;
+  if (firstLoad || !filteredData) return <div className="text-white text-center pt-5">Loading...</div>;
 
   const showSwitch = shareConfig.collection && shareConfig.todo;
   const currentDescription = toDoState ? todoDescription : collectionDescription;
