@@ -4,6 +4,7 @@ import App from './App';
 
 jest.mock('./app/api', () => ({
   api: { get: jest.fn(), post: jest.fn(), put: jest.fn(), delete: jest.fn() },
+  setUnauthorizedHandler: jest.fn(),
 }));
 
 // Make the landing page render synchronously in tests so we don't race Suspense/lazy loading.

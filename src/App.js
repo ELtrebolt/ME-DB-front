@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes, Navigate, useParams, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { lazy, Suspense, useEffect, useState, useMemo, useRef, useCallback } from 'react';
-import { api as axios } from './app/api';
+import { api as axios, setUnauthorizedHandler } from './app/api';
 import { toast } from 'sonner';
 // Components
 import Navbar from "./app/Navbar";
@@ -54,6 +54,14 @@ const App = () => {
     return [];
   });
   const [filteredData, setFilteredData] = useState({});
+
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      setUser(null);
+      setIsLoading(false);
+    });
+    return () => setUnauthorizedHandler(null);
+  }, []);
 
   useEffect(() => {
     // get User data from MongoDB
